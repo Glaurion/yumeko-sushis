@@ -67,6 +67,26 @@
     button:hover {
       background-color: #ff8c8c;
     }
+    .plus, .minus {
+  background-color: #ffb6b6;
+  border: none;
+  color: #1a1a1a;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+.plus:hover, .minus:hover {
+  background-color: #ff8c8c;
+}
+.qty {
+  min-width: 20px;
+  display: inline-block;
+}
+
     footer {
       margin: 40px 0;
       font-size: 0.9rem;
@@ -95,48 +115,74 @@
 
   <footer>© 2025 YUMEKO SUSHIS - Les sushis qui font ronronner vos papilles</footer>
 
-  <script>
-    const categories = {
-      'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
-      'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
-      'Maki printemps 4 pièces': ['P1- Saumon/Avocat','P2- Saumon/Cheese','P3- Concombre/Cheese','P4- Avocat/Cheese'],
-      'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
-      'Sashimi 2 pièces': ['Saumon'],
-      'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
-    };
+ <script>
+  const categories = {
+    'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
+    'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
+    'Maki printemps 4 pièces': ['P1- Saumon/Avocat','P2- Saumon/Cheese','P3- Concombre/Cheese','P4- Avocat/Cheese'],
+    'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
+    'Sashimi 2 pièces': ['Saumon'],
+    'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
+  };
 
-    const menuContainer = document.getElementById('menu');
+  const menuContainer = document.getElementById('menu');
 
-    for (const [category, items] of Object.entries(categories)) {
-      const section = document.createElement('div');
-      section.classList.add('menu-section');
-      const title = document.createElement('h2');
-      title.textContent = category;
-      section.appendChild(title);
+  for (const [category, items] of Object.entries(categories)) {
+    const section = document.createElement('div');
+    section.classList.add('menu-section');
+    const title = document.createElement('h2');
+    title.textContent = category;
+    section.appendChild(title);
 
-      const table = document.createElement('table');
-      const tbody = document.createElement('tbody');
+    const table = document.createElement('table');
+    const tbody = document.createElement('tbody');
 
-      items.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${item}</td><td><input type="number" min="0" value="0" data-item="${item}"></td>`;
-        tbody.appendChild(row);
-      });
-
-      table.appendChild(tbody);
-      section.appendChild(table);
-      menuContainer.appendChild(section);
-    }
-
-    const form = document.getElementById('orderForm');
-    form.addEventListener('submit', e => {
-      const orders = [];
-      document.querySelectorAll('input[type=number]').forEach(i => {
-        const qty = parseInt(i.value);
-        if (qty > 0) orders.push(`${i.dataset.item} x${qty}`);
-      });
-      document.getElementById('orderText').value = orders.join('\n');
+    items.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${item}</td>
+        <td>
+          <button class="minus" data-item="${item}">−</button>
+          <span class="qty" data-item="${item}">0</span>
+          <button class="plus" data-item="${item}">+</button>
+        </td>`;
+      tbody.appendChild(row);
     });
-  </script>
+
+    table.appendChild(tbody);
+    section.appendChild(table);
+    menuContainer.appendChild(section);
+  }
+
+  // Gérer les clics sur + et -
+  document.querySelectorAll('.plus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.dataset.item;
+      const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
+      qtySpan.textContent = parseInt(qtySpan.textContent) + 1;
+    });
+  });
+
+  document.querySelectorAll('.minus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.dataset.item;
+      const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
+      const newQty = Math.max(0, parseInt(qtySpan.textContent) - 1);
+      qtySpan.textContent = newQty;
+    });
+  });
+
+  // Lors de la soumission du formulaire
+  const form = document.getElementById('orderForm');
+  form.addEventListener('submit', e => {
+    const orders = [];
+    document.querySelectorAll('.qty').forEach(span => {
+      const qty = parseInt(span.textContent);
+      if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
+    });
+    document.getElementById('orderText').value = orders.join('\n');
+  });
+</script>
+
 </body>
 </html>
