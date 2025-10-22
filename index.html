@@ -144,6 +144,16 @@
     'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
   };
 
+ <script>
+  const categories = {
+    'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
+    'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
+    'Maki printemps 4 pièces': ['P1- Saumon/Avocat','P2- Saumon/Cheese','P3- Concombre/Cheese','P4- Avocat/Cheese'],
+    'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
+    'Sashimi 2 pièces': ['Saumon'],
+    'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
+  };
+
   const menuContainer = document.getElementById('menu');
 
   for (const [category, items] of Object.entries(categories)) {
@@ -157,9 +167,14 @@
     const tbody = document.createElement('tbody');
 
     items.forEach(item => {
+      const imgName = item.split('-')[0].trim().toLowerCase(); // ex: M1 -> m1
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${item}</td>
+        <td style="display:flex;align-items:center;gap:10px;">
+          <img src="images/${imgName}.jpg" alt="${item}" 
+               style="width:55px;height:55px;object-fit:cover;border-radius:8px;box-shadow:0 0 5px rgba(0,0,0,0.4);">
+          <span>${item}</span>
+        </td>
         <td>
           <button class="minus" data-item="${item}" aria-label="Retirer 1">−</button>
           <span class="qty" data-item="${item}">0</span>
@@ -173,15 +188,12 @@
     menuContainer.appendChild(section);
   }
 
-  // Anim rebond et mise à jour sticky
+  // Animation rebond + sticky
   function bumpAnimation(qtySpan) { qtySpan.classList.add('bump'); setTimeout(() => qtySpan.classList.remove('bump'), 200); }
 
   function getTotalItems(){
-    let total = 0; document.querySelectorAll('.qty').forEach(span => {
-      const v = parseInt(span.textContent) || 0;
-      // ne pas compter les baguettes dans le panier total (option)
-      if(span.id !== 'bagQty') total += v;
-    });
+    let total = 0;
+    document.querySelectorAll('.qty[data-item]').forEach(span => total += parseInt(span.textContent)||0);
     return total;
   }
 
@@ -191,77 +203,42 @@
     if(btn) btn.textContent = total>0 ? `Panier (${total}) • Valider` : 'Panier (0) • Valider';
   }
 
-  // + / - du menu
-  document.querySelectorAll('.plus').forEach(btn => {
-    // ignorer ceux des options (baguettes) qui ont des IDs spécifiques
-    if(btn.id === 'bagPlus') return;
-    btn.addEventListener('click', () => {
-      const item = btn.dataset.item;
+  // + et −
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('plus')) {
+      const item = e.target.dataset.item;
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
-      qtySpan.textContent = (parseInt(qtySpan.textContent)||0) + 1;
+      qtySpan.textContent = parseInt(qtySpan.textContent) + 1;
       bumpAnimation(qtySpan); updateSticky();
-    });
-  });
-
-  document.querySelectorAll('.minus').forEach(btn => {
-    if(btn.id === 'bagMinus') return;
-    btn.addEventListener('click', () => {
-      const item = btn.dataset.item;
+    }
+    if (e.target.classList.contains('minus')) {
+      const item = e.target.dataset.item;
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
-      const newQty = Math.max(0, (parseInt(qtySpan.textContent)||0) - 1);
-      qtySpan.textContent = newQty; bumpAnimation(qtySpan); updateSticky();
-    });
+      const newQty = Math.max(0, parseInt(qtySpan.textContent) - 1);
+      qtySpan.textContent = newQty;
+      bumpAnimation(qtySpan); updateSticky();
+    }
   });
 
-  // Contrôles baguettes + / -
-  const bagMinus = document.getElementById('bagMinus');
-  const bagPlus  = document.getElementById('bagPlus');
-  const bagQty   = document.getElementById('bagQty');
-  const bagInput = document.getElementById('bagInput');
-  bagMinus.addEventListener('click', ()=>{
-    const v = Math.max(0, (parseInt(bagQty.textContent)||0) - 1);
-    bagQty.textContent = v; bagInput.value = v; bumpAnimation(bagQty);
-  });
-  bagPlus.addEventListener('click', ()=>{
-    const v = (parseInt(bagQty.textContent)||0) + 1;
-    bagQty.textContent = v; bagInput.value = v; bumpAnimation(bagQty);
-  });
-
-  // Soumission du formulaire: validation + envoi Ajax à Formspree + confirmation
+  // Soumission du formulaire
   const form = document.getElementById('orderForm');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Construire la liste des articles (hors baguettes)
     const orders = [];
     document.querySelectorAll('.qty[data-item]').forEach(span => {
-      const qty = parseInt(span.textContent)||0;
+      const qty = parseInt(span.textContent);
       if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
     });
 
-    // Ajouter les options dans le corps du message
-    const opts = [];
-    if(document.getElementById('optSojaSucree')?.checked) opts.push('Soja sucrée');
-    if(document.getElementById('optSojaSalee')?.checked)  opts.push('Soja salée');
-    if(document.getElementById('optWasabi')?.checked)     opts.push('Wasabi');
-    if(document.getElementById('optGingembre')?.checked)  opts.push('Gingembre');
-    const bag = parseInt(document.getElementById('bagQty').textContent)||0;
-    if(bag>0) orders.push(`Baguettes x${bag}`);
-
-    // Vérifier qu'il y a au moins 1 article (hors options)
-    const hasItems = orders.some(line => !line.startsWith('Baguettes'));
-    if (!hasItems) {
-      const r = document.getElementById('orderResult');
-      r.textContent = "Ajoute au moins un article avant d'envoyer 😊";
-      r.style.color = "#ffd4d4";
+    if (orders.length === 0) {
+      const res = document.getElementById('orderResult');
+      res.textContent = "Ajoute au moins un article avant d'envoyer 😊";
+      res.style.color = "#ffd4d4";
       return;
     }
 
-    // Compose le texte de commande
-    let body = orders.join('\n');
-    if(opts.length) body += `\nOptions: ${opts.join(', ')}`;
-
-    document.getElementById('orderText').value = body;
+    document.getElementById('orderText').value = orders.join('\\n');
 
     try {
       const resp = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form) });
@@ -269,29 +246,23 @@
       if (resp.ok) {
         res.textContent = "Merci ! Ta commande a bien été envoyée 🍣";
         res.style.color = "#b7ffb7";
-        // Reset quantités
         document.querySelectorAll('.qty').forEach(span => span.textContent = '0');
-        bagQty.textContent = '1'; bagInput.value = '1';
-        // Reset form
-        form.reset();
-        updateSticky();
+        form.reset(); updateSticky();
       } else {
-        res.textContent = "Oups, l'envoi a échoué. Réessaie dans un instant 🙏";
+        res.textContent = "Oups, l'envoi a échoué. Réessaie 🙏";
         res.style.color = "#ffd4d4";
       }
-    } catch (err) {
+    } catch {
       const res = document.getElementById('orderResult');
       res.textContent = "Erreur réseau. Vérifie ta connexion et réessaie.";
       res.style.color = "#ffd4d4";
     }
   });
 
-  // Sticky bouton -> scroll vers le formulaire
   document.getElementById('gotoOrder').addEventListener('click', () => {
     document.getElementById('orderSection').scrollIntoView({behavior:'smooth'});
   });
 
-  // Init
   updateSticky();
 </script>
 
