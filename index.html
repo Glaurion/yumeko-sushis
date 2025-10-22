@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YUMEKO SUSHIS</title>
   <style>
-    :root{
-      --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-      --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family:'Poppins',sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%,#8b0000 100%);
-      color:var(--text); min-height:100vh;
-    }
+  :root{
+  /* ...tes autres vars... */
+  --barShade: 0.35; /* opacité de l’ombre du bandeau (0→transparent, 1→opaque) */
+}
+
+/* Bandeau panier : utilise la variable */
+#stickyBar{
+  position:fixed; left:0; right:0; bottom:0; z-index:100;
+  background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade)));
+  padding:10px;
+}
+
 
     /* HERO */
     .hero{
@@ -159,6 +161,23 @@
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
 <script>
+  <script>
+(function(){
+  const root = document.documentElement;
+  function updateBarShade(){
+    const doc = document.documentElement;
+    const max = (doc.scrollHeight - window.innerHeight) || 1;
+    const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 en haut → 1 en bas
+    // commence à 0.35 et va jusqu’à 0.85
+    const shade = 0.35 + (0.85 - 0.35) * p;
+    root.style.setProperty('--barShade', shade.toFixed(2));
+  }
+  updateBarShade();
+  window.addEventListener('scroll', updateBarShade, { passive:true });
+  window.addEventListener('resize', updateBarShade);
+})();
+</script>
+
 /* ===================== Données ===================== */
 const categories = {
   'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
