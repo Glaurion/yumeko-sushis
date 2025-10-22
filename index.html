@@ -27,8 +27,14 @@
       max-width: 860px;
       border-radius: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      text-align: left;
     }
-    .menu-section h2 { color: var(--pink); border-bottom: 2px solid var(--pink); display: inline-block; padding-bottom: 5px; }
+    .menu-section h2 {
+      color: var(--pink);
+      border-bottom: 2px solid var(--pink);
+      display: inline-block;
+      padding-bottom: 5px;
+    }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -53,7 +59,7 @@
     #stickyInner { margin: 0 auto 12px; width: min(92%, 860px); backdrop-filter: blur(6px); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 10px; }
     #gotoOrder { width: 100%; background: var(--pink); color: #1a1a1a; font-weight: 800; border: none; border-radius: 12px; padding: 14px 18px; cursor: pointer; }
 
-    footer { margin: 80px 0 100px; font-size: 0.9rem; color: #ddd; }
+    footer { margin: 80px 0 100px; font-size: 0.9rem; color: #ddd; text-align:center; }
 
     /* ------- MOBILE OPTIM -------- */
     @media (max-width: 680px){
@@ -73,6 +79,10 @@
       #stickyBar { display: block; }
       footer { margin-bottom: 120px; }
     }
+
+    /* Petits contrôles ronds pour les options (baguettes) */
+    .opt-btn { width: 34px; height: 34px; font-size: 18px; }
+    .opt-qty { min-width: 28px; font-size: 16px; }
   </style>
 </head>
 <body>
@@ -86,28 +96,31 @@
 
   <div class="menu-section" id="orderSection">
     <h2>Validez votre commande</h2>
-    <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
-      <p><input name="phone" placeholder="Téléphone (optionnel)" style="padding:10px 12px; border-radius:10px; width: min(560px, 92%);"></p>
-
-<p style="margin:8px 0">
-  <span style="font-size:14px;opacity:.9">Heure de retrait :</span><br>
-  <input type="time" name="pickup_time" style="padding:8px 10px; border-radius:10px; width: min(240px, 90%);">
-</p>
-
-<p style="margin:8px 0">
-  <span style="font-size:14px;opacity:.9">Options :</span><br>
-  <label><input type="checkbox" name="soja_sucree"> Soja sucrée</label>
-  <label style="margin-left:12px"><input type="checkbox" name="soja_salee"> Soja salée</label>
-  <label style="margin-left:12px"><input type="checkbox" name="wasabi"> Wasabi</label>
-  <label style="margin-left:12px"><input type="checkbox" name="gingembre"> Gingembre</label>
-  <label style="margin-left:12px">Baguettes :
-    <input type="number" name="baguettes" min="0" value="1" style="width:60px">
-  </label>
-</p>
-
+    <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST" style="text-align:center">
       <p><input name="name" id="clientName" placeholder="Votre prénom" required style="padding:10px 12px; border-radius:10px; width: min(560px, 92%);"></p>
+      <p><input name="phone" id="clientPhone" placeholder="Téléphone (optionnel)" style="padding:10px 12px; border-radius:10px; width: min(560px, 92%);"></p>
+
+      <p style="margin:8px 0">
+        <span style="font-size:14px;opacity:.9">Options :</span><br>
+        <label><input type="checkbox" name="soja_sucree" id="optSojaSucree"> Soja sucrée</label>
+        <label style="margin-left:12px"><input type="checkbox" name="soja_salee" id="optSojaSalee"> Soja salée</label>
+        <label style="margin-left:12px"><input type="checkbox" name="wasabi" id="optWasabi"> Wasabi</label>
+        <label style="margin-left:12px"><input type="checkbox" name="gingembre" id="optGingembre"> Gingembre</label>
+      </p>
+
+      <!-- Baguettes avec + / - -->
+      <p style="margin:8px 0">
+        <span style="font-size:14px;opacity:.9;display:block;margin-bottom:6px">Baguettes :</span>
+        <button class="minus opt-btn" type="button" id="bagMinus" aria-label="Retirer 1 baguette">−</button>
+        <span class="qty opt-qty" id="bagQty">1</span>
+        <button class="plus opt-btn" type="button" id="bagPlus" aria-label="Ajouter 1 baguette">+</button>
+        <input type="hidden" name="baguettes" id="bagInput" value="1">
+      </p>
+
       <textarea name="order" id="orderText" hidden></textarea>
-      <button type="submit" style="margin-top:8px">Envoyer ma commande 🍣</button>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap">
+        <button type="submit" style="margin-top:8px">Envoyer ma commande 🍣</button>
+      </div>
     </form>
     <div id="orderResult" style="margin-top:10px; font-size:14px; color:#e6e6e6;"></div>
   </div>
@@ -164,90 +177,123 @@
   function bumpAnimation(qtySpan) { qtySpan.classList.add('bump'); setTimeout(() => qtySpan.classList.remove('bump'), 200); }
 
   function getTotalItems(){
-    let total = 0; document.querySelectorAll('.qty').forEach(span => total += parseInt(span.textContent)||0); return total;
+    let total = 0; document.querySelectorAll('.qty').forEach(span => {
+      const v = parseInt(span.textContent) || 0;
+      // ne pas compter les baguettes dans le panier total (option)
+      if(span.id !== 'bagQty') total += v;
+    });
+    return total;
   }
+
   function updateSticky(){
     const total = getTotalItems();
     const btn = document.getElementById('gotoOrder');
     if(btn) btn.textContent = total>0 ? `Panier (${total}) • Valider` : 'Panier (0) • Valider';
   }
 
+  // + / - du menu
   document.querySelectorAll('.plus').forEach(btn => {
+    // ignorer ceux des options (baguettes) qui ont des IDs spécifiques
+    if(btn.id === 'bagPlus') return;
     btn.addEventListener('click', () => {
       const item = btn.dataset.item;
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
-      qtySpan.textContent = parseInt(qtySpan.textContent) + 1;
+      qtySpan.textContent = (parseInt(qtySpan.textContent)||0) + 1;
       bumpAnimation(qtySpan); updateSticky();
     });
   });
 
   document.querySelectorAll('.minus').forEach(btn => {
+    if(btn.id === 'bagMinus') return;
     btn.addEventListener('click', () => {
       const item = btn.dataset.item;
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
-      const newQty = Math.max(0, parseInt(qtySpan.textContent) - 1);
+      const newQty = Math.max(0, (parseInt(qtySpan.textContent)||0) - 1);
       qtySpan.textContent = newQty; bumpAnimation(qtySpan); updateSticky();
     });
   });
 
-  <script>
-// ... laisse le reste de ton script inchangé
-
-// Soumission du formulaire: validation + envoi Ajax à Formspree + confirmation
-const form = document.getElementById('orderForm');
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  // Construire la liste des articles
-  const orders = [];
-  document.querySelectorAll('.qty').forEach(span => {
-    const qty = parseInt(span.textContent);
-    if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
+  // Contrôles baguettes + / -
+  const bagMinus = document.getElementById('bagMinus');
+  const bagPlus  = document.getElementById('bagPlus');
+  const bagQty   = document.getElementById('bagQty');
+  const bagInput = document.getElementById('bagInput');
+  bagMinus.addEventListener('click', ()=>{
+    const v = Math.max(0, (parseInt(bagQty.textContent)||0) - 1);
+    bagQty.textContent = v; bagInput.value = v; bumpAnimation(bagQty);
+  });
+  bagPlus.addEventListener('click', ()=>{
+    const v = (parseInt(bagQty.textContent)||0) + 1;
+    bagQty.textContent = v; bagInput.value = v; bumpAnimation(bagQty);
   });
 
-  // Vérifier qu'il y a au moins 1 article
-  if (orders.length === 0) {
-    document.getElementById('orderResult').textContent = "Ajoute au moins un article avant d'envoyer 😊";
-    document.getElementById('orderResult').style.color = "#ffd4d4";
-    return;
-  }
+  // Soumission du formulaire: validation + envoi Ajax à Formspree + confirmation
+  const form = document.getElementById('orderForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-  // Injecter la commande dans le textarea 'order'
-  document.getElementById('orderText').value = orders.join('\n');
-
-  // Envoyer via fetch à Formspree sans quitter la page
-  try {
-    const resp = await fetch(form.action, {
-      method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: new FormData(form)
+    // Construire la liste des articles (hors baguettes)
+    const orders = [];
+    document.querySelectorAll('.qty[data-item]').forEach(span => {
+      const qty = parseInt(span.textContent)||0;
+      if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
     });
 
-    if (resp.ok) {
-      // Confirmation visuelle
-      const res = document.getElementById('orderResult');
-      res.textContent = "Merci ! Ta commande a bien été envoyée 🍣";
-      res.style.color = "#b7ffb7";
+    // Ajouter les options dans le corps du message
+    const opts = [];
+    if(document.getElementById('optSojaSucree')?.checked) opts.push('Soja sucrée');
+    if(document.getElementById('optSojaSalee')?.checked)  opts.push('Soja salée');
+    if(document.getElementById('optWasabi')?.checked)     opts.push('Wasabi');
+    if(document.getElementById('optGingembre')?.checked)  opts.push('Gingembre');
+    const bag = parseInt(document.getElementById('bagQty').textContent)||0;
+    if(bag>0) orders.push(`Baguettes x${bag}`);
 
-      // Reset quantités
-      document.querySelectorAll('.qty').forEach(span => span.textContent = '0');
-      // Vider le formulaire
-      form.reset();
-      // Mettre à jour le bouton sticky
-      updateSticky();
-    } else {
+    // Vérifier qu'il y a au moins 1 article (hors options)
+    const hasItems = orders.some(line => !line.startsWith('Baguettes'));
+    if (!hasItems) {
+      const r = document.getElementById('orderResult');
+      r.textContent = "Ajoute au moins un article avant d'envoyer 😊";
+      r.style.color = "#ffd4d4";
+      return;
+    }
+
+    // Compose le texte de commande
+    let body = orders.join('\n');
+    if(opts.length) body += `\nOptions: ${opts.join(', ')}`;
+
+    document.getElementById('orderText').value = body;
+
+    try {
+      const resp = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form) });
       const res = document.getElementById('orderResult');
-      res.textContent = "Oups, l'envoi a échoué. Réessaie dans un instant 🙏";
+      if (resp.ok) {
+        res.textContent = "Merci ! Ta commande a bien été envoyée 🍣";
+        res.style.color = "#b7ffb7";
+        // Reset quantités
+        document.querySelectorAll('.qty').forEach(span => span.textContent = '0');
+        bagQty.textContent = '1'; bagInput.value = '1';
+        // Reset form
+        form.reset();
+        updateSticky();
+      } else {
+        res.textContent = "Oups, l'envoi a échoué. Réessaie dans un instant 🙏";
+        res.style.color = "#ffd4d4";
+      }
+    } catch (err) {
+      const res = document.getElementById('orderResult');
+      res.textContent = "Erreur réseau. Vérifie ta connexion et réessaie.";
       res.style.color = "#ffd4d4";
     }
-  } catch (err) {
-    const res = document.getElementById('orderResult');
-    res.textContent = "Erreur réseau. Vérifie ta connexion et réessaie.";
-    res.style.color = "#ffd4d4";
-  }
-});
-</script>
+  });
 
+  // Sticky bouton -> scroll vers le formulaire
+  document.getElementById('gotoOrder').addEventListener('click', () => {
+    document.getElementById('orderSection').scrollIntoView({behavior:'smooth'});
+  });
+
+  // Init
+  updateSticky();
+</script>
 
 </body>
 </html>
