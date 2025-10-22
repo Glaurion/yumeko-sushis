@@ -90,24 +90,34 @@
   background-color: #ffb6b6;
   border: none;
   color: #1a1a1a;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  vertical-align: middle;
   cursor: pointer;
-  margin: 0 5px;
+  margin: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.15s ease, background-color 0.2s ease;
 }
 .plus:hover, .minus:hover {
   background-color: #ff8c8c;
   transform: scale(1.1);
 }
+
 .qty {
-  min-width: 20px;
+  min-width: 30px;
   display: inline-block;
   font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
   transition: transform 0.2s ease;
+  font-size: 16px;
 }
 .qty.bump {
   transform: scale(1.3);
