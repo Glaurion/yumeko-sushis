@@ -86,6 +86,32 @@
   min-width: 20px;
   display: inline-block;
 }
+.plus, .minus {
+  background-color: #ffb6b6;
+  border: none;
+  color: #1a1a1a;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+.plus:hover, .minus:hover {
+  background-color: #ff8c8c;
+  transform: scale(1.1);
+}
+.qty {
+  min-width: 20px;
+  display: inline-block;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+.qty.bump {
+  transform: scale(1.3);
+}
 
     footer {
       margin: 40px 0;
@@ -115,7 +141,7 @@
 
   <footer>© 2025 YUMEKO SUSHIS - Les sushis qui font ronronner vos papilles</footer>
 
- <script>
+<script>
   const categories = {
     'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
     'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
@@ -154,12 +180,18 @@
     menuContainer.appendChild(section);
   }
 
-  // Gérer les clics sur + et -
+  // Animation + gestion des boutons
+  function bumpAnimation(qtySpan) {
+    qtySpan.classList.add('bump');
+    setTimeout(() => qtySpan.classList.remove('bump'), 200);
+  }
+
   document.querySelectorAll('.plus').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.dataset.item;
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
       qtySpan.textContent = parseInt(qtySpan.textContent) + 1;
+      bumpAnimation(qtySpan);
     });
   });
 
@@ -169,6 +201,7 @@
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
       const newQty = Math.max(0, parseInt(qtySpan.textContent) - 1);
       qtySpan.textContent = newQty;
+      bumpAnimation(qtySpan);
     });
   });
 
