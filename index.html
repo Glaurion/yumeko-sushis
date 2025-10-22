@@ -369,43 +369,43 @@
   document.getElementById('gotoOrder').addEventListener('click', ()=> document.getElementById('orderSection').scrollIntoView({behavior:'smooth'}));
   document.getElementById('ctaOrder').addEventListener('click', ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'}));
 
-  // Build menu (après listeners)
-  function buildMenu(){
-    const menu = document.getElementById('menu');
-    for(const [cat, items] of Object.entries(categories)){
-      const wrap = document.createElement('div');
-      wrap.className = 'category';
-      wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
-      const grid = wrap.querySelector('.menu-grid');
+// Build menu (après listeners)
+function buildMenu(){
+  const menu = document.getElementById('menu');
+  for(const [cat, items] of Object.entries(categories)){
+    const wrap = document.createElement('div');
+    wrap.className = 'category';
+    wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
+    const grid = wrap.querySelector('.menu-grid');
 
-      items.forEach(item=>{
-        const code = item.split('-')[0].trim();
-        const nameOnly = item.split('-').slice(1).join('-').trim();
-        const price = prices[code];
+    items.forEach(item=>{
+      const code = item.split('-')[0].trim();
+      const nameOnly = item.split('-').slice(1).join('-').trim();
+      const price = prices[code];
 
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `
-          <div class="left">
-            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
-            <div class="item-lines">
-              <div class="item-name">${nameOnly || item}</div>
-              <div class="item-sub">${cat}</div>
-            </div>
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.innerHTML = `
+        <div class="left">
+          <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
+          <div class="item-lines">
+            <div class="item-name">${nameOnly || item}</div>
+            <div class="item-sub">${cat}</div>
           </div>
-          <div class="controls">
-            ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
-            <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
-            <span class="qty" data-item="${item}">0</span>
-            <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
-          </div>`;
-        grid.appendChild(card);
-      });
+        </div>
+        <div class="controls">
+          ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
+          <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
+          <span class="qty" data-item="${item}">0</span>
+          <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
+        </div>`;
+      grid.appendChild(card);
+    });
 
-      menu.appendChild(wrap);
-    }
+    menu.appendChild(wrap);
   }
-  buildMenu();
+}
+buildMenu();
   updateSticky();
 </script>
 </body>
