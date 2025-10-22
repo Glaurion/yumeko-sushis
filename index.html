@@ -87,6 +87,24 @@
   <div class="menu-section" id="orderSection">
     <h2>Validez votre commande</h2>
     <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
+      <p><input name="phone" placeholder="Téléphone (optionnel)" style="padding:10px 12px; border-radius:10px; width: min(560px, 92%);"></p>
+
+<p style="margin:8px 0">
+  <span style="font-size:14px;opacity:.9">Heure de retrait :</span><br>
+  <input type="time" name="pickup_time" style="padding:8px 10px; border-radius:10px; width: min(240px, 90%);">
+</p>
+
+<p style="margin:8px 0">
+  <span style="font-size:14px;opacity:.9">Options :</span><br>
+  <label><input type="checkbox" name="soja_sucree"> Soja sucrée</label>
+  <label style="margin-left:12px"><input type="checkbox" name="soja_salee"> Soja salée</label>
+  <label style="margin-left:12px"><input type="checkbox" name="wasabi"> Wasabi</label>
+  <label style="margin-left:12px"><input type="checkbox" name="gingembre"> Gingembre</label>
+  <label style="margin-left:12px">Baguettes :
+    <input type="number" name="baguettes" min="0" value="1" style="width:60px">
+  </label>
+</p>
+
       <p><input name="name" id="clientName" placeholder="Votre prénom" required style="padding:10px 12px; border-radius:10px; width: min(560px, 92%);"></p>
       <textarea name="order" id="orderText" hidden></textarea>
       <button type="submit" style="margin-top:8px">Envoyer ma commande 🍣</button>
@@ -172,25 +190,64 @@
     });
   });
 
-  // Soumission du formulaire: prépare le champ texte avec les quantités
-  const form = document.getElementById('orderForm');
-  form.addEventListener('submit', e => {
-    const orders = [];
-    document.querySelectorAll('.qty').forEach(span => {
-      const qty = parseInt(span.textContent);
-      if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
+  <script>
+// ... laisse le reste de ton script inchangé
+
+// Soumission du formulaire: validation + envoi Ajax à Formspree + confirmation
+const form = document.getElementById('orderForm');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Construire la liste des articles
+  const orders = [];
+  document.querySelectorAll('.qty').forEach(span => {
+    const qty = parseInt(span.textContent);
+    if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
+  });
+
+  // Vérifier qu'il y a au moins 1 article
+  if (orders.length === 0) {
+    document.getElementById('orderResult').textContent = "Ajoute au moins un article avant d'envoyer 😊";
+    document.getElementById('orderResult').style.color = "#ffd4d4";
+    return;
+  }
+
+  // Injecter la commande dans le textarea 'order'
+  document.getElementById('orderText').value = orders.join('\n');
+
+  // Envoyer via fetch à Formspree sans quitter la page
+  try {
+    const resp = await fetch(form.action, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
     });
-    document.getElementById('orderText').value = orders.join('\n');
-  });
 
-  // Sticky bouton -> scroll vers le formulaire
-  document.getElementById('gotoOrder').addEventListener('click', () => {
-    document.getElementById('orderSection').scrollIntoView({behavior:'smooth'});
-  });
+    if (resp.ok) {
+      // Confirmation visuelle
+      const res = document.getElementById('orderResult');
+      res.textContent = "Merci ! Ta commande a bien été envoyée 🍣";
+      res.style.color = "#b7ffb7";
 
-  // Init
-  updateSticky();
+      // Reset quantités
+      document.querySelectorAll('.qty').forEach(span => span.textContent = '0');
+      // Vider le formulaire
+      form.reset();
+      // Mettre à jour le bouton sticky
+      updateSticky();
+    } else {
+      const res = document.getElementById('orderResult');
+      res.textContent = "Oups, l'envoi a échoué. Réessaie dans un instant 🙏";
+      res.style.color = "#ffd4d4";
+    }
+  } catch (err) {
+    const res = document.getElementById('orderResult');
+    res.textContent = "Erreur réseau. Vérifie ta connexion et réessaie.";
+    res.style.color = "#ffd4d4";
+  }
+});
 </script>
+
 
 </body>
 </html>
