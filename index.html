@@ -9,95 +9,69 @@
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
       --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
     }
-    *{ box-sizing: border-box; }
+    *{ box-sizing:border-box; }
 
-    /* Dégradé global: noir -> rouge */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%);
+      background:linear-gradient(180deg,#0f0f0f 0%,#8b0000 100%);
       color:var(--text);
       min-height:100vh;
     }
 
     .hero{
       position:relative; isolation:isolate;
-      background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.75)),
-                  url('images/hero.jpg') center/cover no-repeat;
-      padding: clamp(32px, 6vw, 72px) 20px;
+      background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
+      padding:clamp(32px,6vw,72px) 20px;
       text-align:left;
       overflow:hidden;
     }
-    .hero-inner{ max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; }
-    .logo-mark{ display:flex; align-items:center; gap:14px; }
-    .logo-mark img{ width:56px; height:56px; object-fit:contain; }
-    h1.brand{ font-size:clamp(28px,4vw,48px); margin:8px 0 6px; letter-spacing:.08em; font-weight:800; }
-    .hero p{ color:var(--muted); margin:6px 0 18px; font-size:clamp(14px,1.4vw,18px); }
-    .cta{ background:var(--brand); border:none; color:#fff; padding:14px 18px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.25); }
-    .cta:hover{ background:var(--brand-2); }
+    .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;}
+    .logo-mark{display:flex;align-items:center;gap:14px;}
+    .logo-mark img{width:56px;height:56px;object-fit:contain;}
+    h1.brand{font-size:clamp(28px,4vw,48px);margin:8px 0 6px;letter-spacing:.08em;font-weight:800;}
+    .hero p{color:var(--muted);margin:6px 0 18px;font-size:clamp(14px,1.4vw,18px);}
+    .cta{background:var(--brand);border:none;color:#fff;padding:14px 18px;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+    .cta:hover{background:var(--brand-2);}
 
-    .container{ max-width:1100px; margin:0 auto; padding:22px; }
+    .container{max-width:1100px;margin:0 auto;padding:22px;}
 
-    .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:clamp(16px,2vw,26px); box-shadow:0 10px 30px rgba(0,0,0,.25); }
-    .section-title{ font-size:clamp(22px,2.4vw,32px); margin:0 0 14px; color:#fff; }
+    .section{background:#160c0c;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:clamp(16px,2vw,26px);box-shadow:0 10px 30px rgba(0,0,0,.25);}
+    .section-title{font-size:clamp(22px,2.4vw,32px);margin:0 0 14px;color:#fff;}
 
-    .category{ margin-top:18px; }
-    .category h3{ display:flex; align-items:center; justify-content:space-between; margin:0 0 10px; font-size:clamp(18px,2vw,22px); color:#ffe1e1; border-bottom:1px dashed rgba(255,255,255,.1); padding-bottom:6px; }
+    .category{margin-top:18px;}
+    .category h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;font-size:clamp(18px,2vw,22px);color:#ffe1e1;border-bottom:1px dashed rgba(255,255,255,.1);padding-bottom:6px;}
+    .menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    @media(max-width:820px){.hero-inner{grid-template-columns:1fr;text-align:center;}.logo-mark{justify-content:center;}.menu-grid{grid-template-columns:1fr;}}
 
-    .menu-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    @media (max-width:820px){
-      .hero-inner{ grid-template-columns:1fr; text-align:center; }
-      .logo-mark{ justify-content:center; }
-      .menu-grid{ grid-template-columns:1fr; }
-    }
+    .item-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .left{display:flex;align-items:center;gap:12px;min-width:0;}
+    .thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;box-shadow:0 0 8px rgba(0,0,0,.35);background:#0d0d0d;}
+    .item-lines{min-width:0;}
+    .item-name{font-weight:700;line-height:1.1;}
+    .item-sub{color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-    .item-card{
-      background:var(--card);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:14px;
-      padding:12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .left{ display:flex; align-items:center; gap:12px; min-width:0; }
-    .thumb{ width:64px; height:64px; border-radius:10px; object-fit:cover; box-shadow:0 0 8px rgba(0,0,0,.35); background:#0d0d0d; }
-    .item-lines{ min-width:0; }
-    .item-name{ font-weight:700; line-height:1.1; }
-    .item-sub{ color:var(--muted); font-size:12px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .controls{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .price{font-weight:800;color:#fff;margin-right:8px;}
+    .btn{background:var(--accent);color:#111;border:none;width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.35);transition:transform .1s ease,background .2s ease;}
+    .btn:hover{background:var(--accent-2);transform:scale(1.06);}
+    .btn:active{transform:scale(.95);}
+    .qty{min-width:28px;text-align:center;font-weight:800;}
+    .qty.bump{transform:scale(1.18);transition:transform .2s ease;}
 
-    .controls{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
-    .price{ font-weight:800; color:#fff; margin-right:8px; }
+    form input,form textarea{width:min(560px,92%);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:#161616;color:#fff;}
+    form textarea{min-height:96px;resize:vertical;}
+    form .options{color:#eee;font-size:14px;margin:8px 0 0;}
+    .schedule small{color:#c9c9c9;opacity:.85;display:block;margin-top:6px;}
 
-    .btn{
-      background:var(--accent); color:#111; border:none; width:38px; height:38px;
-      border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
-      font-weight:900; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,.35);
-      transition:transform .1s ease, background .2s ease;
-    }
-    .btn:hover{ background:var(--accent-2); transform:scale(1.06); }
-    .btn:active{ transform:scale(.95); }
-    .qty{ min-width:28px; text-align:center; font-weight:800; }
-    .qty.bump{ transform:scale(1.18); transition:transform .2s ease; }
+    #stickyBar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:block;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.4));}
+    #stickyInner{margin:0 auto 12px;width:min(96%,1100px);}
+    #gotoOrder{width:100%;background:var(--brand);color:white;font-weight:900;border:none;border-radius:12px;padding:14px 18px;cursor:pointer;}
 
-    form input[type="text"], form input[type="tel"], form input[type="date"], form input[type="time"], form textarea{
-      width:min(560px,92%); padding:12px; border-radius:10px;
-      border:1px solid rgba(255,255,255,.14); background:#161616; color:#fff;
-    }
-    form textarea{ min-height:96px; resize:vertical; }
-    form .options{ color:#eee; font-size:14px; margin: 8px 0 0; }
-    .schedule small{ color:#c9c9c9; opacity:.85; display:block; margin-top:6px; }
-
-    #stickyBar{ position:fixed; left:0; right:0; bottom:0; z-index:60; display:block; background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.4)); }
-    #stickyInner{ margin:0 auto 12px; width:min(96%,1100px); }
-    #gotoOrder{ width:100%; background:var(--brand); color:white; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; }
-
-    footer{ text-align:center; color:#d7d7d7; opacity:.9; margin:60px 0 110px; }
+    footer{text-align:center;color:#d7d7d7;opacity:.9;margin:60px 0 110px;}
   </style>
 </head>
 <body>
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
       <div>
@@ -108,25 +82,21 @@
         <p>Des sushis frais et gourmands, préparés avec amour. Commande en ligne et récupère facilement ta box ✨</p>
         <button class="cta" id="ctaOrder">COMMANDER MAINTENANT</button>
       </div>
-      <div></div>
     </div>
   </section>
 
   <main class="container">
-    <!-- MENU -->
     <section class="section" id="menuSection">
       <h2 class="section-title">Menu</h2>
       <div id="menu"></div>
     </section>
 
-    <!-- FORM COMMANDE -->
-    <section class="section" id="orderSection" style="margin-top:18px; text-align:center;">
+    <section class="section" id="orderSection" style="margin-top:18px;text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <p><input type="text" name="name" id="clientName" placeholder="Votre prénom" required></p>
         <p><input type="tel" name="phone" id="clientPhone" placeholder="Téléphone (optionnel)"></p>
 
-        <!-- Options -->
         <p class="options">
           <label><input type="checkbox" id="optSojaSucree" name="soja_sucree"> Soja sucrée</label>
           <label style="margin-left:12px"><input type="checkbox" id="optSojaSalee" name="soja_salee"> Soja salée</label>
@@ -134,7 +104,6 @@
           <label style="margin-left:12px"><input type="checkbox" id="optGingembre" name="gingembre"> Gingembre</label>
         </p>
 
-        <!-- Baguettes -->
         <div class="options" style="margin-top:10px;">
           <span style="display:block;margin-bottom:6px">Baguettes :</span>
           <button class="btn" type="button" id="bagMinus" aria-label="Retirer 1">−</button>
@@ -143,31 +112,24 @@
           <input type="hidden" name="baguettes" id="bagInput" value="1" />
         </div>
 
-        <!-- 📅 Date & heure -->
+        <!-- facultatif -->
         <div class="options schedule" style="margin-top:14px;">
-          <span style="display:block;margin-bottom:6px">Choisis la date et l’heure de retrait :</span>
-          <p style="margin:8px 0;">
-            <input type="date" name="pickup_date" id="pickupDate" required>
-          </p>
-          <p style="margin:8px 0;">
-            <input type="time" name="pickup_time" id="pickupTime" required step="900">
-          </p>
-          <small>Heures de service par défaut : 11:30 – 21:30</small>
+          <span style="display:block;margin-bottom:6px">Date et heure de retrait (facultatif) :</span>
+          <p><input type="date" name="pickup_date" id="pickupDate"></p>
+          <p><input type="time" name="pickup_time" id="pickupTime" step="900"></p>
         </div>
 
-        <!-- 💬 Commentaire -->
         <p style="margin-top:14px;">
           <textarea name="comments" id="comments" placeholder="Commentaire (allergies, sauce en plus, heure précise, etc.)"></textarea>
         </p>
 
         <textarea name="order" id="orderText" hidden></textarea>
         <p><button class="cta" type="submit" style="margin-top:12px;">Envoyer ma commande 🍣</button></p>
-        <div id="orderResult" style="margin-top:8px; font-size:14px; color:#e6e6e6;"></div>
+        <div id="orderResult" style="margin-top:8px;font-size:14px;color:#e6e6e6;"></div>
       </form>
     </section>
   </main>
 
-  <!-- Sticky cart button -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
       <button id="gotoOrder">Panier (0) • Valider</button>
@@ -177,236 +139,86 @@
   <footer>© 2025 YUMEKO SUSHIS — Fait avec ❤️</footer>
 
 <script>
-  // ===== DATA =====
-  const categories = {
-    'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
-    'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
-    'Maki printemps 4 pièces': ['P1- Saumon/Avocat','P2- Saumon/Cheese','P3- Concombre/Cheese','P4- Avocat/Cheese'],
-    'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
-    'Sashimi 2 pièces': ['Saumon'],
-    'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
-  };
+const categories={
+'Maki 4 pièces':['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
+'California 4 pièces':['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
+'Maki printemps 4 pièces':['P1- Saumon/Avocat','P2- Saumon/Cheese','P3- Concombre/Cheese','P4- Avocat/Cheese'],
+'Signature 4 pièces':['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
+'Sashimi 2 pièces':['Saumon'],
+'Nigiri 2 pièces':['N1- Saumon','N2- Avocat']
+};
 
-  // (option) Ajoute des prix si tu veux les afficher
-  const prices = { /* 'M1': 4.00, 'C1': 6.00, 'N1': 3.00, ... */ };
+const prices={};
+const menuRoot=document.getElementById('menu');
 
-  // ===== RENDER =====
-  const menuRoot = document.getElementById('menu');
+for(const [cat,items]of Object.entries(categories)){
+  const wrap=document.createElement('div');
+  wrap.className='category';
+  wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+  const grid=wrap.querySelector('.menu-grid');
 
-  for (const [cat, items] of Object.entries(categories)) {
-    const wrap = document.createElement('div');
-    wrap.className = 'category';
-    wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
-    const grid = wrap.querySelector('.menu-grid');
-
-    items.forEach(item => {
-      const code = item.split('-')[0].trim();           // ex: "M1"
-      const nameOnly = item.split('-').slice(1).join('-').trim();
-      const price = prices[code];
-
-      const card = document.createElement('div');
-      card.className = 'item-card';
-      card.innerHTML = `
-        <div class="left">
-          <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
-          <div class="item-lines">
-            <div class="item-name">${nameOnly || item}</div>
-            <div class="item-sub">${cat}</div>
-          </div>
+  items.forEach(item=>{
+    const code=item.split('-')[0].trim();
+    const nameOnly=item.split('-').slice(1).join('-').trim();
+    const price=prices[code];
+    const card=document.createElement('div');
+    card.className='item-card';
+    card.innerHTML=`
+      <div class="left">
+        <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
+        <div class="item-lines">
+          <div class="item-name">${nameOnly||item}</div>
+          <div class="item-sub">${cat}</div>
         </div>
-        <div class="controls">
-          ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
-          <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
-          <span class="qty" data-item="${item}">0</span>
-          <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
-        </div>`;
-      grid.appendChild(card);
-    });
-
-    menuRoot.appendChild(wrap);
-  }
-
-  // ===== INTERACTIONS =====
-  function bumpAnimation(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'), 200); }
-  function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-  function updateSticky(){ const t=getTotal(); document.getElementById('gotoOrder').textContent = `Panier (${t}) • Valider`; }
-
-  document.addEventListener('click', (e)=>{
-    if(e.target.classList.contains('plus')){
-      const item=e.target.dataset.item; const span=document.querySelector(`.qty[data-item="${item}"]`);
-      span.textContent = (parseInt(span.textContent)||0) + 1; bumpAnimation(span); updateSticky();
-    }
-    if(e.target.classList.contains('minus')){
-      const item=e.target.dataset.item; const span=document.querySelector(`.qty[data-item="${item}"]`);
-      span.textContent = Math.max(0,(parseInt(span.textContent)||0) - 1); bumpAnimation(span); updateSticky();
-    }
+      </div>
+      <div class="controls">
+        ${price!==undefined?`<span class="price">${price.toFixed(2)}€</span>`:''}
+        <button class="btn minus" data-item="${item}">−</button>
+        <span class="qty" data-item="${item}">0</span>
+        <button class="btn plus" data-item="${item}">+</button>
+      </div>`;
+    grid.appendChild(card);
   });
+  menuRoot.appendChild(wrap);
+}
 
-  // Baguettes
-  const bagMinus = document.getElementById('bagMinus');
-  const bagPlus  = document.getElementById('bagPlus');
-  const bagQty   = document.getElementById('bagQty');
-  const bagInput = document.getElementById('bagInput');
-  bagMinus.addEventListener('click', ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bumpAnimation(bagQty); });
-  bagPlus.addEventListener('click', ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bumpAnimation(bagQty); });
+function bump(el){el.classList.add('bump');setTimeout(()=>el.classList.remove('bump'),200);}
+function total(){let t=0;document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0);return t;}
+function updateSticky(){document.getElementById('gotoOrder').textContent=`Panier (${total()}) • Valider`;}
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('plus')){const item=e.target.dataset.item;const q=document.querySelector(`.qty[data-item="${item}"]`);q.textContent=(parseInt(q.textContent)||0)+1;bump(q);updateSticky();}
+  if(e.target.classList.contains('minus')){const item=e.target.dataset.item;const q=document.querySelector(`.qty[data-item="${item}"]`);q.textContent=Math.max(0,(parseInt(q.textContent)||0)-1);bump(q);updateSticky();}
+});
+const bagMinus=document.getElementById('bagMinus'),bagPlus=document.getElementById('bagPlus'),bagQty=document.getElementById('bagQty'),bagInput=document.getElementById('bagInput');
+bagMinus.onclick=()=>{const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1);bagQty.textContent=v;bagInput.value=v;bump(bagQty);}
+bagPlus.onclick=()=>{const v=(parseInt(bagQty.textContent)||0)+1;bagQty.textContent=v;bagInput.value=v;bump(bagQty);}
 
-  // ===== CALENDRIER / HEURE =====
-  const OPEN = {h:11, m:30};
-  const CLOSE = {h:21, m:30};
+const form=document.getElementById('orderForm');
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const lines=[];
+  document.querySelectorAll('.qty[data-item]').forEach(span=>{const q=parseInt(span.textContent)||0;if(q>0)lines.push(`${span.dataset.item} x${q}`);});
+  if(!lines.length){const r=document.getElementById('orderResult');r.textContent="Ajoute au moins un article avant d'envoyer 😊";r.style.color="#ffd4d4";return;}
+  const opts=[];if(optSojaSucree.checked)opts.push('Soja sucrée');if(optSojaSalee.checked)opts.push('Soja salée');if(optWasabi.checked)opts.push('Wasabi');if(optGingembre.checked)opts.push('Gingembre');
+  const bag=parseInt(bagQty.textContent)||0;if(bag>0)lines.push(`Baguettes x${bag}`);
+  const d=document.getElementById('pickupDate').value,t=document.getElementById('pickupTime').value;
+  const comment=(document.getElementById('comments').value||'').trim();
+  let body=lines.join('\n');if(opts.length)body+=`\nOptions: ${opts.join(', ')}`;
+  if(d||t)body+=`\nRetrait: ${d||''} ${t||''}`;
+  if(comment)body+=`\nCommentaire: ${comment}`;
+  document.getElementById('orderText').value=body;
 
-  const dateInput = document.getElementById('pickupDate');
-  const timeInput = document.getElementById('pickupTime');
+  try{
+    const resp=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});
+    const r=document.getElementById('orderResult');
+    if(resp.ok){r.textContent='Merci ! Ta commande a bien été envoyée 🍣';r.style.color='#b7ffb7';document.querySelectorAll('.qty').forEach(s=>s.textContent='0');form.reset();bagQty.textContent='1';bagInput.value='1';updateSticky();}
+    else{r.textContent="Oups, l'envoi a échoué. Réessaie 🙏";r.style.color="#ffd4d4";}
+  }catch{const r=document.getElementById('orderResult');r.textContent='Erreur réseau. Réessaie.';r.style.color='#ffd4d4';}
+});
 
-  // Min = aujourd'hui
-  function pad(n){ return String(n).padStart(2,'0'); }
-  function todayYMD(){
-    const d=new Date();
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  }
-  function setMinToday(){
-    const t=todayYMD();
-    dateInput.min = t;
-    // valeur par défaut aujourd'hui si vide
-    if(!dateInput.value) dateInput.value = t;
-  }
-  setMinToday();
-
-  // Optionnel: borne visuelle des heures
-  timeInput.min = `${pad(OPEN.h)}:${pad(OPEN.m)}`;
-  timeInput.max = `${pad(CLOSE.h)}:${pad(CLOSE.m)}`;
-
-  // ===== ENVOI FORMSPREE =====
-  const form = document.getElementById('orderForm');
-
-  function isValidDateTime(){
-    const dVal = dateInput.value;
-    const tVal = timeInput.value;
-    if(!dVal || !tVal) return {ok:false, msg:"Choisis une date et une heure de retrait."};
-
-    // borne heures
-    const [hh,mm] = tVal.split(':').map(n=>parseInt(n,10));
-    const afterOpen = (hh>OPEN.h) || (hh===OPEN.h && mm>=OPEN.m);
-    const beforeClose = (hh<CLOSE.h) || (hh===CLOSE.h && mm<=CLOSE.m);
-    if(!afterOpen || !beforeClose){
-      return {ok:false, msg:`L'horaire doit être entre ${pad(OPEN.h)}:${pad(OPEN.m)} et ${pad(CLOSE.h)}:${pad(CLOSE.m)}.`};
-    }
-
-    // si c'est aujourd'hui, pas dans le passé
-    const now = new Date();
-    const chosen = new Date(`${dVal}T${tVal}:00`);
-    if(chosen.getTime() < now.getTime()){
-      return {ok:false, msg:"L'heure choisie est déjà passée. Choisis un horaire à venir."};
-    }
-    return {ok:true};
-  }
-
-  form.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-
-    // items
-    const lines=[];
-    document.querySelectorAll('.qty[data-item]').forEach(span=>{
-      const q=parseInt(span.textContent)||0;
-      if(q>0) lines.push(`${span.dataset.item} x${q}`);
-    });
-    if(lines.length===0){
-      const r=document.getElementById('orderResult');
-      r.textContent="Ajoute au moins un article avant d'envoyer 😊";
-      r.style.color="#ffd4d4";
-      return;
-    }
-
-    // options
-    const opts=[];
-    if(optSojaSucree.checked) opts.push('Soja sucrée');
-    if(optSojaSalee.checked)  opts.push('Soja salée');
-    if(optWasabi.checked)     opts.push('Wasabi');
-    if(optGingembre.checked)  opts.push('Gingembre');
-    const bag=parseInt(bagQty.textContent)||0; if(bag>0) lines.push(`Baguettes x${bag}`);
-
-    // date/heure validation
-    const dt = isValidDateTime();
-    if(!dt.ok){
-      const r=document.getElementById('orderResult');
-      r.textContent = dt.msg;
-      r.style.color = "#ffd4d4";
-      return;
-    }
-
-    // commentaire
-    const comment = (document.getElementById('comments').value||'').trim();
-
-    // corps texte envoyé dans 'order'
-    let body = lines.join('\n');
-    if(opts.length) body += `\nOptions: ${opts.join(', ')}`;
-    body += `\nRetrait: ${dateInput.value} à ${timeInput.value}`;
-    if(comment) body += `\nCommentaire: ${comment}`;
-    document.getElementById('orderText').value = body;
-
-    try{
-      const resp = await fetch(form.action,{method:'POST', headers:{'Accept':'application/json'}, body:new FormData(form)});
-      const r=document.getElementById('orderResult');
-      if(resp.ok){
-        r.textContent='Merci ! Ta commande a bien été envoyée 🍣';
-        r.style.color='#b7ffb7';
-        document.querySelectorAll('.qty').forEach(s=>s.textContent='0');
-        form.reset();
-        bagQty.textContent='1'; bagInput.value='1';
-        setMinToday(); // remet min + valeur par défaut pour la date
-        updateSticky();
-      } else {
-        r.textContent="Oups, l'envoi a échoué. Réessaie 🙏";
-        r.style.color='#ffd4d4';
-      }
-    }catch{
-      const r=document.getElementById('orderResult');
-      r.textContent='Erreur réseau. Réessaie.';
-      r.style.color='#ffd4d4';
-    }
-  });
-
-  // Scroll
-  document.getElementById('gotoOrder').addEventListener('click', ()=> document.getElementById('orderSection').scrollIntoView({behavior:'smooth'}));
-  document.getElementById('ctaOrder').addEventListener('click', ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'}));
-
-  // Build menu (après listeners)
-  function buildMenu(){
-    const menu = document.getElementById('menu');
-    for(const [cat, items] of Object.entries(categories)){
-      const wrap = document.createElement('div');
-      wrap.className = 'category';
-      wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
-      const grid = wrap.querySelector('.menu-grid');
-
-      items.forEach(item=>{
-        const code = item.split('-')[0].trim();
-        const nameOnly = item.split('-').slice(1).join('-').trim();
-        const price = prices[code];
-
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `
-          <div class="left">
-            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
-            <div class="item-lines">
-              <div class="item-name">${nameOnly || item}</div>
-              <div class="item-sub">${cat}</div>
-            </div>
-          </div>
-          <div class="controls">
-            ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
-            <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
-            <span class="qty" data-item="${item}">0</span>
-            <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
-          </div>`;
-        grid.appendChild(card);
-      });
-
-      menu.appendChild(wrap);
-    }
-  }
-  buildMenu();
-  updateSticky();
+document.getElementById('gotoOrder').onclick=()=>document.getElementById('orderSection').scrollIntoView({behavior:'smooth'});
+document.getElementById('ctaOrder').onclick=()=>document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+updateSticky();
 </script>
 </body>
 </html>
