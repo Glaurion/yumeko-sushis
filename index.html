@@ -8,46 +8,19 @@
     :root{
       --pink:#ffb6b6; --pink-dark:#ff8c8c; --bg1:#1a1a1a; --bg2:#8b0000; --text:#ffffff;
     }
-    body {
-      margin: 0;
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
-      color: var(--text);
-      text-align: center;
-    }
+    body { margin: 0; font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%); color: var(--text); text-align: center; }
     header { padding: 20px; }
     header img { width: 180px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.4); }
     h1 { margin-top: 10px; font-size: 2.2rem; letter-spacing: 2px; }
 
-    .menu-section {
-      background: rgba(255,255,255,0.06);
-      margin: 20px auto;
-      padding: 20px;
-      width: 92%;
-      max-width: 860px;
-      border-radius: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      text-align: left;
-    }
-    .menu-section h2 {
-      color: var(--pink);
-      border-bottom: 2px solid var(--pink);
-      display: inline-block;
-      padding-bottom: 5px;
-    }
+    .menu-section { background: rgba(255,255,255,0.06); margin: 20px auto; padding: 20px; width: 92%; max-width: 860px; border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); text-align: left; }
+    .menu-section h2 { color: var(--pink); border-bottom: 2px solid var(--pink); display: inline-block; padding-bottom: 5px; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
     /* Boutons +/− centrés et tactiles */
-    .plus, .minus {
-      background-color: var(--pink);
-      border: none; color: #1a1a1a; font-size: 20px; font-weight: 700;
-      border-radius: 50%; width: 40px; height: 40px; cursor: pointer; margin: 0 8px;
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.1s ease;
-      box-shadow: 0 3px 5px rgba(0,0,0,0.3);
-    }
+    .plus, .minus { background-color: var(--pink); border: none; color: #1a1a1a; font-size: 20px; font-weight: 700; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; margin: 0 8px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.1s ease; box-shadow: 0 3px 5px rgba(0,0,0,0.3); }
     .plus:hover, .minus:hover { background-color: var(--pink-dark); transform: scale(1.08); }
     .plus:active, .minus:active { transform: scale(0.95); box-shadow: 0 1px 2px rgba(0,0,0,0.4) inset; }
 
@@ -74,7 +47,7 @@
       table { border-collapse: separate; border-spacing: 0 10px; }
       tbody tr { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 10px; border-bottom: none; }
       tbody tr td:first-child { text-align: left; }
-      tbody tr td:last-child { min-width: 180px; }
+      tbody tr td:last-child { min-width: 200px; }
 
       #stickyBar { display: block; }
       footer { margin-bottom: 120px; }
@@ -144,16 +117,6 @@
     'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
   };
 
- <script>
-  const categories = {
-    'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
-    'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
-    'Maki printemps 4 pièces': ['P1- Saumon/Avocat','P2- Saumon/Cheese','P3- Concombre/Cheese','P4- Avocat/Cheese'],
-    'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
-    'Sashimi 2 pièces': ['Saumon'],
-    'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
-  };
-
   const menuContainer = document.getElementById('menu');
 
   for (const [category, items] of Object.entries(categories)) {
@@ -171,7 +134,8 @@
       const row = document.createElement('tr');
       row.innerHTML = `
         <td style="display:flex;align-items:center;gap:10px;">
-          <img src="images/${imgName}.jpg" alt="${item}" 
+          <img src="images/${imgName}.jpg" alt="${item}"
+               onerror="this.style.display='none'"
                style="width:55px;height:55px;object-fit:cover;border-radius:8px;box-shadow:0 0 5px rgba(0,0,0,0.4);">
           <span>${item}</span>
         </td>
@@ -203,7 +167,7 @@
     if(btn) btn.textContent = total>0 ? `Panier (${total}) • Valider` : 'Panier (0) • Valider';
   }
 
-  // + et −
+  // + et − via délégation d'événements
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('plus')) {
       const item = e.target.dataset.item;
@@ -215,54 +179,69 @@
       const item = e.target.dataset.item;
       const qtySpan = document.querySelector(`.qty[data-item="${item}"]`);
       const newQty = Math.max(0, parseInt(qtySpan.textContent) - 1);
-      qtySpan.textContent = newQty;
-      bumpAnimation(qtySpan); updateSticky();
+      qtySpan.textContent = newQty; bumpAnimation(qtySpan); updateSticky();
     }
   });
 
-  // Soumission du formulaire
+  // Contrôles baguettes + / -
+  const bagMinus = document.getElementById('bagMinus');
+  const bagPlus  = document.getElementById('bagPlus');
+  const bagQty   = document.getElementById('bagQty');
+  const bagInput = document.getElementById('bagInput');
+  bagMinus.addEventListener('click', ()=>{ const v = Math.max(0, (parseInt(bagQty.textContent)||0) - 1); bagQty.textContent = v; bagInput.value = v; bumpAnimation(bagQty); });
+  bagPlus.addEventListener('click', ()=>{ const v = (parseInt(bagQty.textContent)||0) + 1; bagQty.textContent = v; bagInput.value = v; bumpAnimation(bagQty); });
+
+  // Soumission du formulaire (AJAX + confirmation + options)
   const form = document.getElementById('orderForm');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Construire la liste des articles
     const orders = [];
     document.querySelectorAll('.qty[data-item]').forEach(span => {
-      const qty = parseInt(span.textContent);
+      const qty = parseInt(span.textContent)||0;
       if (qty > 0) orders.push(`${span.dataset.item} x${qty}`);
     });
 
     if (orders.length === 0) {
       const res = document.getElementById('orderResult');
       res.textContent = "Ajoute au moins un article avant d'envoyer 😊";
-      res.style.color = "#ffd4d4";
-      return;
+      res.style.color = "#ffd4d4"; return;
     }
 
-    document.getElementById('orderText').value = orders.join('\\n');
+    // Options
+    const opts = [];
+    if(document.getElementById('optSojaSucree')?.checked) opts.push('Soja sucrée');
+    if(document.getElementById('optSojaSalee')?.checked)  opts.push('Soja salée');
+    if(document.getElementById('optWasabi')?.checked)     opts.push('Wasabi');
+    if(document.getElementById('optGingembre')?.checked)  opts.push('Gingembre');
+    const bag = parseInt(bagQty.textContent)||0; if(bag>0) orders.push(`Baguettes x${bag}`);
+
+    let body = orders.join('\n'); if(opts.length) body += `\nOptions: ${opts.join(', ')}`;
+    document.getElementById('orderText').value = body;
 
     try {
       const resp = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form) });
       const res = document.getElementById('orderResult');
       if (resp.ok) {
-        res.textContent = "Merci ! Ta commande a bien été envoyée 🍣";
-        res.style.color = "#b7ffb7";
+        res.textContent = "Merci ! Ta commande a bien été envoyée 🍣"; res.style.color = "#b7ffb7";
         document.querySelectorAll('.qty').forEach(span => span.textContent = '0');
-        form.reset(); updateSticky();
+        bagQty.textContent = '1'; bagInput.value = '1'; form.reset(); updateSticky();
       } else {
-        res.textContent = "Oups, l'envoi a échoué. Réessaie 🙏";
-        res.style.color = "#ffd4d4";
+        res.textContent = "Oups, l'envoi a échoué. Réessaie 🙏"; res.style.color = "#ffd4d4";
       }
     } catch {
       const res = document.getElementById('orderResult');
-      res.textContent = "Erreur réseau. Vérifie ta connexion et réessaie.";
-      res.style.color = "#ffd4d4";
+      res.textContent = "Erreur réseau. Vérifie ta connexion et réessaie."; res.style.color = "#ffd4d4";
     }
   });
 
+  // Sticky bouton -> scroll vers le formulaire
   document.getElementById('gotoOrder').addEventListener('click', () => {
     document.getElementById('orderSection').scrollIntoView({behavior:'smooth'});
   });
 
+  // Init
   updateSticky();
 </script>
 
