@@ -90,6 +90,38 @@
     #gotoOrder{ width:100%; background:var(--brand); color:white; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; }
 
     footer{ text-align:center; color:#d7d7d7; opacity:.9; margin:60px 0 110px; }
+
+    /* ===== MODAL Panier / Récap ===== */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter: blur(2px);
+      display:none; z-index: 80;
+    }
+    .modal{
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:min(560px, 92%); background:#1b1b1b; color:#fff; border:1px solid rgba(255,255,255,.12);
+      border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); padding:14px; display:none; z-index: 81;
+    }
+    .modal.open, .modal-backdrop.open{ display:block; }
+    .modal header{ display:flex; align-items:center; justify-content:space-between; padding:6px 6px 10px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .modal h3{ margin:0; font-size:18px; }
+    .modal .close{ background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; line-height:1; }
+    .modal .body{ max-height: 56vh; overflow:auto; padding: 10px 4px; }
+    .recap-list{ list-style:none; padding:0; margin:0; }
+    .recap-list li{ display:flex; justify-content:space-between; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.08); }
+    .muted{ color:#cfcfcf; opacity:.9; font-size:14px; }
+    .modal footer{ display:flex; gap:10px; justify-content:flex-end; padding-top:10px; border-top:1px solid rgba(255,255,255,.08); }
+    .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,.25); color:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; }
+    .btn-primary{ background:var(--brand); border:none; color:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:800; }
+    .btn-primary:hover{ background:var(--brand-2); }
+
+    /* Petit shake si panier vide */
+    .shake { animation: shake .35s linear; }
+    @keyframes shake {
+      0%,100%{ transform: translateX(0); }
+      25%{ transform: translateX(-4px); }
+      50%{ transform: translateX(4px); }
+      75%{ transform: translateX(-2px); }
+    }
   </style>
 </head>
 <body>
@@ -170,6 +202,26 @@
     </div>
   </div>
 
+  <!-- MODAL: Récap commande -->
+  <div class="modal-backdrop" id="modalBack"></div>
+  <div class="modal" id="cartModal" role="dialog" aria-modal="true" aria-labelledby="recapTitle">
+    <header>
+      <h3 id="recapTitle">Valider votre commande</h3>
+      <button class="close" id="closeModal" aria-label="Fermer">×</button>
+    </header>
+    <div class="body">
+      <p class="muted" id="modalIntro">Vérifie ton panier avant l’envoi :</p>
+      <ul class="recap-list" id="recapList"></ul>
+      <div id="recapOptions"></div>
+      <div id="recapPickup" class="muted" style="margin-top:8px;"></div>
+      <div id="recapComment" class="muted" style="margin-top:4px;"></div>
+    </div>
+    <footer>
+      <button class="btn-ghost" id="editOrder">Modifier</button>
+      <button class="btn-primary" id="confirmSend">Confirmer et envoyer</button>
+    </footer>
+  </div>
+
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles </footer>
 
 <script>
@@ -186,7 +238,7 @@
   // (option) Ajoute des prix si tu veux les afficher
   const prices = { /* 'M1': 4.00, 'C1': 6.00, 'N1': 3.00, ... */ };
 
-  // ===== INTERACTIONS =====
+  // ===== INTERACTIONS GENERALES =====
   function bumpAnimation(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'), 200); }
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
   function updateSticky(){ const t=getTotal(); document.getElementById('gotoOrder').textContent = `Panier (${t}) • Valider`; }
@@ -213,7 +265,6 @@
   // ===== CALENDRIER / HEURE =====
   const OPEN = {h:11, m:30};
   const CLOSE = {h:21, m:30};
-
   const dateInput = document.getElementById('pickupDate');
   const timeInput = document.getElementById('pickupTime');
 
@@ -232,21 +283,16 @@
   timeInput.min = `${pad(OPEN.h)}:${pad(OPEN.m)}`;
   timeInput.max = `${pad(CLOSE.h)}:${pad(CLOSE.m)}`;
 
-  // ===== ENVOI FORMSPREE =====
-  const form = document.getElementById('orderForm');
-
   function isValidDateTime(){
     const dVal = dateInput.value;
     const tVal = timeInput.value;
     if(!dVal || !tVal) return {ok:false, msg:"Choisis une date et une heure de retrait."};
-
     const [hh,mm] = tVal.split(':').map(n=>parseInt(n,10));
     const afterOpen = (hh>OPEN.h) || (hh===OPEN.h && mm>=OPEN.m);
     const beforeClose = (hh<CLOSE.h) || (hh===CLOSE.h && mm<=CLOSE.m);
     if(!afterOpen || !beforeClose){
       return {ok:false, msg:`L'horaire doit être entre ${pad(OPEN.h)}:${pad(OPEN.m)} et ${pad(CLOSE.h)}:${pad(CLOSE.m)}.`};
     }
-
     const now = new Date();
     const chosen = new Date(`${dVal}T${tVal}:00`);
     if(chosen.getTime() < now.getTime()){
@@ -255,7 +301,7 @@
     return {ok:true};
   }
 
-  // Build menu (unique rendu)
+  // ===== CONSTRUCTION DU MENU (1 seule fois) =====
   function buildMenu(){
     const menu = document.getElementById('menu');
     for(const [cat, items] of Object.entries(categories)){
@@ -293,43 +339,118 @@
   }
   buildMenu();
 
+  // ===== RÉCAP PANIER (MODAL) =====
+  const gotoOrderBtn = document.getElementById('gotoOrder');
+  const modal = document.getElementById('cartModal');
+  const backdrop = document.getElementById('modalBack');
+  const closeModal = ()=>{ modal.classList.remove('open'); backdrop.classList.remove('open'); }
+  document.getElementById('closeModal').onclick = closeModal;
+  document.getElementById('editOrder').onclick = closeModal;
+  backdrop.onclick = closeModal;
+
+  function collectItems(){
+    const lines = [];
+    document.querySelectorAll('.qty[data-item]').forEach(span=>{
+      const q = parseInt(span.textContent)||0;
+      if(q>0) lines.push({ label: span.dataset.item, qty: q });
+    });
+    return lines;
+  }
+  function collectOptions(){
+    const opts = [];
+    if(document.getElementById('optSojaSucree').checked) opts.push('Soja sucrée');
+    if(document.getElementById('optSojaSalee').checked)  opts.push('Soja salée');
+    if(document.getElementById('optWasabi').checked)     opts.push('Wasabi');
+    if(document.getElementById('optGingembre').checked)  opts.push('Gingembre');
+    const bag = parseInt(document.getElementById('bagQty').textContent)||0;
+    return { opts, bag };
+  }
+  function buildRecap(){
+    const list = document.getElementById('recapList');
+    list.innerHTML = '';
+    const items = collectItems();
+    if(items.length===0){
+      list.innerHTML = '<li class="muted">Ton panier est vide.</li>';
+    }else{
+      items.forEach(it=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${it.label}</span><strong>x${it.qty}</strong>`;
+        list.appendChild(li);
+      });
+    }
+    // options
+    const {opts, bag} = collectOptions();
+    const recOpt = document.getElementById('recapOptions');
+    const optParts = [];
+    if(opts.length) optParts.push(`Options: ${opts.join(', ')}`);
+    if(bag>0) optParts.push(`Baguettes x${bag}`);
+    recOpt.innerHTML = optParts.length ? `<p class="muted">${optParts.join(' • ')}</p>` : '';
+
+    // date/heure + commentaire
+    const d = document.getElementById('pickupDate').value;
+    const t = document.getElementById('pickupTime').value;
+    document.getElementById('recapPickup').textContent = (d||t) ? `Retrait: ${d||''} ${t||''}` : '';
+    const c = (document.getElementById('comments').value||'').trim();
+    document.getElementById('recapComment').textContent = c ? `Commentaire: ${c}` : '';
+  }
+
+  gotoOrderBtn.addEventListener('click', ()=>{
+    const total = getTotal();
+    if(total===0){
+      // petit shake pour montrer qu'il faut ajouter quelque chose
+      gotoOrderBtn.classList.add('shake');
+      setTimeout(()=>gotoOrderBtn.classList.remove('shake'), 400);
+      return;
+    }
+    buildRecap();
+    modal.classList.add('open');
+    backdrop.classList.add('open');
+  });
+
+  // ===== ENVOI FORMSPREE =====
+  const form = document.getElementById('orderForm');
+
+  function prepareOrderText(){
+    const lines=[];
+    collectItems().forEach(it=>lines.push(`${it.label} x${it.qty}`));
+    const {opts, bag} = collectOptions();
+    if(opts.length) lines.push(`Options: ${opts.join(', ')}`);
+    if(bag>0) lines.push(`Baguettes x${bag}`);
+    const d = document.getElementById('pickupDate').value;
+    const t = document.getElementById('pickupTime').value;
+    const c = (document.getElementById('comments').value||'').trim();
+
+    // validation date/heure (obligatoires dans cette version)
+    const dt = isValidDateTime();
+    if(!dt.ok){ 
+      const r=document.getElementById('orderResult');
+      r.textContent = dt.msg; r.style.color = "#ffd4d4";
+      closeModal();
+      return false;
+    }
+
+    if(d||t) lines.push(`Retrait: ${d} ${t}`);
+    if(c) lines.push(`Commentaire: ${c}`);
+
+    document.getElementById('orderText').value = lines.join('\n');
+    return true;
+  }
+
+  document.getElementById('confirmSend').addEventListener('click', ()=>{
+    // préparer le texte + lancer la soumission native (déclenche le handler submit ci-dessous)
+    if(prepareOrderText()){
+      closeModal();
+      form.requestSubmit(); // déclenche le submit (et la logique fetch)
+    }
+  });
+
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
 
-    const lines=[];
-    document.querySelectorAll('.qty[data-item]').forEach(span=>{
-      const q=parseInt(span.textContent)||0;
-      if(q>0) lines.push(`${span.dataset.item} x${q}`);
-    });
-    if(lines.length===0){
-      const r=document.getElementById('orderResult');
-      r.textContent="Ajoute au moins un article avant d'envoyer 😊";
-      r.style.color="#ffd4d4";
-      return;
+    // Si l’utilisateur a cliqué directement « Envoyer ma commande » sans passer par le modal
+    if(!document.getElementById('orderText').value){
+      if(!prepareOrderText()) return; // stop si non valide
     }
-
-    const opts=[];
-    if(optSojaSucree.checked) opts.push('Soja sucrée');
-    if(optSojaSalee.checked)  opts.push('Soja salée');
-    if(optWasabi.checked)     opts.push('Wasabi');
-    if(optGingembre.checked)  opts.push('Gingembre');
-    const bag=parseInt(bagQty.textContent)||0; if(bag>0) lines.push(`Baguettes x${bag}`);
-
-    const dt = isValidDateTime();
-    if(!dt.ok){
-      const r=document.getElementById('orderResult');
-      r.textContent = dt.msg;
-      r.style.color = "#ffd4d4";
-      return;
-    }
-
-    const comment = (document.getElementById('comments').value||'').trim();
-
-    let body = lines.join('\n');
-    if(opts.length) body += `\nOptions: ${opts.join(', ')}`;
-    body += `\nRetrait: ${dateInput.value} à ${timeInput.value}`;
-    if(comment) body += `\nCommentaire: ${comment}`;
-    document.getElementById('orderText').value = body;
 
     try{
       const resp = await fetch(form.action,{method:'POST', headers:{'Accept':'application/json'}, body:new FormData(form)});
@@ -353,7 +474,6 @@
     }
   });
 
-  document.getElementById('gotoOrder').addEventListener('click', ()=> document.getElementById('orderSection').scrollIntoView({behavior:'smooth'}));
   document.getElementById('ctaOrder').addEventListener('click', ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'}));
 
   updateSticky();
