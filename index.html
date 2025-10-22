@@ -25,8 +25,7 @@
       background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.75)),
                   url('images/hero.jpg') center/cover no-repeat;
       padding: clamp(32px, 6vw, 72px) 20px;
-      text-align:left;
-      overflow:hidden;
+      text-align:left; overflow:hidden;
     }
     .hero-inner{ max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; }
     .logo-mark{ display:flex; align-items:center; gap:14px; }
@@ -56,10 +55,7 @@
       border:1px solid rgba(255,255,255,.06);
       border-radius:14px;
       padding:12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
     }
     .left{ display:flex; align-items:center; gap:12px; min-width:0; }
     .thumb{ width:64px; height:64px; border-radius:10px; object-fit:cover; box-shadow:0 0 8px rgba(0,0,0,.35); background:#0d0d0d; }
@@ -190,42 +186,6 @@
   // (option) Ajoute des prix si tu veux les afficher
   const prices = { /* 'M1': 4.00, 'C1': 6.00, 'N1': 3.00, ... */ };
 
-  // ===== RENDER =====
-  const menuRoot = document.getElementById('menu');
-
-  for (const [cat, items] of Object.entries(categories)) {
-    const wrap = document.createElement('div');
-    wrap.className = 'category';
-    wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
-    const grid = wrap.querySelector('.menu-grid');
-
-    items.forEach(item => {
-      const code = item.split('-')[0].trim();           // ex: "M1"
-      const nameOnly = item.split('-').slice(1).join('-').trim();
-      const price = prices[code];
-
-      const card = document.createElement('div');
-      card.className = 'item-card';
-      card.innerHTML = `
-        <div class="left">
-          <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
-          <div class="item-lines">
-            <div class="item-name">${nameOnly || item}</div>
-            <div class="item-sub">${cat}</div>
-          </div>
-        </div>
-        <div class="controls">
-          ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
-          <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
-          <span class="qty" data-item="${item}">0</span>
-          <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
-        </div>`;
-      grid.appendChild(card);
-    });
-
-    menuRoot.appendChild(wrap);
-  }
-
   // ===== INTERACTIONS =====
   function bumpAnimation(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'), 200); }
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
@@ -257,7 +217,6 @@
   const dateInput = document.getElementById('pickupDate');
   const timeInput = document.getElementById('pickupTime');
 
-  // Min = aujourd'hui
   function pad(n){ return String(n).padStart(2,'0'); }
   function todayYMD(){
     const d=new Date();
@@ -266,12 +225,10 @@
   function setMinToday(){
     const t=todayYMD();
     dateInput.min = t;
-    // valeur par défaut aujourd'hui si vide
     if(!dateInput.value) dateInput.value = t;
   }
   setMinToday();
 
-  // Optionnel: borne visuelle des heures
   timeInput.min = `${pad(OPEN.h)}:${pad(OPEN.m)}`;
   timeInput.max = `${pad(CLOSE.h)}:${pad(CLOSE.m)}`;
 
@@ -283,7 +240,6 @@
     const tVal = timeInput.value;
     if(!dVal || !tVal) return {ok:false, msg:"Choisis une date et une heure de retrait."};
 
-    // borne heures
     const [hh,mm] = tVal.split(':').map(n=>parseInt(n,10));
     const afterOpen = (hh>OPEN.h) || (hh===OPEN.h && mm>=OPEN.m);
     const beforeClose = (hh<CLOSE.h) || (hh===CLOSE.h && mm<=CLOSE.m);
@@ -291,7 +247,6 @@
       return {ok:false, msg:`L'horaire doit être entre ${pad(OPEN.h)}:${pad(OPEN.m)} et ${pad(CLOSE.h)}:${pad(CLOSE.m)}.`};
     }
 
-    // si c'est aujourd'hui, pas dans le passé
     const now = new Date();
     const chosen = new Date(`${dVal}T${tVal}:00`);
     if(chosen.getTime() < now.getTime()){
@@ -300,10 +255,47 @@
     return {ok:true};
   }
 
+  // Build menu (unique rendu)
+  function buildMenu(){
+    const menu = document.getElementById('menu');
+    for(const [cat, items] of Object.entries(categories)){
+      const wrap = document.createElement('div');
+      wrap.className = 'category';
+      wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
+      const grid = wrap.querySelector('.menu-grid');
+
+      items.forEach(item=>{
+        const code = item.split('-')[0].trim();
+        const nameOnly = item.split('-').slice(1).join('-').trim();
+        const price = prices[code];
+
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+          <div class="left">
+            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
+            <div class="item-lines">
+              <div class="item-name">${nameOnly || item}</div>
+              <div class="item-sub">${cat}</div>
+            </div>
+          </div>
+          <div class="controls">
+            ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
+            <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
+            <span class="qty" data-item="${item}">0</span>
+            <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      menu.appendChild(wrap);
+    }
+  }
+  buildMenu();
+
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
 
-    // items
     const lines=[];
     document.querySelectorAll('.qty[data-item]').forEach(span=>{
       const q=parseInt(span.textContent)||0;
@@ -316,7 +308,6 @@
       return;
     }
 
-    // options
     const opts=[];
     if(optSojaSucree.checked) opts.push('Soja sucrée');
     if(optSojaSalee.checked)  opts.push('Soja salée');
@@ -324,7 +315,6 @@
     if(optGingembre.checked)  opts.push('Gingembre');
     const bag=parseInt(bagQty.textContent)||0; if(bag>0) lines.push(`Baguettes x${bag}`);
 
-    // date/heure validation
     const dt = isValidDateTime();
     if(!dt.ok){
       const r=document.getElementById('orderResult');
@@ -333,10 +323,8 @@
       return;
     }
 
-    // commentaire
     const comment = (document.getElementById('comments').value||'').trim();
 
-    // corps texte envoyé dans 'order'
     let body = lines.join('\n');
     if(opts.length) body += `\nOptions: ${opts.join(', ')}`;
     body += `\nRetrait: ${dateInput.value} à ${timeInput.value}`;
@@ -352,7 +340,7 @@
         document.querySelectorAll('.qty').forEach(s=>s.textContent='0');
         form.reset();
         bagQty.textContent='1'; bagInput.value='1';
-        setMinToday(); // remet min + valeur par défaut pour la date
+        setMinToday();
         updateSticky();
       } else {
         r.textContent="Oups, l'envoi a échoué. Réessaie 🙏";
@@ -365,47 +353,9 @@
     }
   });
 
-  // Scroll
   document.getElementById('gotoOrder').addEventListener('click', ()=> document.getElementById('orderSection').scrollIntoView({behavior:'smooth'}));
   document.getElementById('ctaOrder').addEventListener('click', ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'}));
 
-// Build menu (après listeners)
-function buildMenu(){
-  const menu = document.getElementById('menu');
-  for(const [cat, items] of Object.entries(categories)){
-    const wrap = document.createElement('div');
-    wrap.className = 'category';
-    wrap.innerHTML = `<h3>${cat}</h3><div class="menu-grid"></div>`;
-    const grid = wrap.querySelector('.menu-grid');
-
-    items.forEach(item=>{
-      const code = item.split('-')[0].trim();
-      const nameOnly = item.split('-').slice(1).join('-').trim();
-      const price = prices[code];
-
-      const card = document.createElement('div');
-      card.className = 'item-card';
-      card.innerHTML = `
-        <div class="left">
-          <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'"/>
-          <div class="item-lines">
-            <div class="item-name">${nameOnly || item}</div>
-            <div class="item-sub">${cat}</div>
-          </div>
-        </div>
-        <div class="controls">
-          ${price !== undefined ? `<span class="price">${price.toFixed(2)}€</span>` : ''}
-          <button class="btn minus" data-item="${item}" aria-label="Retirer 1">−</button>
-          <span class="qty" data-item="${item}">0</span>
-          <button class="btn plus" data-item="${item}" aria-label="Ajouter 1">+</button>
-        </div>`;
-      grid.appendChild(card);
-    });
-
-    menu.appendChild(wrap);
-  }
-}
-buildMenu();
   updateSticky();
 </script>
 </body>
