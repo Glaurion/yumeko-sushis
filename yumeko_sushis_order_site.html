@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YUMEKO SUSHIS - Commande</title>
+  <style>
+    :root{--accent:#d94f4f;--muted:#6b6b6b;--bg:#faf9f7;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial; margin:0; background:var(--bg); color:#111}
+    header{background:linear-gradient(90deg,rgba(217,79,79,0.95),rgba(255,120,120,0.95)); color:white; padding:28px 16px; text-align:center}
+    .container{max-width:980px;margin:20px auto;padding:0 16px}
+    h1{margin:0;font-size:28px;letter-spacing:0.6px}
+    p.lead{margin:8px 0 0;opacity:0.95}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr} .sidebar{order:2}}
+
+    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(8,8,8,0.06)}
+
+    .menu-section{margin-bottom:12px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .item{border:1px solid #eee;border-radius:10px;padding:10px;background:#fff}
+    .item h4{margin:0 0 6px;font-size:15px}
+    .item p{margin:0 0 8px;color:var(--muted);font-size:13px}
+    .controls{display:flex;align-items:center;gap:8px}
+    .qty{width:36px;padding:6px;border-radius:6px;border:1px solid #ddd;text-align:center}
+    .btn{background:var(--accent);color:white;padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(217,79,79,0.12)}
+
+    .sidebar .card{position:sticky;top:20px}
+    .summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee}
+    .small{font-size:13px;color:var(--muted)}
+
+    form .field{margin-bottom:10px}
+    input[type=text],input[type=tel],textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
+    footer{margin:30px 0;text-align:center;color:var(--muted)}
+
+    /* Admin modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:80}
+    .modal .box{width:420px;padding:18px;border-radius:12px;background:white}
+
+    .tiny{font-size:12px;color:var(--muted)}
+    .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:#f6f6f6;font-size:13px}
+
+    .export{display:inline-flex;align-items:center;gap:8px}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>YUMEKO SUSHIS</h1>
+      <p class="lead">Commande en ligne — Simple, rapide. Pas de paiement, juste ta commande.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Notre menu</h3>
+          <p class="tiny">Clique sur les + / - pour ajouter des pièces. Les portions indiquées sont en 4 pièces (sauf Sashimi/Nigiri).</p>
+
+          <!-- Menu sections rendered by JS -->
+          <div id="menu"></div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin-top:0">À propos</h3>
+          <p class="small">YUMEKO SUSHIS — mini-service pour amis. Commandes collectées ici et exportables. Personnalise le menu dans le code si besoin.</p>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h3 style="margin-top:0">Ta commande</h3>
+          <div id="orderSummary">
+            <p class="tiny">Aucun article pour l'instant.</p>
+          </div>
+
+          <hr style="border:none;border-top:1px dashed #eee;margin:12px 0">
+
+          <form id="orderForm">
+            <div class="field">
+              <label class="tiny">Prénom</label>
+              <input type="text" id="custName" placeholder="Ex : Antoine" required>
+            </div>
+            <div class="field">
+              <label class="tiny">Téléphone (optionnel)</label>
+              <input type="tel" id="custPhone" placeholder="06 12 34 56 78">
+            </div>
+            <div class="field">
+              <label class="tiny">Créneaux / Remarques</label>
+              <input type="text" id="custNote" placeholder="Ex : pickup 12:30 - sans oignon">
+            </div>
+            <button class="btn" type="submit">Valider la commande</button>
+            <button class="btn ghost" type="button" id="mailtoBtn" style="margin-left:8px">Préparer email</button>
+          </form>
+
+          <hr style="border:none;border-top:1px dashed #eee;margin:12px 0">
+          <div class="tiny" style="display:flex;justify-content:space-between;align-items:center">
+            <span>Admin</span>
+            <button class="btn ghost" id="openAdmin">Voir commandes</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <small>Site prototype — modifie les adresses email et le menu dans le code avant usage.</small>
+    </footer>
+  </main>
+
+  <!-- Admin modal & area (hidden by default) -->
+  <div id="adminModal" class="modal" style="display:none">
+    <div class="box">
+      <h3>Accès admin</h3>
+      <p class="tiny">Entrez le mot de passe pour consulter les commandes.</p>
+      <input type="password" id="adminPass" placeholder="Mot de passe admin">
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" id="adminUnlock">Ouvrir</button>
+        <button class="btn ghost" id="adminClose">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminPanel" style="display:none" class="card container" >
+    <h3 style="margin-top:0">Commandes reçues</h3>
+    <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center">
+      <div class="export tiny">Exporter : <button class="btn ghost" id="exportCsv">CSV</button></div>
+      <button class="btn" id="clearAll">Supprimer tout</button>
+    </div>
+    <div id="ordersList"></div>
+  </div>
+
+  <script>
+    /* ====== Configuration ====== */
+    const OWNER_EMAIL = "remplace-par-ton-email@example.com"; // change this to your email to use mailto
+    const ADMIN_PASS = "yumeko-admin"; // mot de passe admin frontend (modifiable)
+
+    /* ====== Menu data (four sections) ====== */
+    const MENU = [
+      { key:'maki', title:'Maki (4 pièces)', items:[
+        {id:'M1', name:'Saumon', price:4},
+        {id:'M2', name:'Saumon/Avocat', price:4},
+        {id:'M3', name:'Saumon/Cheese', price:4},
+        {id:'M4', name:'Thon', price:4},
+        {id:'M5', name:'Concombre', price:3},
+        {id:'M6', name:'Concombre/Cheese', price:3.5},
+        {id:'M7', name:'Avocat', price:3.5},
+        {id:'M8', name:'Avocat/Cheese', price:3.8}
+      ]},
+      { key:'california', title:'California (4 pièces)', items:[
+        {id:'C1', name:'Saumon', price:5},
+        {id:'C2', name:'Saumon/Avocat', price:5},
+        {id:'C3', name:'Saumon/Cheese', price:5},
+        {id:'C4', name:'Thon', price:5},
+        {id:'C5', name:'Concombre', price:3.5},
+        {id:'C6', name:'Concombre/Cheese', price:3.8},
+        {id:'C7', name:'Avocat', price:3.8},
+        {id:'C8', name:'Avocat/Cheese', price:4}
+      ]},
+      { key:'printemps', title:'Maki printemps (4 pièces)', items:[
+        {id:'P1', name:'Saumon/Avocat', price:4.5},
+        {id:'P2', name:'Saumon/Cheese', price:4.5},
+        {id:'P3', name:'Concombre/Cheese', price:3.5},
+        {id:'P4', name:'Avocat/Cheese', price:4}
+      ]},
+      { key:'signature', title:'Signature (4 pièces)', items:[
+        {id:'S1', name:'California saumon/cheese/oignon frits', price:6},
+        {id:'S2', name:'Rols saumon/avocat/cheese', price:6}
+      ]},
+      { key:'sashimi', title:'Sashimi (2 pièces)', items:[
+        {id:'SS1', name:'Saumon (2pcs)', price:4}
+      ]},
+      { key:'nigiri', title:'Nigiri (2 pièces)', items:[
+        {id:'N1', name:'Saumon', price:3.5},
+        {id:'N2', name:'Avocat', price:3}
+      ]}
+    ];
+
+    /* ====== App state ====== */
+    const state = { cart: {} };
+
+    function formatPrice(p){ return p % 1 === 0 ? p+" €" : p.toFixed(2)+" €" }
+
+    /* Render menu */
+    function renderMenu(){
+      const menu = document.getElementById('menu'); menu.innerHTML='';
+      MENU.forEach(section=>{
+        const sec = document.createElement('div'); sec.className='menu-section';
+        sec.innerHTML = `<div class="section-title"><strong>${section.title}</strong><span class="tiny"></span></div>`;
+        const itemsWrap = document.createElement('div'); itemsWrap.className='items';
+        section.items.forEach(it=>{
+          const div = document.createElement('div'); div.className='item';
+          div.innerHTML = `<h4>${it.id} - ${it.name}</h4>
+            <p class="tiny">${formatPrice(it.price)}</p>
+            <div class="controls">
+              <button class="btn ghost" data-action="dec" data-id="${it.id}">−</button>
+              <input class="qty" data-id="${it.id}" value="0" readonly>
+              <button class="btn" data-action="inc" data-id="${it.id}">+</button>
+            </div>`;
+          itemsWrap.appendChild(div);
+        });
+        sec.appendChild(itemsWrap); menu.appendChild(sec);
+      });
+    }
+
+    function updateQtyDisplay(){
+      document.querySelectorAll('.qty').forEach(inp=>{
+        const id = inp.dataset.id; const q = state.cart[id] || 0; inp.value = q;
+      });
+    }
+
+    function changeItem(id, delta){
+      state.cart[id] = Math.max(0,(state.cart[id]||0)+delta);
+      updateQtyDisplay(); renderSummary();
+    }
+
+    function buildOrderSummaryObject(){
+      const entries = [];
+      MENU.forEach(sec=> sec.items.forEach(it=>{
+        const q = state.cart[it.id] || 0; if(q>0) entries.push({id:it.id,name:it.name,qty:q,price:it.price});
+      }));
+      return entries;
+    }
+
+    function renderSummary(){
+      const wrap = document.getElementById('orderSummary');
+      const items = buildOrderSummaryObject();
+      if(items.length===0){ wrap.innerHTML='<p class="tiny">Aucun article pour l\'instant.</p>'; return }
+      let html=''; let total=0;
+      items.forEach(it=>{ total += it.qty * it.price; html += `<div class="summary-row"><div><strong>${it.qty}×</strong> ${it.name} <div class="tiny">${it.id}</div></div><div>${formatPrice(it.qty*it.price)}</div></div>`});
+      html += `<div style="padding-top:10px;display:flex;justify-content:space-between"><strong>Total</strong><strong>${formatPrice(total)}</strong></div>`;
+      wrap.innerHTML = html;
+    }
+
+    // Event delegation for + / - buttons
+    document.addEventListener('click', e=>{
+      const b = e.target.closest('button'); if(!b) return;
+      const action = b.dataset.action; const id = b.dataset.id;
+      if(action && id){ if(action==='inc') changeItem(id,1); if(action==='dec') changeItem(id,-1); }
+    });
+
+    // Init
+    renderMenu(); updateQtyDisplay(); renderSummary();
+
+    // Form submit: store order in localStorage
+    document.getElementById('orderForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = document.getElementById('custName').value.trim();
+      if(!name){ alert('Merci d\'indiquer ton prénom.'); return }
+      const phone = document.getElementById('custPhone').value.trim();
+      const note = document.getElementById('custNote').value.trim();
+      const items = buildOrderSummaryObject(); if(items.length===0){ alert('Ton panier est vide.'); return }
+
+      const order = { id: 'ORD'+Date.now(), name, phone, note, items, ts: new Date().toISOString() };
+      // store
+      const all = JSON.parse(localStorage.getItem('yumeko_orders')||'[]'); all.push(order); localStorage.setItem('yumeko_orders', JSON.stringify(all));
+
+      // show confirmation
+      alert('Commande enregistrée ✅ — elle est visible dans le panneau admin.');
+      // reset
+      state.cart = {}; updateQtyDisplay(); renderSummary(); document.getElementById('orderForm').reset();
+    });
+
+    // Mailto prefill (opens mail client with order summary)
+    document.getElementById('mailtoBtn').addEventListener('click', ()=>{
+      const items = buildOrderSummaryObject(); if(items.length===0){ alert('Panier vide.'); return }
+      const name = document.getElementById('custName').value.trim() || 'Anonyme';
+      const phone = document.getElementById('custPhone').value.trim() || '';
+      const note = document.getElementById('custNote').value.trim() || '';
+      let body = `Commande YUMEKO - ${name}%0A`;
+      if(phone) body += `Téléphone: ${phone}%0A`;
+      body += `%0AArticles:%0A`;
+      items.forEach(it=> body += `${it.qty} x ${it.id} - ${it.name} (${formatPrice(it.price)})%0A`);
+      if(note) body += `%0ARemarques: ${note}%0A`;
+      body += `%0A---%0A`; // end
+      const mailto = `mailto:${OWNER_EMAIL}?subject=Commande%20YUMEKO%20-%20${encodeURIComponent(name)}&body=${body}`;
+      window.location.href = mailto;
+    });
+
+    // Admin modal controls
+    document.getElementById('openAdmin').addEventListener('click', ()=>{ document.getElementById('adminModal').style.display='flex'; });
+    document.getElementById('adminClose').addEventListener('click', ()=>{ document.getElementById('adminModal').style.display='none'; });
+
+    document.getElementById('adminUnlock').addEventListener('click', ()=>{
+      const pass = document.getElementById('adminPass').value;
+      if(pass === ADMIN_PASS){ document.getElementById('adminModal').style.display='none'; showAdminPanel(); }
+      else alert('Mot de passe incorrect');
+    });
+
+    function showAdminPanel(){
+      document.getElementById('adminPanel').style.display='block'; document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});
+      renderOrders();
+    }
+
+    function renderOrders(){
+      const wrap = document.getElementById('ordersList'); const all = JSON.parse(localStorage.getItem('yumeko_orders')||'[]');
+      if(all.length===0){ wrap.innerHTML='<p class="tiny">Aucune commande reçue.</p>'; return }
+      let html=''; all.slice().reverse().forEach(o=>{
+        html += `<div style="border:1px solid #f0f0f0;padding:10px;border-radius:8px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between"><strong>${o.name}</strong><span class="tiny">${new Date(o.ts).toLocaleString()}</span></div>
+          <div class="tiny">${o.phone || ''}</div>
+          <div style="margin-top:8px">`;
+        o.items.forEach(it=> html += `<div class="tiny">${it.qty}× ${it.id} - ${it.name} — ${formatPrice(it.qty*it.price)}</div>`);
+        html += `</div><div style="margin-top:8px" class="tiny">Rem : ${o.note || '-'}</div>
+          <div style="margin-top:8px;display:flex;gap:8px"><button class="btn" onclick='markDone("${o.id}")'>Marquer traité</button><button class="btn ghost" onclick='deleteOrder("${o.id}")'>Supprimer</button></div>
+        </div>`;
+      });
+      wrap.innerHTML = html;
+    }
+
+    // delete/order actions
+    window.deleteOrder = function(id){ if(!confirm('Supprimer cette commande ?')) return; let all = JSON.parse(localStorage.getItem('yumeko_orders')||'[]'); all = all.filter(o=>o.id!==id); localStorage.setItem('yumeko_orders', JSON.stringify(all)); renderOrders(); }
+    window.markDone = function(id){ // simple visual: prepend "(traité)" to name
+      let all = JSON.parse(localStorage.getItem('yumeko_orders')||'[]'); all = all.map(o=> o.id===id ? Object.assign({},o,{name: o.name + ' (traité)'}) : o); localStorage.setItem('yumeko_orders', JSON.stringify(all)); renderOrders(); }
+
+    document.getElementById('exportCsv').addEventListener('click', ()=>{
+      const all = JSON.parse(localStorage.getItem('yumeko_orders')||'[]'); if(all.length===0){ alert('Aucune commande à exporter'); return }
+      // build CSV rows: id,name,phone,ts,itemId,itemName,qty,price,note
+      const rows = [['id','name','phone','ts','itemId','itemName','qty','unitPrice','note']];
+      all.forEach(o=> o.items.forEach(it=> rows.push([o.id,o.name,o.phone,o.ts,it.id,it.name,it.qty,it.price,o.note||''])));
+      const csv = rows.map(r=> r.map(v=> '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'yumeko_orders.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('clearAll').addEventListener('click', ()=>{
+      if(!confirm('Supprimer toutes les commandes enregistrées ?')) return; localStorage.removeItem('yumeko_orders'); renderOrders(); alert('Supprimé');
+    });
+
+    // Load any existing orders automatically if admin panel open
+    renderOrders();
+
+  </script>
+</body>
+</html>
