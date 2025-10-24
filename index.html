@@ -171,203 +171,100 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <script>
-    /* ===== Ombre du bandeau qui fonce avec le scroll ===== */
-    (function(){
-      const root = document.documentElement;
-      function updateBarShade(){
-        const doc = document.documentElement;
-        const max = (doc.scrollHeight - window.innerHeight) || 1;
-        const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
-        const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
-        root.style.setProperty('--barShade', shade.toFixed(2));
-      }
-      updateBarShade();
-      window.addEventListener('scroll', updateBarShade, { passive:true });
-      window.addEventListener('resize', updateBarShade);
-    })();
-
-    /* ===================== Données ===================== */
-    const categories = {
-      'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
-      'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
-      'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
-      'Sashimi 2 pièces': ['Saumon'],
-      'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
-      'Maki printemps 4 pièces': [ 'P1- Saumon/Avocat',  'P2- Saumon/Fromage',  'P3- Concombre/Fromage',  'P4- Avocat/Fromage'],
-
-    };
-    const prices = {}; // ex: {'M1':4.00}
-
-    /* ===================== Construction du menu ===================== */
-    function buildMenu(){
-      const menu=document.getElementById('menu');
-      for(const [cat,items] of Object.entries(categories)){
-        const wrap=document.createElement('div');
-        wrap.className='category';
-        wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
-        const grid=wrap.querySelector('.menu-grid');
-
-        items.forEach(item=>{
-          const code=item.split('-')[0].trim();
-          const name=item.split('-').slice(1).join('-').trim();
-          const price=prices[code];
-
-          const card=document.createElement('div');
-          card.className='item-card';
-          card.innerHTML=`
-            <div class="left">
-              <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'">
-              <div class="item-name">${name || item}</div>
-            </div>
-            <div class="controls">
-              ${price!==undefined?`<span class="muted" style="margin-right:6px">${price.toFixed(2)}€</span>`:''}
-              <button class="btn minus" data-item="${item}">−</button>
-              <span class="qty" data-item="${item}">0</span>
-              <button class="btn plus" data-item="${item}">+</button>
-            </div>`;
-          grid.appendChild(card);
-        });
-
-        menu.appendChild(wrap);
-      }
+ <script>
+  /* ===== Ombre du bandeau qui fonce avec le scroll ===== */
+  (function(){
+    const root = document.documentElement;
+    function updateBarShade(){
+      const doc = document.documentElement;
+      const max = (doc.scrollHeight - window.innerHeight) || 1;
+      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
+      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
+      root.style.setProperty('--barShade', shade.toFixed(2));
     }
-    buildMenu();
+    updateBarShade();
+    window.addEventListener('scroll', updateBarShade, { passive:true });
+    window.addEventListener('resize', updateBarShade);
+  })();
 
-    /* ===================== Utilitaires ===================== */
-    function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
-    function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-    function updateSticky(){ document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`; }
+  /* ===================== Données ===================== */
+  const categories = {
+    'Maki 4 pièces': ['M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon','M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese'],
+    'California 4 pièces': ['C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon','C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese'],
+    'Signature 4 pièces': ['S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'],
+    'Sashimi 2 pièces': ['Saumon'],
+    'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat'],   // ← virgule ajoutée ici ✅
+    'Maki printemps 4 pièces': [
+      'P1- Saumon/Avocat',
+      'P2- Saumon/Fromage',
+      'P3- Concombre/Fromage',
+      'P4- Avocat/Fromage'
+    ],
+  };
+  const prices = {}; // ex: {'M1':4.00}
 
-    // +/- via délégation
-    document.addEventListener('click', e=>{
-      if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
-        const inc = e.target.classList.contains('plus') ? 1 : -1;
-        const item = e.target.dataset.item;
-        const span = document.querySelector(`.qty[data-item="${item}"]`);
-        const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-        span.textContent = v; bump(span); updateSticky();
-      }
-    });
+  /* ===================== Construction du menu ===================== */
+  function buildMenu(){
+    const menu=document.getElementById('menu');
+    for(const [cat,items] of Object.entries(categories)){
+      const wrap=document.createElement('div');
+      wrap.className='category';
+      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+      const grid=wrap.querySelector('.menu-grid');
 
-    /* Baguettes */
-    const bagMinus = document.getElementById('bagMinus');
-    const bagPlus  = document.getElementById('bagPlus');
-    const bagQty   = document.getElementById('bagQty');
-    const bagInput = document.getElementById('bagInput');
-    bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-    bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
+      items.forEach(item=>{
+        const code=item.split('-')[0].trim();
+        const name=item.split('-').slice(1).join('-').trim();
+        const price=prices[code];
 
-    /* ===================== Tiroir récap ===================== */
-    const sheet = document.getElementById('cartSheet');
-    const gotoOrder = document.getElementById('gotoOrder');
-    const sheetClose = document.getElementById('sheetClose');
-
-    function collectItems(){
-      const lines=[];
-      document.querySelectorAll('.qty[data-item]').forEach(span=>{
-        const q=parseInt(span.textContent)||0;
-        if(q>0) lines.push({label:span.dataset.item, qty:q});
+        const card=document.createElement('div');
+        card.className='item-card';
+        card.innerHTML=`
+          <div class="left">
+            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'">
+            <div class="item-name">${name || item}</div>
+          </div>
+          <div class="controls">
+            ${price!==undefined?`<span class="muted" style="margin-right:6px">${price.toFixed(2)}€</span>`:''}
+            <button class="btn minus" data-item="${item}">−</button>
+            <span class="qty" data-item="${item}">0</span>
+            <button class="btn plus" data-item="${item}">+</button>
+          </div>`;
+        grid.appendChild(card);
       });
-      return lines;
+
+      menu.appendChild(wrap);
     }
-    function collectOptions(){
-      const opts=[];
-      if(document.getElementById('optSojaSucree').checked) opts.push('Soja sucrée');
-      if(document.getElementById('optSojaSalee').checked)  opts.push('Soja salée');
-      if(document.getElementById('optWasabi').checked)     opts.push('Wasabi');
-      if(document.getElementById('optGingembre').checked)  opts.push('Gingembre');
-      const bag=parseInt(bagQty.textContent)||0;
-      return {opts, bag};
+  }
+  buildMenu();
+
+  /* ===================== Utilitaires ===================== */
+  function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
+  function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
+  function updateSticky(){ document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`; }
+
+  document.addEventListener('click', e=>{
+    if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
+      const inc = e.target.classList.contains('plus') ? 1 : -1;
+      const item = e.target.dataset.item;
+      const span = document.querySelector(`.qty[data-item="${item}"]`);
+      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
+      span.textContent = v; bump(span); updateSticky();
     }
-    function buildRecap(){
-      const list = document.getElementById('recapList'); list.innerHTML='';
-      const items = collectItems();
-      if(items.length===0){
-        list.innerHTML = '<li class="muted">Ton panier est vide.</li>';
-      }else{
-        items.forEach(it=>{
-          const li=document.createElement('li');
-          li.innerHTML = `<span>${it.label}</span><strong>x${it.qty}</strong>`;
-          list.appendChild(li);
-        });
-      }
-      const {opts, bag} = collectOptions();
-      const parts=[];
-      if(opts.length) parts.push(`Options: ${opts.join(', ')}`);
-      if(bag>0) parts.push(`Baguettes x${bag}`);
-      document.getElementById('recapOptions').innerHTML = parts.length ? `<p class="muted">${parts.join(' • ')}</p>` : '';
+  });
 
-      const d=document.getElementById('pickupDate').value;
-      const t=document.getElementById('pickupTime').value;
-      document.getElementById('recapPickup').textContent = (d||t) ? `Retrait: ${d} ${t}` : '';
-      const c=(document.getElementById('comments').value||'').trim();
-      document.getElementById('recapComment').textContent = c ? `Commentaire: ${c}` : '';
-    }
+  // Baguettes
+  const bagMinus = document.getElementById('bagMinus');
+  const bagPlus  = document.getElementById('bagPlus');
+  const bagQty   = document.getElementById('bagQty');
+  const bagInput = document.getElementById('bagInput');
+  bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
+  bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
 
-    gotoOrder.onclick = ()=>{
-      if(getTotal()===0){ gotoOrder.classList.add('shake'); setTimeout(()=>gotoOrder.classList.remove('shake'),400); return; }
-      buildRecap();
-      sheet.classList.toggle('open');
-    };
-    sheetClose.onclick = ()=> sheet.classList.remove('open');
-    document.getElementById('editOrder').onclick = ()=> sheet.classList.remove('open');
-
-    /* ===================== Envoi Formspree ===================== */
-    function prepareOrderText(){
-      const items = collectItems();
-      if(!items.length) return false;
-      const lines = items.map(it=>`${it.label} x${it.qty}`);
-      const {opts, bag} = collectOptions();
-      if(opts.length) lines.push(`Options: ${opts.join(', ')}`);
-      if(bag>0) lines.push(`Baguettes x${bag}`);
-      const d=document.getElementById('pickupDate').value;
-      const t=document.getElementById('pickupTime').value;
-      const c=(document.getElementById('comments').value||'').trim();
-      if(d||t) lines.push(`Retrait: ${d} ${t}`);
-      if(c) lines.push(`Commentaire: ${c}`);
-      document.getElementById('orderText').value = lines.join('\n');
-      return true;
-    }
-
-    document.getElementById('confirmSend').onclick = ()=>{
-      if(prepareOrderText()){
-        sheet.classList.remove('open');
-        const f=document.getElementById('orderForm');
-        if(f.requestSubmit) f.requestSubmit(); else f.submit();
-      }
-    };
-
-    document.getElementById('orderForm').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      if(!document.getElementById('orderText').value){
-        if(!prepareOrderText()) {
-          const r=document.getElementById('orderResult');
-          r.textContent="Ajoute au moins un article avant d'envoyer 😊";
-          r.style.color="#ffd4d4"; return;
-        }
-      }
-      const form=e.target;
-      try{
-        const resp=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});
-        const r=document.getElementById('orderResult');
-        if(resp.ok){
-          r.textContent="Merci ! Ta commande a bien été envoyée 🍣";
-          r.style.color="#b7ffb7";
-          document.querySelectorAll('.qty').forEach(s=>s.textContent='0');
-          form.reset(); bagQty.textContent='1'; bagInput.value='1'; updateSticky();
-        }else{
-          r.textContent="Oups, l'envoi a échoué. Réessaie 🙏"; r.style.color="#ffd4d4";
-        }
-      }catch{
-        const r=document.getElementById('orderResult');
-        r.textContent="Erreur réseau. Réessaie."; r.style.color="#ffd4d4";
-      }
-    });
-
-    /* ===================== Scroll + Init ===================== */
-    document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
-    updateSticky();
-  </script>
+  /* ===================== Tiroir récap & envoi (inchangé) ===================== */
+  // … garde ton code existant pour le tiroir, prepareOrderText, fetch Formspree, etc.
+  document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+  updateSticky();
+</script>
 </body>
 </html>
