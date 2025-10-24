@@ -69,7 +69,7 @@
       padding:10px;
     }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; }
-    #miniRecap{ font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow-x:auto; scrollbar-width:none; }
+    #miniRecap{ font-size:13px; color:#eee; opacity:.95; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #miniRecap::-webkit-scrollbar{ display:none; }
     #gotoOrder{ width:100%; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px; cursor:pointer; }
 
@@ -415,8 +415,15 @@ Commentaire : ${c}`;
     // Envoi : le bouton du tiroir déclenche l’envoi du formulaire
     btnConfirm?.addEventListener('click', ()=>{
       if (!form) return;
+      // Vérifier les champs requis. Si invalide, basculer vers l'étape détails.
+      if (!form.reportValidity()) {
+        setStep('details');
+        form.reportValidity();
+        form.querySelector(':invalid')?.focus();
+        return;
+      }
       prepareOrderText();
-      form.requestSubmit(); // déclenche la soumission native
+      form.requestSubmit();
     });
 
     // Soumission via fetch pour afficher un retour dans le tiroir
@@ -431,6 +438,29 @@ Commentaire : ${c}`;
             body: fd,
             headers: { 'Accept': 'application/json' }
           });
+          if (res.ok) {
+            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
+            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
+            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
+            const bagQtyEl = document.getElementById('bagQty');
+            const bagInput = document.getElementById('bagInput');
+            if (bagQtyEl) bagQtyEl.textContent = '1';
+            if (bagInput) bagInput.value = '1';
+            document.getElementById('comments')?.value = '';
+            document.getElementById('deliveryDate')?.value = '';
+            document.getElementById('deliveryTime')?.value = '';
+            if (typeof updateSticky === 'function') updateSticky();
+            buildRecap();
+            setStep('cart');
+          } else {
+            // Fallback vers soumission native si Formspree refuse la requête fetch
+            form.submit();
+          }
+        } catch(err){
+          // Fallback offline / CORS : soumission native
+          form.submit();
+        }
+      });
           if (res.ok) {
             if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
             // Vider le panier + options + commentaire (sans fermer le tiroir)
@@ -573,7 +603,18 @@ Commentaire : ${c}`;
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
 
   function updateMiniRecap(){
-    const items=[]; document.querySelectorAll('.qty[data-item]').forEach(span=>{ const q=parseInt(span.textContent)||0; if(q>0){ items.push(`${span.dataset.item.split('-').slice(1).join('-').trim()} x${q}`); } });
+    const items=[]; 
+    document.querySelectorAll('.qty[data-item]').forEach(span=>{ 
+      const q=parseInt(span.textContent)||0; 
+      if(q>0){ items.push(`${span.dataset.item.split('-').slice(1).join('-').trim()} x${q}`); } 
+    });
+    const c = document.getElementById('comments')?.value?.trim();
+    const parts = [];
+    if(items.length) parts.push(items.join(' • '));
+    if(c) parts.push('💬 ' + (c.length>40? c.slice(0,40)+'…': c));
+    const mini=document.getElementById('miniRecap');
+    mini.textContent = parts.length? parts.join(' — '): 'Votre panier est vide pour le moment.';
+  } x${q}`); } });
     const mini=document.getElementById('miniRecap');
     mini.textContent = items.length? items.join(' • ') : 'Votre panier est vide pour le moment.';
   }
