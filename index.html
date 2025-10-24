@@ -14,6 +14,9 @@
       --muted:#cfcfcf;
       --accent:#ffb6b6;
       --accent-2:#ff8c8c;
+      /* On retire totalement la section de la page */
+#orderSection { display: none !important; }
+
 
       /* Opacité du dégradé du bandeau (mise à jour au scroll via JS) */
       --barShade: .35;
@@ -82,12 +85,186 @@
     #cartSheet header h3{ margin:0; font-size:18px; }
     #cartSheet header button{ background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; }
     #cartSheet .body{ padding:10px; overflow:auto; }
-    .recap-list{ list-style:none; margin:0; padding:0; }
+    .recap-list{ list-:none; margin:0; padding:0; }
     .recap-list li{ display:flex; justify-content:space-between; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
     .shake{ animation:shake .35s; } 
     @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);}}
+    <script>
+/* ======== PANIER / TIROIR : déplacer le formulaire et tout gérer ici ======== */
+document.addEventListener('DOMContentLoaded', function () {
+  const sheet       = document.getElementById('cartSheet');
+  const sheetBody   = sheet.querySelector('.body');
+  const sheetClose  = document.getElementById('sheetClose');
+  const btnOpen     = document.getElementById('gotoOrder');
+  const btnEdit     = document.getElementById('editOrder');
+  const btnConfirm  = document.getElementById('confirmSend');
+  const recapList   = document.getElementById('recapList');
+  const recapOpt    = document.getElementById('recapOptions');
+  const recapPickup = document.getElementById('recapPickup');
+  const recapCom    = document.getElementById('recapComment');
+  const form        = document.getElementById('orderForm');
+  const orderResult = document.getElementById('orderResult');
+
+  // 1) Déplacer le formulaire dans le tiroir
+  if (form && sheetBody && !sheetBody.contains(form)) {
+    sheetBody.appendChild(form);
+  }
+
+  // 2) Utilitaires panier
+  function getCartItems(){
+    const items = [];
+    document.querySelectorAll('.qty[data-item]').forEach(span=>{
+      const qty = parseInt(span.textContent) || 0;
+      if (qty > 0) {
+        const item = span.dataset.item; // format "M1- Saumon/Avocat"
+        items.push({ label: item, qty });
+      }
+    });
+    return items;
+  }
+
+  function buildRecap(){
+    // Items
+    const items = getCartItems();
+    recapList.innerHTML = '';
+    if (items.length === 0) {
+      recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
+    } else {
+      items.forEach(({label, qty})=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${label}</span><strong>x${qty}</strong>`;
+        recapList.appendChild(li);
+      });
+    }
+
+    // Options (soja, wasabi, gingembre + baguettes)
+    const {opts, bag} = collectOptions();
+    const optParts = [];
+    if (opts.length) optParts.push(opts.join(' • '));
+    optParts.push(`Baguettes x${bag}`);
+    recapOpt.textContent = optParts.join(' — ');
+
+    // Retrait (date/heure)
+    const d = document.getElementById('pickupDate')?.value;
+    const t = document.getElementById('pickupTime')?.value;
+    recapPickup.textContent = (d || t) ? `Retrait: ${[d,t].filter(Boolean).join(' à ')}` : '';
+
+    // Commentaire
+    const c = document.getElementById('comments')?.value.trim();
+    recapCom.textContent = c ? `Commentaire: ${c}` : '';
+  }
+
+  // 3) Ouvrir / fermer
+  function openSheet(){
+    buildRecap();
+    sheet.classList.add('open');
+    sheet.setAttribute('aria-hidden','false');
+  }
+  function closeSheet(){
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden','true');
+  }
+
+  btnOpen.addEventListener('click', openSheet);
+  sheetClose.addEventListener('click', closeSheet);
+
+  // 4) Bouton "Modifier" → revenir voir le menu (et fermer le tiroir)
+  btnEdit.addEventListener('click', ()=>{
+    closeSheet();
+    document.getElementById('menuSection')?.scrollIntoView({behavior:'smooth'});
+  });
+
+  // 5) Préparer le texte d'ordre pour Formspree (champ caché "order")
+  function ensureHiddenField(name){
+    let input = form.querySelector(`input[name="${name}"]`);
+    if (!input) {
+      input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      form.appendChild(input);
+    }
+    return input;
+  }
+
+  function prepareOrderText(){
+    const items = getCartItems()
+      .map(({label, qty})=>`- ${label} x${qty}`)
+      .join('\n');
+    const {opts, bag} = collectOptions();
+    const d = document.getElementById('pickupDate')?.value || '—';
+    const t = document.getElementById('pickupTime')?.value || '—';
+    const c = document.getElementById('comments')?.value?.trim() || '—';
+    const name = form.querySelector('[name="name"]')?.value || '—';
+    const phone = form.querySelector('[name="phone"]')?.value || '—';
+
+    const text =
+`Commande YUMEKO
+Client : ${name}
+Téléphone : ${phone}
+
+Articles :
+${items || '(aucun)'}
+
+Options : ${opts.length ? opts.join(', ') : 'aucune'}
+Baguettes : ${bag}
+
+Retrait : ${d} ${t}
+Commentaire : ${c}`;
+
+    ensureHiddenField('order').value = text;
+  }
+
+  // 6) Envoi : le bouton du tiroir déclenche l'envoi du formulaire
+  btnConfirm.addEventListener('click', ()=>{
+    prepareOrderText();
+    form.requestSubmit(); // clique programmatique sur "Envoyer ma commande 🍣"
+  });
+
+  // 7) Soumission via fetch pour afficher un retour dans le tiroir
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    orderResult.textContent = 'Envoi en cours…';
+    try{
+      const fd = new FormData(form);
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: fd,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
+        // Optionnel : vider le panier
+        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
+        updateSticky();
+        buildRecap();
+      } else {
+        orderResult.textContent = 'Oups, une erreur est survenue. Réessayez.';
+      }
+    } catch(err){
+      orderResult.textContent = 'Réseau indisponible. Vérifiez votre connexion.';
+    }
+  });
+
+  // 8) Rebuild récap si l’utilisateur modifie des champs du formulaire
+  sheet.addEventListener('input', (e)=>{
+    if (['pickupDate','pickupTime','comments','name','phone'].includes(e.target.id) || e.target.matches('textarea,input')) {
+      buildRecap();
+    }
+  });
+
+  // 9) Rebuild récap à chaque clic +/- sur les articles ou options
+  document.addEventListener('click', (e)=>{
+    if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
+        e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
+      // Donne un petit délai pour que la qty soit à jour
+      setTimeout(buildRecap, 0);
+    }
+  });
+});
+</script>
+
   </style>
 </head>
 <body>
