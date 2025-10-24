@@ -569,5 +569,32 @@ Commentaire : ${c}`;
   // Init
   updateSticky();
   </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function(){
+  var btnOpen    = document.getElementById('gotoOrder');
+  var sheet      = document.getElementById('cartSheet');
+  var sheetClose = document.getElementById('sheetClose');
+
+  function openSheet(){
+    if (!sheet) return;
+    sheet.classList.add('open');
+    sheet.setAttribute('aria-hidden','false');
+  }
+  function closeSheet(){
+    if (!sheet) return;
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden','true');
+  }
+
+  if (btnOpen)    btnOpen.addEventListener('click', openSheet);
+  if (sheetClose) sheetClose.addEventListener('click', closeSheet);
+
+  // Bonus: Échap pour fermer
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && sheet && sheet.classList.contains('open')) closeSheet();
+  });
+});
+</script>
+
 </body>
 </html>
