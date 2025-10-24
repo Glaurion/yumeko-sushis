@@ -385,7 +385,8 @@
     function prepareOrderText(){
       const itemsText = getCartItems()
         .map(({label, qty})=>`- ${label} x${qty}`)
-        .join('\n');
+        .join('
+');
       const {opts, bag} = collectOptionsSafe();
       const d = document.getElementById('deliveryDate')?.value || '—';
       const t = document.getElementById('deliveryTime')?.value || '—';
@@ -423,7 +424,7 @@ Commentaire : ${c}`;
         return;
       }
       prepareOrderText();
-      form.requestSubmit();
+      form.requestSubmit(); // déclenche la soumission native
     });
 
     // Soumission via fetch pour afficher un retour dans le tiroir
@@ -438,29 +439,6 @@ Commentaire : ${c}`;
             body: fd,
             headers: { 'Accept': 'application/json' }
           });
-          if (res.ok) {
-            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
-            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
-            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
-            const bagQtyEl = document.getElementById('bagQty');
-            const bagInput = document.getElementById('bagInput');
-            if (bagQtyEl) bagQtyEl.textContent = '1';
-            if (bagInput) bagInput.value = '1';
-            document.getElementById('comments')?.value = '';
-            document.getElementById('deliveryDate')?.value = '';
-            document.getElementById('deliveryTime')?.value = '';
-            if (typeof updateSticky === 'function') updateSticky();
-            buildRecap();
-            setStep('cart');
-          } else {
-            // Fallback vers soumission native si Formspree refuse la requête fetch
-            form.submit();
-          }
-        } catch(err){
-          // Fallback offline / CORS : soumission native
-          form.submit();
-        }
-      });
           if (res.ok) {
             if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
             // Vider le panier + options + commentaire (sans fermer le tiroir)
@@ -478,17 +456,19 @@ Commentaire : ${c}`;
             buildRecap();
             setStep('cart');
           } else {
-            if (orderResult) orderResult.textContent = 'Oups, une erreur est survenue. Réessayez.';
+            // Fallback vers soumission native si Formspree refuse la requête fetch
+            form.submit();
           }
         } catch(err){
-          if (orderResult) orderResult.textContent = 'Réseau indisponible. Vérifiez votre connexion.';
+          // Fallback offline / CORS : soumission native
+          form.submit();
         }
       });
     }
 
     // Rebuild récap si l’utilisateur modifie des champs dans le tiroir
     sheet.addEventListener('input', (e)=>{
-      if (e.target.matches('textarea,input')) buildRecap();
+      if (e.target.matches('textarea,input')) { buildRecap(); updateMiniRecap(); }
     });
 
     // Réagir aux +/- de la liste récap (on modifie les spans du menu)
@@ -500,9 +480,7 @@ Commentaire : ${c}`;
       if (!span) return;
       const inc = btn.classList.contains('recap-plus') ? 1 : -1;
       const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v; bump(span);
-      updateSticky();
-      buildRecap();
+      span.textContent = v; bump(span); updateSticky(); buildRecap();
     });
 
     // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
@@ -521,6 +499,24 @@ Commentaire : ${c}`;
   </script>
 
   <!-- Script 2 : Ombre du bandeau qui fonce avec le scroll -->
+  <script>
+  (function(){
+    const root = document.documentElement;
+    function updateBarShade(){
+      const doc = document.documentElement;
+      const max = (doc.scrollHeight - window.innerHeight) || 1;
+      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
+      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
+      root.style.setProperty('--barShade', shade.toFixed(2));
+    }
+    updateBarShade();
+    window.addEventListener('scroll', updateBarShade, { passive:true });
+    window.addEventListener('resize', updateBarShade);
+  })();
+  </script>
+
+  <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
+  <script> : Ombre du bandeau qui fonce avec le scroll -->
   <script>
   (function(){
     const root = document.documentElement;
@@ -614,9 +610,6 @@ Commentaire : ${c}`;
     if(c) parts.push('💬 ' + (c.length>40? c.slice(0,40)+'…': c));
     const mini=document.getElementById('miniRecap');
     mini.textContent = parts.length? parts.join(' — '): 'Votre panier est vide pour le moment.';
-  } x${q}`); } });
-    const mini=document.getElementById('miniRecap');
-    mini.textContent = items.length? items.join(' • ') : 'Votre panier est vide pour le moment.';
   }
 
   function updateSticky(){
@@ -685,6 +678,7 @@ Commentaire : ${c}`;
 
   // Init
   updateSticky();
+  updateMiniRecap();
   </script>
 
   <!-- Petit correctif ancien script d'ouverture/fermeture si doublon -->
