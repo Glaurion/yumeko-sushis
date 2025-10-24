@@ -1,1 +1,1 @@
-Bonjour, voici mon pseudo site internet de vente de sushis
+Bonjour, voici mon site internet de vente de sushis
