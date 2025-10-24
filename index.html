@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YUMEKO SUSHIS</title>
+
   <style>
     :root{
       /* Couleurs du thème */
@@ -18,6 +19,9 @@
       /* Opacité du dégradé du bandeau (mise à jour au scroll via JS) */
       --barShade: .35;
     }
+
+    /* On retire totalement la section de la page */
+    #orderSection { display: none !important; }
 
     *{ box-sizing: border-box; }
 
@@ -58,7 +62,7 @@
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    /* STICKY BAR (une seule définition, pilotée par --barShade) */
+    /* STICKY BAR */
     #stickyBar{
       position:fixed; bottom:0; left:0; right:0; z-index:100;
       background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade)));
@@ -85,16 +89,28 @@
     .recap-list{ list-style:none; margin:0; padding:0; }
     .recap-list li{ display:flex; justify-content:space-between; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
+    /* Boutons du tiroir */
+    .btn-ghost, .btn-primary{
+      border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer;
+    }
+    .btn-ghost{ background:#2a2a2a; color:#fff; }
+    .btn-ghost:hover{ filter:brightness(1.1); }
+    .btn-primary{ background:var(--brand); color:#fff; }
+    .btn-primary:hover{ background:var(--brand-2); }
+
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
     .shake{ animation:shake .35s; } 
     @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);}}
   </style>
+<link rel="icon" type="image/png" href="images/favicon.png" />
+<link rel="apple-touch-icon" href="images/favicon.png" />
+<meta name="theme-color" content="#8b0000" />
 </head>
 <body>
 
   <!-- HERO -->
   <section class="hero">
- <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" width="120" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
+    <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" width="120" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">🍣 YUMEKO SUSHIS 🍣</h1>
     <p>Commandez vos sushis préférés simplement ici 🍱</p>
     <button class="cta" id="ctaOrder">Commander maintenant</button>
@@ -107,7 +123,7 @@
       <div id="menu"></div>
     </section>
 
-    <!-- FORM COMMANDE -->
+    <!-- FORM COMMANDE (sera déplacé dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
@@ -115,12 +131,32 @@
         <input name="phone" placeholder="Téléphone (optionnel)">
 
         <p class="muted" style="margin-top:8px">Options :</p>
-        <p>
-          <label><input type="checkbox" id="optSojaSucree"> Soja sucrée</label>
-          <label style="margin-left:12px"><input type="checkbox" id="optSojaSalee"> Soja salée</label>
-          <label style="margin-left:12px"><input type="checkbox" id="optWasabi"> Wasabi</label>
-          <label style="margin-left:12px"><input type="checkbox" id="optGingembre"> Gingembre</label>
-        </p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:10px;">
+          <div>
+            <span class="muted">Soja sucrée :</span><br>
+            <button type="button" class="btn opt-minus" data-opt="sojaSucree">−</button>
+            <span class="qty opt-qty" data-opt="sojaSucree">0</span>
+            <button type="button" class="btn opt-plus" data-opt="sojaSucree">+</button>
+          </div>
+          <div>
+            <span class="muted">Soja salée :</span><br>
+            <button type="button" class="btn opt-minus" data-opt="sojaSalee">−</button>
+            <span class="qty opt-qty" data-opt="sojaSalee">0</span>
+            <button type="button" class="btn opt-plus" data-opt="sojaSalee">+</button>
+          </div>
+          <div>
+            <span class="muted">Wasabi :</span><br>
+            <button type="button" class="btn opt-minus" data-opt="wasabi">−</button>
+            <span class="qty opt-qty" data-opt="wasabi">0</span>
+            <button type="button" class="btn opt-plus" data-opt="wasabi">+</button>
+          </div>
+          <div>
+            <span class="muted">Gingembre :</span><br>
+            <button type="button" class="btn opt-minus" data-opt="gingembre">−</button>
+            <span class="qty opt-qty" data-opt="gingembre">0</span>
+            <button type="button" class="btn opt-plus" data-opt="gingembre">+</button>
+          </div>
+        </div>
 
         <div style="margin:8px 0 12px">
           <span class="muted" style="display:block;margin-bottom:6px;">Baguettes :</span>
@@ -134,8 +170,8 @@
         <input type="date" id="pickupDate" name="pickup_date">
         <input type="time" id="pickupTime" name="pickup_time" step="900">
 
-        <textarea name="comments" id="comments" placeholder="Commentaire (allergies, sauce en plus, etc.)"></textarea>
-        
+        <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
+
         <button type="submit" class="cta" style="margin-top:10px;">Envoyer ma commande 🍣</button>
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
@@ -170,8 +206,229 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
- <script>
-  /* ===== Ombre du bandeau qui fonce avec le scroll ===== */
+  <!-- Script 1 : Gestion du tiroir / formulaire (ouvre même vide) -->
+  <script>
+  /* ======== PANIER / TIROIR : déplacer le formulaire et tout gérer ici ======== */
+  document.addEventListener('DOMContentLoaded', function () {
+    const sheet       = document.getElementById('cartSheet');
+    const sheetBody   = sheet?.querySelector('.body');
+    const sheetClose  = document.getElementById('sheetClose');
+    const btnOpen     = document.getElementById('gotoOrder');
+    const btnEdit     = document.getElementById('editOrder');
+    const btnConfirm  = document.getElementById('confirmSend');
+    const recapList   = document.getElementById('recapList');
+    const recapOpt    = document.getElementById('recapOptions');
+    const recapPickup = document.getElementById('recapPickup');
+    const recapCom    = document.getElementById('recapComment');
+    const form        = document.getElementById('orderForm');
+    const orderResult = document.getElementById('orderResult');
+
+    if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
+      console.warn('[cart] éléments requis manquants');
+      return;
+    }
+
+    // 1) Déplacer le formulaire dans le tiroir (même si aucun article)
+    if (form && !sheetBody.contains(form)) {
+      sheetBody.appendChild(form);
+    }
+
+    // ---- Utilitaires globaux sûrs ----
+    function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
+
+    // Fallback si collectOptions n’existe pas (au cas où le code amont change)
+    function collectOptionsSafe(){
+      if (typeof collectOptions === 'function') return collectOptions();
+      const bagQtyEl = document.getElementById('bagQty');
+      const bag = safeInt(bagQtyEl);
+      const map = [
+        ['sojaSucree','Soja sucrée'],
+        ['sojaSalee','Soja salée'],
+        ['wasabi','Wasabi'],
+        ['gingembre','Gingembre']
+      ];
+      const opts=[];
+      map.forEach(([key,label])=>{
+        const qty = safeInt(document.querySelector(`.opt-qty[data-opt="${key}"]`));
+        if (qty>0) opts.push(`${label} x${qty}`);
+      });
+      return { opts, bag };
+    }
+
+    function getCartItems(){
+      const items = [];
+      document.querySelectorAll('.qty[data-item]').forEach(span=>{
+        const qty = safeInt(span);
+        if (qty > 0) {
+          items.push({ label: span.dataset.item, qty });
+        }
+      });
+      return items;
+    }
+
+    function buildRecap(){
+      // Items
+      const items = getCartItems();
+      recapList.innerHTML = '';
+      if (items.length === 0) {
+        recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
+      } else {
+        items.forEach(({label, qty})=>{
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${label}</span><strong>x${qty}</strong>`;
+          recapList.appendChild(li);
+        });
+      }
+
+      // Options (soja, wasabi, gingembre + baguettes)
+      const {opts, bag} = collectOptionsSafe();
+      const parts = [];
+      if (opts.length) parts.push(opts.join(' • '));
+      parts.push(`Baguettes x${bag}`);
+      recapOpt.textContent = parts.join(' — ');
+
+      // Retrait (date/heure)
+      const d = document.getElementById('pickupDate')?.value || '';
+      const t = document.getElementById('pickupTime')?.value || '';
+      recapPickup.textContent = (d || t) ? `Retrait : ${[d,t].filter(Boolean).join(' à ')}` : '';
+
+      // Commentaire
+      const c = document.getElementById('comments')?.value?.trim() || '';
+      recapCom.textContent = c ? `Commentaire : ${c}` : '';
+    }
+
+    // 3) Ouvrir / fermer — s’ouvre TOUJOURS (même à 0 article)
+    function openSheet(){
+      buildRecap();
+      sheet.classList.add('open');
+      sheet.setAttribute('aria-hidden','false');
+    }
+    function closeSheet(){
+      sheet.classList.remove('open');
+      sheet.setAttribute('aria-hidden','true');
+    }
+
+    btnOpen.addEventListener('click', openSheet);
+    sheetClose?.addEventListener('click', closeSheet);
+
+    // Échap pour fermer
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+    });
+
+    // 4) Bouton "Modifier" → revenir voir le menu (et fermer le tiroir)
+    btnEdit?.addEventListener('click', ()=>{
+      closeSheet();
+      document.getElementById('menuSection')?.scrollIntoView({behavior:'smooth'});
+    });
+
+    // 5) Préparer le texte d’ordre pour Formspree (champ caché "order")
+    function ensureHiddenField(name){
+      if (!form) return null;
+      let input = form.querySelector(`input[name="${name}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        form.appendChild(input);
+      }
+      return input;
+    }
+
+    function prepareOrderText(){
+      const itemsText = getCartItems()
+        .map(({label, qty})=>`- ${label} x${qty}`)
+        .join('\n');
+      const {opts, bag} = collectOptionsSafe();
+      const d = document.getElementById('pickupDate')?.value || '—';
+      const t = document.getElementById('pickupTime')?.value || '—';
+      const c = document.getElementById('comments')?.value?.trim() || '—';
+      const name = form?.querySelector('[name="name"]')?.value || '—';
+      const phone = form?.querySelector('[name="phone"]')?.value || '—';
+
+      const text =
+`Commande YUMEKO
+Client : ${name}
+Téléphone : ${phone}
+
+Articles :
+${itemsText || '(aucun)'}
+
+Options : ${opts.length ? opts.join(', ') : 'aucune'}
+Baguettes : ${bag}
+
+Retrait : ${d} ${t}
+Commentaire : ${c}`;
+
+      const hidden = ensureHiddenField('order');
+      if (hidden) hidden.value = text;
+    }
+
+    // 6) Envoi : le bouton du tiroir déclenche l’envoi du formulaire
+    btnConfirm?.addEventListener('click', ()=>{
+      if (!form) return;
+      prepareOrderText();
+      form.requestSubmit(); // déclenche la soumission native
+    });
+
+    // 7) Soumission via fetch pour afficher un retour dans le tiroir
+    if (form) {
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        if (orderResult) orderResult.textContent = 'Envoi en cours…';
+        try{
+          const fd = new FormData(form);
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: fd,
+            headers: { 'Accept': 'application/json' }
+          });
+          if (res.ok) {
+            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
+            // Vider le panier + options + commentaire (sans fermer le tiroir)
+            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
+            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
+            const bagQtyEl = document.getElementById('bagQty');
+            const bagInput = document.getElementById('bagInput');
+            if (bagQtyEl) bagQtyEl.textContent = '1';
+            if (bagInput) bagInput.value = '1';
+            document.getElementById('comments')?.value = '';
+            document.getElementById('pickupDate')?.value = '';
+            document.getElementById('pickupTime')?.value = '';
+            // Mettre à jour l’UI
+            if (typeof updateSticky === 'function') updateSticky();
+            buildRecap();
+          } else {
+            if (orderResult) orderResult.textContent = 'Oups, une erreur est survenue. Réessayez.';
+          }
+        } catch(err){
+          if (orderResult) orderResult.textContent = 'Réseau indisponible. Vérifiez votre connexion.';
+        }
+      });
+    }
+
+    // 8) Rebuild récap si l’utilisateur modifie des champs dans le tiroir
+    sheet.addEventListener('input', (e)=>{
+      if (e.target.matches('textarea,input')) buildRecap();
+    });
+
+    // 9) Rebuild récap à chaque clic +/- sur les articles ou options
+    document.addEventListener('click', (e)=>{
+      if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
+          e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
+        setTimeout(buildRecap, 0);
+      }
+    });
+
+    // 10) Ouvre le tiroir si ancre #panier (#cart) est utilisée (optionnel)
+    if (location.hash === '#panier' || location.hash === '#cart') {
+      openSheet();
+    }
+  });
+  </script>
+
+  <!-- Script 2 : Ombre du bandeau qui fonce avec le scroll -->
+  <script>
   (function(){
     const root = document.documentElement;
     function updateBarShade(){
@@ -185,28 +442,31 @@
     window.addEventListener('scroll', updateBarShade, { passive:true });
     window.addEventListener('resize', updateBarShade);
   })();
+  </script>
 
+  <!-- Script 3 : Données + Construction du menu + Options -->
+  <script>
   /* ===================== Données ===================== */
   const categories = {
-  'Maki 4 pièces': [
-    'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon',
-    'M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese',
-    'M9- Fromage'                 // ⟵ NOUVEAU
-  ],
-  'California 4 pièces': [
-    'C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon',
-    'C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese',
-    'C9- Fromage'                 // ⟵ NOUVEAU
-  ],
-  'Maki printemps 4 pièces': [
-    'P1- Saumon/Avocat','P2- Saumon/Fromage','P3- Concombre/Fromage','P4- Avocat/Fromage'
-  ],
-  'Signature 4 pièces': [
-    'S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'
-  ],
-  'Sashimi 2 pièces': ['Saumon'],
-  'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
-};
+    'Maki 4 pièces': [
+      'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon',
+      'M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese',
+      'M9- Fromage'
+    ],
+    'California 4 pièces': [
+      'C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon',
+      'C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese',
+      'C9- Fromage'
+    ],
+    'Maki printemps 4 pièces': [
+      'P1- Saumon/Avocat','P2- Saumon/Fromage','P3- Concombre/Fromage','P4- Avocat/Fromage'
+    ],
+    'Signature 4 pièces': [
+      'S1- California Saumon/Cheese/Oignons frits','S2- Rols Saumon/Avocat/Cheese'
+    ],
+    'Sashimi 2 pièces': ['Saumon'],
+    'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
+  };
 
   const prices = {}; // ex: {'M1':4.00}
 
@@ -265,13 +525,79 @@
   const bagPlus  = document.getElementById('bagPlus');
   const bagQty   = document.getElementById('bagQty');
   const bagInput = document.getElementById('bagInput');
-  bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-  bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
+  if (bagMinus && bagPlus && bagQty && bagInput){
+    bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
+    bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
+  }
 
-  /* ===================== Tiroir récap & envoi (inchangé) ===================== */
-  // … garde ton code existant pour le tiroir, prepareOrderText, fetch Formspree, etc.
+  // Options +/-
+  document.querySelectorAll('.opt-plus').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const key = btn.dataset.opt;
+      const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      qtyEl.textContent = parseInt(qtyEl.textContent) + 1;
+      bump(qtyEl);
+    });
+  });
+  document.querySelectorAll('.opt-minus').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const key = btn.dataset.opt;
+      const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      qtyEl.textContent = Math.max(0, parseInt(qtyEl.textContent) - 1);
+      bump(qtyEl);
+    });
+  });
+
+  function collectOptions(){
+    const opts=[];
+    const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
+    optionKeys.forEach(key=>{
+      const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      const qty = el ? parseInt(el.textContent)||0 : 0;
+      if(qty>0){
+        const label = key.replace('sojaSucree','Soja sucrée')
+                         .replace('sojaSalee','Soja salée')
+                         .replace('wasabi','Wasabi')
+                         .replace('gingembre','Gingembre');
+        opts.push(`${label} x${qty}`);
+      }
+    });
+    const bag = parseInt(bagQty?.textContent)||0;
+    return {opts, bag};
+  }
+
+  // CTA "Commander maintenant" → vers le menu
   document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+
+  // Init
   updateSticky();
+  </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function(){
+  var btnOpen    = document.getElementById('gotoOrder');
+  var sheet      = document.getElementById('cartSheet');
+  var sheetClose = document.getElementById('sheetClose');
+
+  function openSheet(){
+    if (!sheet) return;
+    sheet.classList.add('open');
+    sheet.setAttribute('aria-hidden','false');
+  }
+  function closeSheet(){
+    if (!sheet) return;
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden','true');
+  }
+
+  if (btnOpen)    btnOpen.addEventListener('click', openSheet);
+  if (sheetClose) sheetClose.addEventListener('click', closeSheet);
+
+  // Bonus: Échap pour fermer
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && sheet && sheet.classList.contains('open')) closeSheet();
+  });
+});
 </script>
+
 </body>
 </html>
