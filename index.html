@@ -20,7 +20,7 @@
       --barShade: .35;
     }
 
-    /* On retire totalement la section de la page */
+    /* On retire totalement la section de la page (on gère tout dans le tiroir) */
     #orderSection { display: none !important; }
 
     *{ box-sizing: border-box; }
@@ -68,7 +68,9 @@
       background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade)));
       padding:10px;
     }
-    #stickyInner{ width:min(96%,1100px); margin:0 auto; }
+    #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; }
+    #miniRecap{ font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow-x:auto; scrollbar-width:none; }
+    #miniRecap::-webkit-scrollbar{ display:none; }
     #gotoOrder{ width:100%; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px; cursor:pointer; }
 
     /* TIROIR RÉCAP */
@@ -86,8 +88,10 @@
     #cartSheet header h3{ margin:0; font-size:18px; }
     #cartSheet header button{ background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; }
     #cartSheet .body{ padding:10px; overflow:auto; }
-    .recap-list{ list-style:none; margin:0; padding:0; }
-    .recap-list li{ display:flex; justify-content:space-between; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
+    .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+    .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
+    .recap-item .it-label{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .recap-item .it-ctrl{ display:flex; align-items:center; gap:8px; }
 
     /* Boutons du tiroir */
     .btn-ghost, .btn-primary{
@@ -100,11 +104,16 @@
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
     .shake{ animation:shake .35s; } 
-    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);}}
+    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);} }
+
+    /* Stepper du tiroir */
+    .step{ display:none; }
+    .step.active{ display:block; }
+    .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
   </style>
-<link rel="icon" type="image/png" href="images/favicon.png" />
-<link rel="apple-touch-icon" href="images/favicon.png" />
-<meta name="theme-color" content="#8b0000" />
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#8b0000" />
 </head>
 <body>
 
@@ -127,7 +136,8 @@
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
-        <input name="name" placeholder="Votre prénom" required>
+        <input name="first_name" placeholder="Prénom" required>
+        <input name="last_name" placeholder="Nom" required>
         <input name="phone" placeholder="Téléphone (optionnel)">
 
         <p class="muted" style="margin-top:8px">Options :</p>
@@ -166,9 +176,9 @@
           <input type="hidden" name="baguettes" id="bagInput" value="1">
         </div>
 
-        <p class="muted" style="margin:8px 0 4px">Date & heure de retrait (facultatif)</p>
-        <input type="date" id="pickupDate" name="pickup_date">
-        <input type="time" id="pickupTime" name="pickup_time" step="900">
+        <p class="muted" style="margin:8px 0 4px">Date & heure de livraison (facultatif)</p>
+        <input type="date" id="deliveryDate" name="delivery_date">
+        <input type="time" id="deliveryTime" name="delivery_time" step="900">
 
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
 
@@ -181,26 +191,40 @@
   <!-- BANDEAU PANIER -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
+      <div id="miniRecap"></div>
       <button id="gotoOrder">Panier (0) • Valider</button>
     </div>
   </div>
 
-  <!-- TIROIR RÉCAP -->
+  <!-- TIROIR RÉCAP / 2 ÉTAPES -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
       <button id="sheetClose" aria-label="Fermer">×</button>
     </header>
     <div class="body">
-      <p class="muted" id="sheetIntro">Vérifie ton panier avant l’envoi :</p>
-      <ul class="recap-list" id="recapList"></ul>
-      <div id="recapOptions" style="margin-top:6px;"></div>
-      <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
-      <div id="recapComment" class="muted" style="margin-top:4px;"></div>
+      <!-- ÉTAPE 1 : Récap & édition -->
+      <div id="stepCart" class="step active">
+        <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
+        <ul class="recap-list" id="recapList"></ul>
+        <div id="recapOptions" style="margin-top:6px;"></div>
+        <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
+        <div id="recapComment" class="muted" style="margin-top:4px;"></div>
+      </div>
+      <!-- ÉTAPE 2 : Infos client & livraison (le formulaire est déplacé ici) -->
+      <div id="stepDetails" class="step">
+        <!-- le formulaire sera injecté ici par JS -->
+      </div>
     </div>
     <footer>
-      <button class="btn-ghost" id="editOrder">Modifier</button>
-      <button class="btn-primary" id="confirmSend">Confirmer et envoyer</button>
+      <div id="footerCart" class="step active">
+        <button class="btn-ghost" id="editOrder">Modifier le menu</button>
+        <button class="btn-primary" id="goDetails">Valider le panier →</button>
+      </div>
+      <div id="footerDetails" class="step">
+        <button class="btn-ghost" id="backToCart">← Retour</button>
+        <button class="btn-primary" id="confirmSend">Confirmer et envoyer</button>
+      </div>
     </footer>
   </div>
 
@@ -208,13 +232,15 @@
 
   <!-- Script 1 : Gestion du tiroir / formulaire (ouvre même vide) -->
   <script>
-  /* ======== PANIER / TIROIR : déplacer le formulaire et tout gérer ici ======== */
+  /* ======== PANIER amélioré : récap editable + page infos ======== */
   document.addEventListener('DOMContentLoaded', function () {
     const sheet       = document.getElementById('cartSheet');
     const sheetBody   = sheet?.querySelector('.body');
     const sheetClose  = document.getElementById('sheetClose');
     const btnOpen     = document.getElementById('gotoOrder');
     const btnEdit     = document.getElementById('editOrder');
+    const btnGoDetails= document.getElementById('goDetails');
+    const btnBack     = document.getElementById('backToCart');
     const btnConfirm  = document.getElementById('confirmSend');
     const recapList   = document.getElementById('recapList');
     const recapOpt    = document.getElementById('recapOptions');
@@ -222,16 +248,18 @@
     const recapCom    = document.getElementById('recapComment');
     const form        = document.getElementById('orderForm');
     const orderResult = document.getElementById('orderResult');
+    const stepCart    = document.getElementById('stepCart');
+    const stepDetails = document.getElementById('stepDetails');
+    const footCart    = document.getElementById('footerCart');
+    const footDetails = document.getElementById('footerDetails');
 
     if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
       console.warn('[cart] éléments requis manquants');
       return;
     }
 
-    // 1) Déplacer le formulaire dans le tiroir (même si aucun article)
-    if (form && !sheetBody.contains(form)) {
-      sheetBody.appendChild(form);
-    }
+    // Déplacer le formulaire dans l'étape 2 du tiroir
+    if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
     // ---- Utilitaires globaux sûrs ----
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
@@ -275,7 +303,14 @@
       } else {
         items.forEach(({label, qty})=>{
           const li = document.createElement('li');
-          li.innerHTML = `<span>${label}</span><strong>x${qty}</strong>`;
+          li.className = 'recap-item';
+          li.innerHTML = `
+            <span class="it-label">${label}</span>
+            <div class="it-ctrl">
+              <button class="btn recap-minus" data-item="${label}" aria-label="Retirer">−</button>
+              <span class="qty" aria-live="polite">${qty}</span>
+              <button class="btn recap-plus" data-item="${label}" aria-label="Ajouter">+</button>
+            </div>`;
           recapList.appendChild(li);
         });
       }
@@ -287,18 +322,18 @@
       parts.push(`Baguettes x${bag}`);
       recapOpt.textContent = parts.join(' — ');
 
-      // Retrait (date/heure)
-      const d = document.getElementById('pickupDate')?.value || '';
-      const t = document.getElementById('pickupTime')?.value || '';
-      recapPickup.textContent = (d || t) ? `Retrait : ${[d,t].filter(Boolean).join(' à ')}` : '';
+      // Livraison (date/heure)
+      const d = document.getElementById('deliveryDate')?.value || '';
+      const t = document.getElementById('deliveryTime')?.value || '';
+      recapPickup.textContent = (d || t) ? `Livraison : ${[d,t].filter(Boolean).join(' à ')}` : '';
 
       // Commentaire
       const c = document.getElementById('comments')?.value?.trim() || '';
       recapCom.textContent = c ? `Commentaire : ${c}` : '';
     }
 
-    // 3) Ouvrir / fermer — s’ouvre TOUJOURS (même à 0 article)
     function openSheet(){
+      setStep('cart');
       buildRecap();
       sheet.classList.add('open');
       sheet.setAttribute('aria-hidden','false');
@@ -308,21 +343,33 @@
       sheet.setAttribute('aria-hidden','true');
     }
 
+    function setStep(which){
+      const cartActive = which === 'cart';
+      stepCart.classList.toggle('active', cartActive);
+      footCart.classList.toggle('active', cartActive);
+      stepDetails.classList.toggle('active', !cartActive);
+      footDetails.classList.toggle('active', !cartActive);
+    }
+
     btnOpen.addEventListener('click', openSheet);
     sheetClose?.addEventListener('click', closeSheet);
+
+    // Navigation étapes
+    btnGoDetails?.addEventListener('click', ()=> setStep('details'));
+    btnBack?.addEventListener('click', ()=> setStep('cart'));
 
     // Échap pour fermer
     document.addEventListener('keydown', (e)=>{
       if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
     });
 
-    // 4) Bouton "Modifier" → revenir voir le menu (et fermer le tiroir)
+    // Bouton "Modifier le menu" → revenir au menu (et fermer)
     btnEdit?.addEventListener('click', ()=>{
       closeSheet();
       document.getElementById('menuSection')?.scrollIntoView({behavior:'smooth'});
     });
 
-    // 5) Préparer le texte d’ordre pour Formspree (champ caché "order")
+    // Préparer le texte d’ordre pour Formspree (champ caché "order")
     function ensureHiddenField(name){
       if (!form) return null;
       let input = form.querySelector(`input[name="${name}"]`);
@@ -340,15 +387,16 @@
         .map(({label, qty})=>`- ${label} x${qty}`)
         .join('\n');
       const {opts, bag} = collectOptionsSafe();
-      const d = document.getElementById('pickupDate')?.value || '—';
-      const t = document.getElementById('pickupTime')?.value || '—';
+      const d = document.getElementById('deliveryDate')?.value || '—';
+      const t = document.getElementById('deliveryTime')?.value || '—';
       const c = document.getElementById('comments')?.value?.trim() || '—';
-      const name = form?.querySelector('[name="name"]')?.value || '—';
+      const first = form?.querySelector('[name="first_name"]')?.value || '—';
+      const last  = form?.querySelector('[name="last_name"]')?.value || '—';
       const phone = form?.querySelector('[name="phone"]')?.value || '—';
 
       const text =
 `Commande YUMEKO
-Client : ${name}
+Client : ${first} ${last}
 Téléphone : ${phone}
 
 Articles :
@@ -357,21 +405,21 @@ ${itemsText || '(aucun)'}
 Options : ${opts.length ? opts.join(', ') : 'aucune'}
 Baguettes : ${bag}
 
-Retrait : ${d} ${t}
+Livraison : ${d} ${t}
 Commentaire : ${c}`;
 
       const hidden = ensureHiddenField('order');
       if (hidden) hidden.value = text;
     }
 
-    // 6) Envoi : le bouton du tiroir déclenche l’envoi du formulaire
+    // Envoi : le bouton du tiroir déclenche l’envoi du formulaire
     btnConfirm?.addEventListener('click', ()=>{
       if (!form) return;
       prepareOrderText();
       form.requestSubmit(); // déclenche la soumission native
     });
 
-    // 7) Soumission via fetch pour afficher un retour dans le tiroir
+    // Soumission via fetch pour afficher un retour dans le tiroir
     if (form) {
       form.addEventListener('submit', async (e)=>{
         e.preventDefault();
@@ -393,11 +441,12 @@ Commentaire : ${c}`;
             if (bagQtyEl) bagQtyEl.textContent = '1';
             if (bagInput) bagInput.value = '1';
             document.getElementById('comments')?.value = '';
-            document.getElementById('pickupDate')?.value = '';
-            document.getElementById('pickupTime')?.value = '';
+            document.getElementById('deliveryDate')?.value = '';
+            document.getElementById('deliveryTime')?.value = '';
             // Mettre à jour l’UI
             if (typeof updateSticky === 'function') updateSticky();
             buildRecap();
+            setStep('cart');
           } else {
             if (orderResult) orderResult.textContent = 'Oups, une erreur est survenue. Réessayez.';
           }
@@ -407,20 +456,34 @@ Commentaire : ${c}`;
       });
     }
 
-    // 8) Rebuild récap si l’utilisateur modifie des champs dans le tiroir
+    // Rebuild récap si l’utilisateur modifie des champs dans le tiroir
     sheet.addEventListener('input', (e)=>{
       if (e.target.matches('textarea,input')) buildRecap();
     });
 
-    // 9) Rebuild récap à chaque clic +/- sur les articles ou options
+    // Réagir aux +/- de la liste récap (on modifie les spans du menu)
+    recapList.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.recap-plus, .recap-minus');
+      if (!btn) return;
+      const item = btn.dataset.item;
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      if (!span) return;
+      const inc = btn.classList.contains('recap-plus') ? 1 : -1;
+      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
+      span.textContent = v; bump(span);
+      updateSticky();
+      buildRecap();
+    });
+
+    // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
     document.addEventListener('click', (e)=>{
       if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
           e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
-        setTimeout(buildRecap, 0);
+        setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
       }
     });
 
-    // 10) Ouvre le tiroir si ancre #panier (#cart) est utilisée (optionnel)
+    // Ouvre le tiroir si ancre #panier/#cart
     if (location.hash === '#panier' || location.hash === '#cart') {
       openSheet();
     }
@@ -444,7 +507,7 @@ Commentaire : ${c}`;
   })();
   </script>
 
-  <!-- Script 3 : Données + Construction du menu + Options -->
+  <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
   <script>
   /* ===================== Données ===================== */
   const categories = {
@@ -508,13 +571,23 @@ Commentaire : ${c}`;
   /* ===================== Utilitaires ===================== */
   function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-  function updateSticky(){ document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`; }
+
+  function updateMiniRecap(){
+    const items=[]; document.querySelectorAll('.qty[data-item]').forEach(span=>{ const q=parseInt(span.textContent)||0; if(q>0){ items.push(`${span.dataset.item.split('-').slice(1).join('-').trim()} x${q}`); } });
+    const mini=document.getElementById('miniRecap');
+    mini.textContent = items.length? items.join(' • ') : 'Votre panier est vide pour le moment.';
+  }
+
+  function updateSticky(){
+    document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`;
+    updateMiniRecap();
+  }
 
   document.addEventListener('click', e=>{
     if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
       const inc = e.target.classList.contains('plus') ? 1 : -1;
       const item = e.target.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${item}"]`);
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
       const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
       span.textContent = v; bump(span); updateSticky();
     }
@@ -536,7 +609,7 @@ Commentaire : ${c}`;
       const key = btn.dataset.opt;
       const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
       qtyEl.textContent = parseInt(qtyEl.textContent) + 1;
-      bump(qtyEl);
+      bump(qtyEl); updateMiniRecap();
     });
   });
   document.querySelectorAll('.opt-minus').forEach(btn=>{
@@ -544,7 +617,7 @@ Commentaire : ${c}`;
       const key = btn.dataset.opt;
       const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
       qtyEl.textContent = Math.max(0, parseInt(qtyEl.textContent) - 1);
-      bump(qtyEl);
+      bump(qtyEl); updateMiniRecap();
     });
   });
 
@@ -572,32 +645,25 @@ Commentaire : ${c}`;
   // Init
   updateSticky();
   </script>
+
+  <!-- Petit correctif ancien script d'ouverture/fermeture si doublon -->
   <script>
-document.addEventListener('DOMContentLoaded', function(){
-  var btnOpen    = document.getElementById('gotoOrder');
-  var sheet      = document.getElementById('cartSheet');
-  var sheetClose = document.getElementById('sheetClose');
+  document.addEventListener('DOMContentLoaded', function(){
+    var btnOpen    = document.getElementById('gotoOrder');
+    var sheet      = document.getElementById('cartSheet');
+    var sheetClose = document.getElementById('sheetClose');
 
-  function openSheet(){
-    if (!sheet) return;
-    sheet.classList.add('open');
-    sheet.setAttribute('aria-hidden','false');
-  }
-  function closeSheet(){
-    if (!sheet) return;
-    sheet.classList.remove('open');
-    sheet.setAttribute('aria-hidden','true');
-  }
+    function openSheet(){ if (!sheet) return; sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
+    function closeSheet(){ if (!sheet) return; sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
 
-  if (btnOpen)    btnOpen.addEventListener('click', openSheet);
-  if (sheetClose) sheetClose.addEventListener('click', closeSheet);
+    if (btnOpen)    btnOpen.addEventListener('click', openSheet);
+    if (sheetClose) sheetClose.addEventListener('click', closeSheet);
 
-  // Bonus: Échap pour fermer
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && sheet && sheet.classList.contains('open')) closeSheet();
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && sheet && sheet.classList.contains('open')) closeSheet();
+    });
   });
-});
-</script>
+  </script>
 
 </body>
 </html>
