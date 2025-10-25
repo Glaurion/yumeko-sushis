@@ -252,7 +252,6 @@
     const stepDetails = document.getElementById('stepDetails');
     const footCart    = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
-
     if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
       console.warn('[cart] éléments requis manquants');
       return;
@@ -385,8 +384,7 @@
     function prepareOrderText(){
       const itemsText = getCartItems()
         .map(({label, qty})=>`- ${label} x${qty}`)
-        .join('
-');
+        .join('');
       const {opts, bag} = collectOptionsSafe();
       const d = document.getElementById('deliveryDate')?.value || '—';
       const t = document.getElementById('deliveryTime')?.value || '—';
@@ -448,9 +446,9 @@ Commentaire : ${c}`;
             const bagInput = document.getElementById('bagInput');
             if (bagQtyEl) bagQtyEl.textContent = '1';
             if (bagInput) bagInput.value = '1';
-            document.getElementById('comments')?.value = '';
-            document.getElementById('deliveryDate')?.value = '';
-            document.getElementById('deliveryTime')?.value = '';
+            document.getElementById('comments').value = '';
+            document.getElementById('deliveryDate').value = '';
+            document.getElementById('deliveryTime').value = '';
             // Mettre à jour l’UI
             if (typeof updateSticky === 'function') updateSticky();
             buildRecap();
@@ -516,7 +514,6 @@ Commentaire : ${c}`;
   </script>
 
   <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
-  <script> : Ombre du bandeau qui fonce avec le scroll -->
   <script>
   (function(){
     const root = document.documentElement;
