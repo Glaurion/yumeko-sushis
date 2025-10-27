@@ -18,8 +18,8 @@
     }
 
     #orderSection { display: none !important; }
-
     *{ box-sizing: border-box; }
+
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%);
@@ -59,7 +59,6 @@
       padding:10px;
     }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; }
-    #miniRecap{ font-size:13px; color:#eee; opacity:.95; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #gotoOrder{ width:100%; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px; cursor:pointer; }
 
     #cartSheet{
@@ -73,6 +72,7 @@
     #cartSheet header, #cartSheet footer{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
+
     .recap-item img.thumb { width:45px; height:45px; border-radius:8px; object-fit:cover; }
 
     .btn-ghost, .btn-primary{
@@ -83,6 +83,26 @@
     .btn-primary:hover{ background:var(--brand-2); }
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
+
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      background: #111;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 200;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -100,15 +120,12 @@
       <div id="menu"></div>
     </section>
 
-    <section class="section" id="orderSection" style="text-align:center;">
-      <h2 class="section-title">Validez votre commande</h2>
+    <section class="section" id="orderSection">
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
         <input name="phone" placeholder="Téléphone" required>
-
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
-        <!-- bouton supprimé -->
       </form>
     </section>
   </main>
@@ -132,7 +149,6 @@
     </div>
     <footer>
       <div id="footerCart" class="step active">
-        <!-- bouton Modifier le menu retiré -->
         <button class="btn-primary" id="goDetails">Valider le panier →</button>
       </div>
       <div id="footerDetails" class="step">
@@ -141,6 +157,8 @@
       </div>
     </footer>
   </div>
+
+  <div id="toast">Commande envoyée avec succès ✅</div>
 
   <footer>© 2025 YUMEKO SUSHIS</footer>
 
@@ -164,34 +182,31 @@
     'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
   };
 
-  function buildMenu(){
-    const menu=document.getElementById('menu');
-    for(const [cat,items] of Object.entries(categories)){
-      const wrap=document.createElement('div');
-      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
-      const grid=wrap.querySelector('.menu-grid');
-
-      items.forEach(item=>{
-        const code=item.split('-')[0].trim();
-        const name=item.split('-').slice(1).join('-').trim();
-        const card=document.createElement('div');
-        card.className='item-card';
-        card.innerHTML=`
-          <div class="left">
-            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${name}" onerror="this.style.display='none'">
-            <div class="item-name">${name}</div>
-          </div>
-          <div class="controls">
-            <button class="btn minus" data-item="${item}">−</button>
-            <span class="qty" data-item="${item}">0</span>
-            <button class="btn plus" data-item="${item}">+</button>
-          </div>`;
-        grid.appendChild(card);
-      });
-      menu.appendChild(wrap);
-    }
+  // === Construction menu ===
+  const menu=document.getElementById('menu');
+  for(const [cat,items] of Object.entries(categories)){
+    const wrap=document.createElement('div');
+    wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+    const grid=wrap.querySelector('.menu-grid');
+    items.forEach(item=>{
+      const code=item.split('-')[0].trim();
+      const name=item.split('-').slice(1).join('-').trim();
+      const card=document.createElement('div');
+      card.className='item-card';
+      card.innerHTML=`
+        <div class="left">
+          <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${name}" onerror="this.style.display='none'">
+          <div class="item-name">${name}</div>
+        </div>
+        <div class="controls">
+          <button class="btn minus" data-item="${item}">−</button>
+          <span class="qty" data-item="${item}">0</span>
+          <button class="btn plus" data-item="${item}">+</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+    menu.appendChild(wrap);
   }
-  buildMenu();
 
   function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
@@ -211,6 +226,17 @@
   const recapList=document.getElementById('recapList');
   const btnOpen=document.getElementById('gotoOrder');
   const btnClose=document.getElementById('sheetClose');
+  const btnGoDetails=document.getElementById('goDetails');
+  const btnBack=document.getElementById('backToCart');
+  const btnConfirm=document.getElementById('confirmSend');
+  const form=document.getElementById('orderForm');
+  const stepCart=document.getElementById('stepCart');
+  const stepDetails=document.getElementById('stepDetails');
+  const footCart=document.getElementById('footerCart');
+  const footDetails=document.getElementById('footerDetails');
+  const toast=document.getElementById('toast');
+
+  if(form) stepDetails.appendChild(form);
 
   function getCartItems(){
     const items=[];
@@ -244,8 +270,18 @@
     });
   }
 
-  btnOpen.onclick=()=>{buildRecap();sheet.classList.add('open');};
+  function setStep(which){
+    const cart = which === 'cart';
+    stepCart.classList.toggle('active',cart);
+    stepDetails.classList.toggle('active',!cart);
+    footCart.classList.toggle('active',cart);
+    footDetails.classList.toggle('active',!cart);
+  }
+
+  btnOpen.onclick=()=>{buildRecap();setStep('cart');sheet.classList.add('open');};
   btnClose.onclick=()=>sheet.classList.remove('open');
+  btnGoDetails.onclick=()=>setStep('details');
+  btnBack.onclick=()=>setStep('cart');
 
   recapList.addEventListener('click',e=>{
     const btn=e.target.closest('.recap-plus,.recap-minus');
@@ -257,6 +293,17 @@
     const v=Math.max(0,(parseInt(span.textContent)||0)+inc);
     span.textContent=v;bump(span);updateSticky();setTimeout(buildRecap,50);
   });
+
+  btnConfirm.onclick=()=>{
+    if(!form.reportValidity()){setStep('details');return;}
+    document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
+    updateSticky();buildRecap();sheet.classList.remove('open');showToast();
+  }
+
+  function showToast(){
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'),3000);
+  }
   </script>
 </body>
 </html>
