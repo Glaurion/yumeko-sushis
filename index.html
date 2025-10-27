@@ -72,10 +72,7 @@
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; }
 
     /* 🔕 Mini récap totalement masqué */
-    #miniRecap{
-      display:none !important;
-      font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
+    #miniRecap{ display:none !important; font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #miniRecap::-webkit-scrollbar{ display:none; }
 
     #gotoOrder{ width:100%; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px; cursor:pointer; }
@@ -102,16 +99,14 @@
     .recap-item .it-ctrl{ display:flex; align-items:center; gap:8px; }
 
     /* Boutons du tiroir */
-    .btn-ghost, .btn-primary{
-      border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer;
-    }
+    .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer; }
     .btn-ghost{ background:#2a2a2a; color:#fff; }
     .btn-ghost:hover{ filter:brightness(1.1); }
     .btn-primary{ background:var(--brand); color:#fff; }
     .btn-primary:hover{ background:var(--brand-2); }
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
-    .shake{ animation:shake .35s; } 
+    .shake{ animation:shake .35s; }
     @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);} }
 
     /* Stepper du tiroir */
@@ -231,7 +226,6 @@
     </div>
     <footer>
       <div id="footerCart" class="step active">
-        <!-- Bouton "Modifier le menu" SUPPRIMÉ -->
         <button class="btn-primary" id="goDetails">Valider le panier →</button>
       </div>
       <div id="footerDetails" class="step">
@@ -243,9 +237,35 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- Script 1 : Gestion du tiroir / formulaire (ouvre même vide) -->
+  <!-- ===== Script A : utilitaires globaux & ombre bandeau ===== -->
   <script>
-  /* ======== PANIER amélioré : récap editable + page infos ======== */
+  // Polyfill léger pour CSS.escape sur vieux navigateurs
+  (function(){
+    if (typeof window.CSS === 'undefined') window.CSS = {};
+    if (typeof window.CSS.escape !== 'function') {
+      window.CSS.escape = function(sel){
+        return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g, '\\$&');
+      };
+    }
+  })();
+
+  (function(){
+    const root = document.documentElement;
+    function updateBarShade(){
+      const doc = document.documentElement;
+      const max = (doc.scrollHeight - window.innerHeight) || 1;
+      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
+      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
+      root.style.setProperty('--barShade', shade.toFixed(2));
+    }
+    updateBarShade();
+    window.addEventListener('scroll', updateBarShade, { passive:true });
+    window.addEventListener('resize', updateBarShade);
+  })();
+  </script>
+
+  <!-- ===== Script B : Panier / tiroir / formulaire ===== -->
+  <script>
   document.addEventListener('DOMContentLoaded', function () {
     const sheet       = document.getElementById('cartSheet');
     const sheetBody   = sheet?.querySelector('.body');
@@ -272,32 +292,38 @@
     // Déplacer le formulaire dans l'étape 2 du tiroir
     if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
-    // ---- Utilitaires globaux sûrs ----
+    // ---- Utilitaires ----
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
+    function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
+    function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
 
-    // Fallback si collectOptions n’existe pas (au cas où le code amont change)
-    function collectOptionsSafe(){
-      if (typeof collectOptions === 'function') return collectOptions();
-      const bagQtyEl = document.getElementById('bagQty');
-      const bag = safeInt(bagQtyEl);
-      const map = [
-        ['sojaSucree','Soja sucrée'],
-        ['sojaSalee','Soja salée'],
-        ['wasabi','Wasabi'],
-        ['gingembre','Gingembre']
-      ];
+    // Options
+    function collectOptions(){
       const opts=[];
-      map.forEach(([key,label])=>{
-        const qty = safeInt(document.querySelector(\`.opt-qty[data-opt="\${key}"]\`));
-        if (qty>0) opts.push(\`\${label} x\${qty}\`);
+      const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
+      optionKeys.forEach(key=>{
+        const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+        const qty = el ? parseInt(el.textContent)||0 : 0;
+        if(qty>0){
+          const label = key.replace('sojaSucree','Soja sucrée')
+                           .replace('sojaSalee','Soja salée')
+                           .replace('wasabi','Wasabi')
+                           .replace('gingembre','Gingembre');
+          opts.push(`${label} x${qty}`);
+        }
       });
-      return { opts, bag };
+      const bag = parseInt(document.getElementById('bagQty')?.textContent)||0;
+      return {opts, bag};
     }
 
-    // Récupère items du menu avec code+nom nettoyé (sans suffixe type "M9-")
+    function collectOptionsSafe(){
+      try { return collectOptions(); } catch { return {opts:[], bag:0}; }
+    }
+
     function parseItem(full){
-      const code = (full.split('-')[0] || '').trim();
-      const name = full.split('-').slice(1).join('-').trim() || full.trim();
+      const parts = String(full).split('-');
+      const code = (parts[0] || '').trim();
+      const name = parts.slice(1).join('-').trim() || full.trim();
       return {code, name};
     }
 
@@ -315,7 +341,6 @@
     }
 
     function buildRecap(){
-      // Items
       const items = getCartItems();
       recapList.innerHTML = '';
       if (items.length === 0) {
@@ -339,7 +364,7 @@
         });
       }
 
-      // ⛔ Options masquées : ne rien afficher dans le tiroir
+      // Options masquées dans le tiroir
       recapOpt.textContent = '';
 
       // Livraison (date/heure)
@@ -350,6 +375,14 @@
       // Commentaire
       const c = document.getElementById('comments')?.value?.trim() || '';
       recapCom.textContent = c ? `Commentaire : ${c}` : '';
+    }
+
+    function setStep(which){
+      const cartActive = which === 'cart';
+      stepCart.classList.toggle('active', cartActive);
+      footCart.classList.toggle('active', cartActive);
+      stepDetails.classList.toggle('active', !cartActive);
+      footDetails.classList.toggle('active', !cartActive);
     }
 
     function openSheet(){
@@ -363,30 +396,19 @@
       sheet.setAttribute('aria-hidden','true');
     }
 
-    function setStep(which){
-      const cartActive = which === 'cart';
-      stepCart.classList.toggle('active', cartActive);
-      footCart.classList.toggle('active', cartActive);
-      stepDetails.classList.toggle('active', !cartActive);
-      footDetails.classList.toggle('active', !cartActive);
-    }
-
     btnOpen.addEventListener('click', openSheet);
     sheetClose?.addEventListener('click', closeSheet);
-
-    // Navigation étapes
     btnGoDetails?.addEventListener('click', ()=> setStep('details'));
     btnBack?.addEventListener('click', ()=> setStep('cart'));
 
-    // Échap pour fermer
     document.addEventListener('keydown', (e)=>{
       if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
     });
 
-    // Préparer le texte d’ordre pour Formspree (champ caché "order")
+    // Champ caché "order" pour Formspree
     function ensureHiddenField(name){
       if (!form) return null;
-      let input = form.querySelector(\`input[name="\${name}"]\`);
+      let input = form.querySelector(`input[name="${name}"]`);
       if (!input) {
         input = document.createElement('input');
         input.type = 'hidden';
@@ -397,9 +419,7 @@
     }
 
     function prepareOrderText(){
-      const itemsText = getCartItems()
-        .map(({name, qty})=>`- ${name} x${qty}`)
-        .join('\n');
+      const itemsText = getCartItems().map(({name, qty})=>`- ${name} x${qty}`).join('\n');
       const {opts, bag} = collectOptionsSafe();
       const d = document.getElementById('deliveryDate')?.value || '—';
       const t = document.getElementById('deliveryTime')?.value || '—';
@@ -426,10 +446,9 @@ Commentaire : ${c}`;
       if (hidden) hidden.value = text;
     }
 
-    // Envoi : le bouton du tiroir déclenche l’envoi du formulaire
+    // Envoi : bouton du tiroir déclenche l’envoi du formulaire
     btnConfirm?.addEventListener('click', ()=>{
       if (!form) return;
-      // Vérifier les champs requis. Si invalide, basculer vers l’étape détails.
       if (!form.reportValidity()) {
         setStep('details');
         form.reportValidity();
@@ -437,7 +456,7 @@ Commentaire : ${c}`;
         return;
       }
       prepareOrderText();
-      form.requestSubmit(); // déclenche la soumission native
+      if (typeof form.requestSubmit === 'function') form.requestSubmit(); else form.submit();
     });
 
     // Soumission via fetch pour afficher un retour dans le tiroir
@@ -447,14 +466,10 @@ Commentaire : ${c}`;
         if (orderResult) orderResult.textContent = 'Envoi en cours…';
         try{
           const fd = new FormData(form);
-          const res = await fetch(form.action, {
-            method: 'POST',
-            body: fd,
-            headers: { 'Accept': 'application/json' }
-          });
+          const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
           if (res.ok) {
             if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
-            // Vider le panier + options + commentaire (sans fermer le tiroir)
+            // Reset panier + options + commentaire
             document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
             document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
             const bagQtyEl = document.getElementById('bagQty');
@@ -467,37 +482,24 @@ Commentaire : ${c}`;
             if (comEl) comEl.value = '';
             if (dEl) dEl.value = '';
             if (tEl) tEl.value = '';
-            // Mettre à jour l’UI
+            // MAJ UI
             if (typeof updateSticky === 'function') updateSticky();
             buildRecap();
-
-            // ✅ Rester sur l'étape détails (= confirmation visible)
             setStep('details');
-            if (btnConfirm) {
-              btnConfirm.disabled = true;
-              btnConfirm.textContent = 'Commande envoyée ✔';
-            }
-            // Ajouter un bouton "Fermer" si pas déjà présent
+            if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.textContent = 'Commande envoyée ✔'; }
+            // Bouton Fermer (si absent)
             if (!footDetails.querySelector('[data-close-sheet]')) {
               const closeBtn = document.createElement('button');
               closeBtn.className = 'btn-ghost';
               closeBtn.textContent = 'Fermer';
               closeBtn.setAttribute('data-close-sheet','1');
-              closeBtn.onclick = () => {
-                const s = document.getElementById('cartSheet');
-                s?.classList.remove('open');
-                s?.setAttribute('aria-hidden','true');
-              };
+              closeBtn.onclick = () => closeSheet();
               footDetails?.prepend(closeBtn);
             }
           } else {
-            // Fallback vers soumission native si Formspree refuse la requête fetch
             form.submit();
           }
-        } catch(err){
-          // Fallback offline / CORS : soumission native
-          form.submit();
-        }
+        } catch(err){ form.submit(); }
       });
     }
 
@@ -506,7 +508,7 @@ Commentaire : ${c}`;
       if (e.target.matches('textarea,input')) { buildRecap(); updateMiniRecap(); }
     });
 
-    // Réagir aux +/- de la liste récap (on modifie les spans du menu)
+    // Réagir aux +/- de la liste récap
     recapList.addEventListener('click', (e)=>{
       const btn = e.target.closest('.recap-plus, .recap-minus');
       if (!btn) return;
@@ -526,64 +528,26 @@ Commentaire : ${c}`;
       }
     });
 
-    // ✅ Observer les changements de quantité pour MAJ instantanée
+    // Observer les changements de quantité
     const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
     document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
 
     // Ouvre le tiroir si ancre #panier/#cart
-    if (location.hash === '#panier' || location.hash === '#cart') {
-      openSheet();
-    }
+    if (location.hash === '#panier' || location.hash === '#cart') openSheet();
   });
   </script>
 
-  <!-- Script 2 : Ombre du bandeau qui fonce avec le scroll -->
-  <script>
-  (function(){
-    const root = document.documentElement;
-    function updateBarShade(){
-      const doc = document.documentElement;
-      const max = (doc.scrollHeight - window.innerHeight) || 1;
-      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
-      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
-      root.style.setProperty('--barShade', shade.toFixed(2));
-    }
-    updateBarShade();
-    window.addEventListener('scroll', updateBarShade, { passive:true });
-    window.addEventListener('resize', updateBarShade);
-  })();
-  </script>
-
-  <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
-  <script>
-  (function(){
-    const root = document.documentElement;
-    function updateBarShade(){
-      const doc = document.documentElement;
-      const max = (doc.scrollHeight - window.innerHeight) || 1;
-      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
-      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
-      root.style.setProperty('--barShade', shade.toFixed(2));
-    }
-    updateBarShade();
-    window.addEventListener('scroll', updateBarShade, { passive:true });
-    window.addEventListener('resize', updateBarShade);
-  })();
-  </script>
-
-  <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
+  <!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
   <script>
   /* ===================== Données ===================== */
   const categories = {
     'Maki 4 pièces': [
       'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese',
-      /* 'M4- Thon' RETIRÉ */
       'M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese',
       'M9- Fromage'
     ],
     'California 4 pièces': [
       'C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese',
-      /* 'C4- Thon' RETIRÉ */
       'C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese',
       'C9- Fromage'
     ],
@@ -609,22 +573,23 @@ Commentaire : ${c}`;
       const grid=wrap.querySelector('.menu-grid');
 
       items.forEach(item=>{
-        const code=item.split('-')[0].trim();
-        const name=item.split('-').slice(1).join('-').trim();
+        const hasDash = item.includes('-');
+        const code= hasDash ? item.split('-')[0].trim() : item.trim();
+        const name= hasDash ? item.split('-').slice(1).join('-').trim() : item.trim();
         const price=prices[code];
 
         const card=document.createElement('div');
         card.className='item-card';
         card.innerHTML=`
           <div class="left">
-            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${name || item}" onerror="this.style.display='none'">
-            <div class="item-name">${name || item}</div>
+            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${name}" onerror="this.style.display='none'">
+            <div class="item-name">${name}</div>
           </div>
           <div class="controls">
             ${price!==undefined?`<span class="muted" style="margin-right:6px">${price.toFixed(2)}€</span>`:''}
-            <button class="btn minus" data-item="${code}- ${name || item}">−</button>
-            <span class="qty" data-item="${code}- ${name || item}">0</span>
-            <button class="btn plus" data-item="${code}- ${name || item}">+</button>
+            <button class="btn minus" data-item="${code}- ${name}">−</button>
+            <span class="qty" data-item="${code}- ${name}">0</span>
+            <button class="btn plus" data-item="${code}- ${name}">+</button>
           </div>`;
         grid.appendChild(card);
       });
@@ -634,99 +599,44 @@ Commentaire : ${c}`;
   }
   buildMenu();
 
-  /* ===================== Utilitaires ===================== */
-  function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
-  function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-
-  /* 🔕 mini récap désactivé : fonction vidée */
-  function updateMiniRecap(){ /* mini-récap supprimé */ }
+  // mini récap désactivé
+  function updateMiniRecap(){ /* noop */ }
 
   function updateSticky(){
-    document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`;
+    const total = (function(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; })();
+    document.getElementById('gotoOrder').textContent = `Panier (${total}) • Valider`;
     updateMiniRecap();
   }
 
+  // Gestion plus/moins menu
   document.addEventListener('click', e=>{
     if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
       const inc = e.target.classList.contains('plus') ? 1 : -1;
       const item = e.target.dataset.item;
-      const span = document.querySelector(\`.qty[data-item="\${CSS.escape(item)}"]\`);
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
       const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v; bump(span); updateSticky();
+      span.textContent = v; span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
     }
   });
 
   // Baguettes
-  const bagMinus = document.getElementById('bagMinus');
-  const bagPlus  = document.getElementById('bagPlus');
-  const bagQty   = document.getElementById('bagQty');
-  const bagInput = document.getElementById('bagInput');
-  if (bagMinus && bagPlus && bagQty && bagInput){
-    bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-    bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-  }
+  (function(){
+    const bagMinus = document.getElementById('bagMinus');
+    const bagPlus  = document.getElementById('bagPlus');
+    const bagQty   = document.getElementById('bagQty');
+    const bagInput = document.getElementById('bagInput');
+    if (bagMinus && bagPlus && bagQty && bagInput){
+      bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
+      bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
+    }
+  })();
 
-  // Options +/-
-  document.querySelectorAll('.opt-plus').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const key = btn.dataset.opt;
-      const qtyEl = document.querySelector(\`.opt-qty[data-opt="\${key}"]\`);
-      qtyEl.textContent = parseInt(qtyEl.textContent) + 1;
-      bump(qtyEl); updateMiniRecap();
-    });
-  });
-  document.querySelectorAll('.opt-minus').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const key = btn.dataset.opt;
-      const qtyEl = document.querySelector(\`.opt-qty[data-opt="\${key}"]\`);
-      qtyEl.textContent = Math.max(0, parseInt(qtyEl.textContent) - 1);
-      bump(qtyEl); updateMiniRecap();
-    });
-  });
-
-  function collectOptions(){
-    const opts=[];
-    const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
-    optionKeys.forEach(key=>{
-      const el = document.querySelector(\`.opt-qty[data-opt="\${key}"]\`);
-      const qty = el ? parseInt(el.textContent)||0 : 0;
-      if(qty>0){
-        const label = key.replace('sojaSucree','Soja sucrée')
-                         .replace('sojaSalee','Soja salée')
-                         .replace('wasabi','Wasabi')
-                         .replace('gingembre','Gingembre');
-        opts.push(\`\${label} x\${qty}\`);
-      }
-    });
-    const bag = parseInt(bagQty?.textContent)||0;
-    return {opts, bag};
-  }
-
-  // CTA "Commander maintenant" → vers le menu
+  // CTA "Commander maintenant"
   document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
 
-  // Init
+  // Init bandeau
   updateSticky();
   updateMiniRecap();
-  </script>
-
-  <!-- Petit correctif ancien script d'ouverture/fermeture si doublon -->
-  <script>
-  document.addEventListener('DOMContentLoaded', function(){
-    var btnOpen    = document.getElementById('gotoOrder');
-    var sheet      = document.getElementById('cartSheet');
-    var sheetClose = document.getElementById('sheetClose');
-
-    function openSheet(){ if (!sheet) return; sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
-    function closeSheet(){ if (!sheet) return; sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
-
-    if (btnOpen)    btnOpen.addEventListener('click', openSheet);
-    if (sheetClose) sheetClose.addEventListener('click', closeSheet);
-
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape' && sheet && sheet.classList.contains('open')) closeSheet();
-    });
-  });
   </script>
 
 </body>
