@@ -7,31 +7,25 @@
 
   <style>
     :root{
-      /* Couleurs du thème */
-      --brand:#8b0000;          /* rouge foncé */
-      --brand-2:#a31212;        /* rouge hover */
+      --brand:#8b0000;
+      --brand-2:#a31212;
       --text:#f8f8f8;
       --card:#1b1b1b;
       --muted:#cfcfcf;
       --accent:#ffb6b6;
       --accent-2:#ff8c8c;
-
-      /* Opacité du dégradé du bandeau (mise à jour au scroll via JS) */
-      --barShade: .35;
+      --barShade:.35;
     }
 
-    /* On retire totalement la section de la page (on gère tout dans le tiroir) */
     #orderSection { display: none !important; }
 
     *{ box-sizing: border-box; }
-
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%);
       color:var(--text); min-height:100vh;
     }
 
-    /* HERO */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center;
@@ -40,12 +34,10 @@
     .cta{ background:var(--brand); border:none; color:#fff; padding:14px 18px; border-radius:10px; font-weight:800; cursor:pointer; }
     .cta:hover{ background:var(--brand-2); }
 
-    /* LAYOUT & SECTIONS */
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;}
     .section-title{ color:#fff; font-size:1.8rem; margin-bottom:10px; }
 
-    /* MENU */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
     .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .left{ display:flex; align-items:center; gap:10px; min-width:0; }
@@ -57,12 +49,10 @@
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    /* FORM */
     form input, form textarea{ width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:10px; margin:6px auto; display:block; }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    /* STICKY BAR */
     #stickyBar{
       position:fixed; bottom:0; left:0; right:0; z-index:100;
       background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade)));
@@ -70,10 +60,8 @@
     }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; }
     #miniRecap{ font-size:13px; color:#eee; opacity:.95; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #miniRecap::-webkit-scrollbar{ display:none; }
     #gotoOrder{ width:100%; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px; cursor:pointer; }
 
-    /* TIROIR RÉCAP */
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
       width:min(96%,1100px); background:#1b1b1b; color:#fff;
@@ -85,39 +73,20 @@
     #cartSheet header, #cartSheet footer{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
-    #cartSheet header h3{ margin:0; font-size:18px; }
-    #cartSheet header button{ background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; }
-    #cartSheet .body{ padding:10px; overflow:auto; }
-    .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
-    .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
-    .recap-item .it-label{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .recap-item .it-ctrl{ display:flex; align-items:center; gap:8px; }
+    .recap-item img.thumb { width:45px; height:45px; border-radius:8px; object-fit:cover; }
 
-    /* Boutons du tiroir */
     .btn-ghost, .btn-primary{
       border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer;
     }
     .btn-ghost{ background:#2a2a2a; color:#fff; }
-    .btn-ghost:hover{ filter:brightness(1.1); }
     .btn-primary{ background:var(--brand); color:#fff; }
     .btn-primary:hover{ background:var(--brand-2); }
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
-    .shake{ animation:shake .35s; } 
-    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);} }
-
-    /* Stepper du tiroir */
-    .step{ display:none; }
-    .step.active{ display:block; }
-    .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
   </style>
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#8b0000" />
 </head>
 <body>
 
-  <!-- HERO -->
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" width="120" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">🍣 YUMEKO SUSHIS 🍣</h1>
@@ -126,98 +95,44 @@
   </section>
 
   <main class="container">
-    <!-- MENU -->
     <section class="section" id="menuSection">
       <h2 class="section-title">Menu</h2>
       <div id="menu"></div>
     </section>
 
-    <!-- FORM COMMANDE (sera déplacé dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
-        <input name="phone" placeholder="Téléphone (optionnel)">
-
-        <p class="muted" style="margin-top:8px">Options :</p>
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:10px;">
-          <div>
-            <span class="muted">Soja sucrée :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="sojaSucree">−</button>
-            <span class="qty opt-qty" data-opt="sojaSucree">0</span>
-            <button type="button" class="btn opt-plus" data-opt="sojaSucree">+</button>
-          </div>
-          <div>
-            <span class="muted">Soja salée :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="sojaSalee">−</button>
-            <span class="qty opt-qty" data-opt="sojaSalee">0</span>
-            <button type="button" class="btn opt-plus" data-opt="sojaSalee">+</button>
-          </div>
-          <div>
-            <span class="muted">Wasabi :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="wasabi">−</button>
-            <span class="qty opt-qty" data-opt="wasabi">0</span>
-            <button type="button" class="btn opt-plus" data-opt="wasabi">+</button>
-          </div>
-          <div>
-            <span class="muted">Gingembre :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="gingembre">−</button>
-            <span class="qty opt-qty" data-opt="gingembre">0</span>
-            <button type="button" class="btn opt-plus" data-opt="gingembre">+</button>
-          </div>
-        </div>
-
-        <div style="margin:8px 0 12px">
-          <span class="muted" style="display:block;margin-bottom:6px;">Baguettes :</span>
-          <button type="button" class="btn" id="bagMinus">−</button>
-          <span class="qty" id="bagQty">1</span>
-          <button type="button" class="btn" id="bagPlus">+</button>
-          <input type="hidden" name="baguettes" id="bagInput" value="1">
-        </div>
-
-        <p class="muted" style="margin:8px 0 4px">Date & heure de livraison (facultatif)</p>
-        <input type="date" id="deliveryDate" name="delivery_date">
-        <input type="time" id="deliveryTime" name="delivery_time" step="900">
+        <input name="phone" placeholder="Téléphone" required>
 
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
-
-        <button type="submit" class="cta" style="margin-top:10px;">Envoyer ma commande 🍣</button>
-        <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
+        <!-- bouton supprimé -->
       </form>
     </section>
   </main>
 
-  <!-- BANDEAU PANIER -->
-  <div id="stickyBar" aria-live="polite">
+  <div id="stickyBar">
     <div id="stickyInner">
       <button id="gotoOrder">Panier (0) • Valider</button>
     </div>
   </div>
 
-  <!-- TIROIR RÉCAP / 2 ÉTAPES -->
-  <div id="cartSheet" aria-hidden="true">
+  <div id="cartSheet">
     <header>
       <h3>Valider votre commande</h3>
       <button id="sheetClose" aria-label="Fermer">×</button>
     </header>
     <div class="body">
-      <!-- ÉTAPE 1 : Récap & édition -->
       <div id="stepCart" class="step active">
-        <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
-        <div id="recapOptions" style="margin-top:6px;"></div>
-        <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
-        <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <!-- ÉTAPE 2 : Infos client & livraison (le formulaire est déplacé ici) -->
-      <div id="stepDetails" class="step">
-        <!-- le formulaire sera injecté ici par JS -->
-      </div>
+      <div id="stepDetails" class="step"></div>
     </div>
     <footer>
       <div id="footerCart" class="step active">
-        <button class="btn-ghost" id="editOrder">Modifier le menu</button>
+        <!-- bouton Modifier le menu retiré -->
         <button class="btn-primary" id="goDetails">Valider le panier →</button>
       </div>
       <div id="footerDetails" class="step">
@@ -227,321 +142,17 @@
     </footer>
   </div>
 
-  <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
+  <footer>© 2025 YUMEKO SUSHIS</footer>
 
-  <!-- Script 1 : Gestion du tiroir / formulaire (ouvre même vide) -->
   <script>
-  /* ======== PANIER amélioré : récap editable + page infos ======== */
-  document.addEventListener('DOMContentLoaded', function () {
-    const sheet       = document.getElementById('cartSheet');
-    const sheetBody   = sheet?.querySelector('.body');
-    const sheetClose  = document.getElementById('sheetClose');
-    const btnOpen     = document.getElementById('gotoOrder');
-    const btnEdit     = document.getElementById('editOrder');
-    const btnGoDetails= document.getElementById('goDetails');
-    const btnBack     = document.getElementById('backToCart');
-    const btnConfirm  = document.getElementById('confirmSend');
-    const recapList   = document.getElementById('recapList');
-    const recapOpt    = document.getElementById('recapOptions');
-    const recapPickup = document.getElementById('recapPickup');
-    const recapCom    = document.getElementById('recapComment');
-    const form        = document.getElementById('orderForm');
-    const orderResult = document.getElementById('orderResult');
-    const stepCart    = document.getElementById('stepCart');
-    const stepDetails = document.getElementById('stepDetails');
-    const footCart    = document.getElementById('footerCart');
-    const footDetails = document.getElementById('footerDetails');
-    if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
-      console.warn('[cart] éléments requis manquants');
-      return;
-    }
-
-    // Déplacer le formulaire dans l'étape 2 du tiroir
-    if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
-
-    // ---- Utilitaires globaux sûrs ----
-    function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
-
-    // Fallback si collectOptions n’existe pas (au cas où le code amont change)
-    function collectOptionsSafe(){
-      if (typeof collectOptions === 'function') return collectOptions();
-      const bagQtyEl = document.getElementById('bagQty');
-      const bag = safeInt(bagQtyEl);
-      const map = [
-        ['sojaSucree','Soja sucrée'],
-        ['sojaSalee','Soja salée'],
-        ['wasabi','Wasabi'],
-        ['gingembre','Gingembre']
-      ];
-      const opts=[];
-      map.forEach(([key,label])=>{
-        const qty = safeInt(document.querySelector(`.opt-qty[data-opt="${key}"]`));
-        if (qty>0) opts.push(`${label} x${qty}`);
-      });
-      return { opts, bag };
-    }
-
-    function getCartItems(){
-      const items = [];
-      document.querySelectorAll('.qty[data-item]').forEach(span=>{
-        const qty = safeInt(span);
-        if (qty > 0) {
-          items.push({ label: span.dataset.item, qty });
-        }
-      });
-      return items;
-    }
-
-    function buildRecap(){
-      // Items
-      const items = getCartItems();
-      recapList.innerHTML = '';
-      if (items.length === 0) {
-        recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
-      } else {
-        items.forEach(({label, qty})=>{
-          const li = document.createElement('li');
-          li.className = 'recap-item';
-          li.innerHTML = `
-            <span class="it-label">${label}</span>
-            <div class="it-ctrl">
-              <button class="btn recap-minus" data-item="${label}" aria-label="Retirer">−</button>
-              <span class="qty" aria-live="polite">${qty}</span>
-              <button class="btn recap-plus" data-item="${label}" aria-label="Ajouter">+</button>
-            </div>`;
-          recapList.appendChild(li);
-        });
-      }
-
-      // Options (soja, wasabi, gingembre + baguettes)
-      const {opts, bag} = collectOptionsSafe();
-      const parts = [];
-      if (opts.length) parts.push(opts.join(' • '));
-      parts.push(`Baguettes x${bag}`);
-      recapOpt.textContent = parts.join(' — ');
-
-      // Livraison (date/heure)
-      const d = document.getElementById('deliveryDate')?.value || '';
-      const t = document.getElementById('deliveryTime')?.value || '';
-      recapPickup.textContent = (d || t) ? `Livraison : ${[d,t].filter(Boolean).join(' à ')}` : '';
-
-      // Commentaire
-      const c = document.getElementById('comments')?.value?.trim() || '';
-      recapCom.textContent = c ? `Commentaire : ${c}` : '';
-    }
-
-    function openSheet(){
-      setStep('cart');
-      buildRecap();
-      sheet.classList.add('open');
-      sheet.setAttribute('aria-hidden','false');
-    }
-    function closeSheet(){
-      sheet.classList.remove('open');
-      sheet.setAttribute('aria-hidden','true');
-    }
-
-    function setStep(which){
-      const cartActive = which === 'cart';
-      stepCart.classList.toggle('active', cartActive);
-      footCart.classList.toggle('active', cartActive);
-      stepDetails.classList.toggle('active', !cartActive);
-      footDetails.classList.toggle('active', !cartActive);
-    }
-
-    btnOpen.addEventListener('click', openSheet);
-    sheetClose?.addEventListener('click', closeSheet);
-
-    // Navigation étapes
-    btnGoDetails?.addEventListener('click', ()=> setStep('details'));
-    btnBack?.addEventListener('click', ()=> setStep('cart'));
-
-    // Échap pour fermer
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
-    });
-
-    // Bouton "Modifier le menu" → revenir au menu (et fermer)
-    btnEdit?.addEventListener('click', ()=>{
-      closeSheet();
-      document.getElementById('menuSection')?.scrollIntoView({behavior:'smooth'});
-    });
-
-    // Préparer le texte d’ordre pour Formspree (champ caché "order")
-    function ensureHiddenField(name){
-      if (!form) return null;
-      let input = form.querySelector(`input[name="${name}"]`);
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        form.appendChild(input);
-      }
-      return input;
-    }
-
-    function prepareOrderText(){
-      const itemsText = getCartItems()
-        .map(({label, qty})=>`- ${label} x${qty}`)
-        .join('');
-      const {opts, bag} = collectOptionsSafe();
-      const d = document.getElementById('deliveryDate')?.value || '—';
-      const t = document.getElementById('deliveryTime')?.value || '—';
-      const c = document.getElementById('comments')?.value?.trim() || '—';
-      const first = form?.querySelector('[name="first_name"]')?.value || '—';
-      const last  = form?.querySelector('[name="last_name"]')?.value || '—';
-      const phone = form?.querySelector('[name="phone"]')?.value || '—';
-
-      const text =
-`Commande YUMEKO
-Client : ${first} ${last}
-Téléphone : ${phone}
-
-Articles :
-${itemsText || '(aucun)'}
-
-Options : ${opts.length ? opts.join(', ') : 'aucune'}
-Baguettes : ${bag}
-
-Livraison : ${d} ${t}
-Commentaire : ${c}`;
-
-      const hidden = ensureHiddenField('order');
-      if (hidden) hidden.value = text;
-    }
-
-    // Envoi : le bouton du tiroir déclenche l’envoi du formulaire
-    btnConfirm?.addEventListener('click', ()=>{
-      if (!form) return;
-      // Vérifier les champs requis. Si invalide, basculer vers l'étape détails.
-      if (!form.reportValidity()) {
-        setStep('details');
-        form.reportValidity();
-        form.querySelector(':invalid')?.focus();
-        return;
-      }
-      prepareOrderText();
-      form.requestSubmit(); // déclenche la soumission native
-    });
-
-    // Soumission via fetch pour afficher un retour dans le tiroir
-    if (form) {
-      form.addEventListener('submit', async (e)=>{
-        e.preventDefault();
-        if (orderResult) orderResult.textContent = 'Envoi en cours…';
-        try{
-          const fd = new FormData(form);
-          const res = await fetch(form.action, {
-            method: 'POST',
-            body: fd,
-            headers: { 'Accept': 'application/json' }
-          });
-          if (res.ok) {
-            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
-            // Vider le panier + options + commentaire (sans fermer le tiroir)
-            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
-            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
-            const bagQtyEl = document.getElementById('bagQty');
-            const bagInput = document.getElementById('bagInput');
-            if (bagQtyEl) bagQtyEl.textContent = '1';
-            if (bagInput) bagInput.value = '1';
-            document.getElementById('comments').value = '';
-            document.getElementById('deliveryDate').value = '';
-            document.getElementById('deliveryTime').value = '';
-            // Mettre à jour l’UI
-            if (typeof updateSticky === 'function') updateSticky();
-            buildRecap();
-            setStep('cart');
-          } else {
-            // Fallback vers soumission native si Formspree refuse la requête fetch
-            form.submit();
-          }
-        } catch(err){
-          // Fallback offline / CORS : soumission native
-          form.submit();
-        }
-      });
-    }
-
-    // Rebuild récap si l’utilisateur modifie des champs dans le tiroir
-    sheet.addEventListener('input', (e)=>{
-      if (e.target.matches('textarea,input')) { buildRecap(); updateMiniRecap(); }
-    });
-
-    // Réagir aux +/- de la liste récap (on modifie les spans du menu)
-    recapList.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.recap-plus, .recap-minus');
-      if (!btn) return;
-      const item = btn.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      if (!span) return;
-      const inc = btn.classList.contains('recap-plus') ? 1 : -1;
-      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v; bump(span); updateSticky(); buildRecap();
-    });
-
-    // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
-    document.addEventListener('click', (e)=>{
-      if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
-          e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
-        setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
-      }
-    });
-
-    // Ouvre le tiroir si ancre #panier/#cart
-    if (location.hash === '#panier' || location.hash === '#cart') {
-      openSheet();
-    }
-  });
-  </script>
-
-  <!-- Script 2 : Ombre du bandeau qui fonce avec le scroll -->
-  <script>
-  (function(){
-    const root = document.documentElement;
-    function updateBarShade(){
-      const doc = document.documentElement;
-      const max = (doc.scrollHeight - window.innerHeight) || 1;
-      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
-      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
-      root.style.setProperty('--barShade', shade.toFixed(2));
-    }
-    updateBarShade();
-    window.addEventListener('scroll', updateBarShade, { passive:true });
-    window.addEventListener('resize', updateBarShade);
-  })();
-  </script>
-
-  <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
-  <script>
-  (function(){
-    const root = document.documentElement;
-    function updateBarShade(){
-      const doc = document.documentElement;
-      const max = (doc.scrollHeight - window.innerHeight) || 1;
-      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
-      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
-      root.style.setProperty('--barShade', shade.toFixed(2));
-    }
-    updateBarShade();
-    window.addEventListener('scroll', updateBarShade, { passive:true });
-    window.addEventListener('resize', updateBarShade);
-  })();
-  </script>
-
-  <!-- Script 3 : Données + Construction du menu + Options + mini récap dans le bandeau -->
-  <script>
-  /* ===================== Données ===================== */
   const categories = {
     'Maki 4 pièces': [
-      'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese','M4- Thon',
-      'M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese',
-      'M9- Fromage'
+      'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Cheese',
+      'M5- Concombre','M6- Concombre/Cheese','M7- Avocat','M8- Avocat/Cheese','M9- Fromage'
     ],
     'California 4 pièces': [
-      'C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese','C4- Thon',
-      'C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese',
-      'C9- Fromage'
+      'C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Cheese',
+      'C5- Concombre','C6- Concombre/Cheese','C7- Avocat','C8- Avocat/Cheese','C9- Fromage'
     ],
     'Maki printemps 4 pièces': [
       'P1- Saumon/Avocat','P2- Saumon/Fromage','P3- Concombre/Fromage','P4- Avocat/Fromage'
@@ -553,148 +164,99 @@ Commentaire : ${c}`;
     'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
   };
 
-  const prices = {}; // ex: {'M1':4.00}
-
-  /* ===================== Construction du menu ===================== */
   function buildMenu(){
     const menu=document.getElementById('menu');
     for(const [cat,items] of Object.entries(categories)){
       const wrap=document.createElement('div');
-      wrap.className='category';
       wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
       const grid=wrap.querySelector('.menu-grid');
 
       items.forEach(item=>{
         const code=item.split('-')[0].trim();
         const name=item.split('-').slice(1).join('-').trim();
-        const price=prices[code];
-
         const card=document.createElement('div');
         card.className='item-card';
         card.innerHTML=`
           <div class="left">
-            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${item}" onerror="this.style.display='none'">
-            <div class="item-name">${name || item}</div>
+            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${name}" onerror="this.style.display='none'">
+            <div class="item-name">${name}</div>
           </div>
           <div class="controls">
-            ${price!==undefined?`<span class="muted" style="margin-right:6px">${price.toFixed(2)}€</span>`:''}
             <button class="btn minus" data-item="${item}">−</button>
             <span class="qty" data-item="${item}">0</span>
             <button class="btn plus" data-item="${item}">+</button>
           </div>`;
         grid.appendChild(card);
       });
-
       menu.appendChild(wrap);
     }
   }
   buildMenu();
 
-  /* ===================== Utilitaires ===================== */
   function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-
-  function updateMiniRecap(){
-    const items=[]; 
-    document.querySelectorAll('.qty[data-item]').forEach(span=>{ 
-      const q=parseInt(span.textContent)||0; 
-      if(q>0){ items.push(`${span.dataset.item.split('-').slice(1).join('-').trim()} x${q}`); } 
-    });
-    const c = document.getElementById('comments')?.value?.trim();
-    const parts = [];
-    if(items.length) parts.push(items.join(' • '));
-    if(c) parts.push('💬 ' + (c.length>40? c.slice(0,40)+'…': c));
-    const mini=document.getElementById('miniRecap');
-    mini.textContent = parts.length? parts.join(' — '): 'Votre panier est vide pour le moment.';
-  }
-
-  function updateSticky(){
-    document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`;
-    updateMiniRecap();
-  }
+  function updateSticky(){ document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`; }
 
   document.addEventListener('click', e=>{
-    if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
-      const inc = e.target.classList.contains('plus') ? 1 : -1;
-      const item = e.target.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v; bump(span); updateSticky();
+    if(e.target.classList.contains('plus')||e.target.classList.contains('minus')){
+      const inc=e.target.classList.contains('plus')?1:-1;
+      const item=e.target.dataset.item;
+      const span=document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const v=Math.max(0,(parseInt(span.textContent)||0)+inc);
+      span.textContent=v;bump(span);updateSticky();
     }
   });
 
-  // Baguettes
-  const bagMinus = document.getElementById('bagMinus');
-  const bagPlus  = document.getElementById('bagPlus');
-  const bagQty   = document.getElementById('bagQty');
-  const bagInput = document.getElementById('bagInput');
-  if (bagMinus && bagPlus && bagQty && bagInput){
-    bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-    bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
+  const sheet=document.getElementById('cartSheet');
+  const recapList=document.getElementById('recapList');
+  const btnOpen=document.getElementById('gotoOrder');
+  const btnClose=document.getElementById('sheetClose');
+
+  function getCartItems(){
+    const items=[];
+    document.querySelectorAll('.qty[data-item]').forEach(span=>{
+      const qty=parseInt(span.textContent)||0;
+      if(qty>0) items.push({label:span.dataset.item,qty});
+    });
+    return items;
   }
 
-  // Options +/-
-  document.querySelectorAll('.opt-plus').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const key = btn.dataset.opt;
-      const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
-      qtyEl.textContent = parseInt(qtyEl.textContent) + 1;
-      bump(qtyEl); updateMiniRecap();
+  function buildRecap(){
+    const items=getCartItems();
+    recapList.innerHTML='';
+    if(items.length===0){recapList.innerHTML='<li class="muted">Aucun article</li>';return;}
+    items.forEach(({label,qty})=>{
+      const code=label.split('-')[0].trim().toLowerCase();
+      const name=label.split('-').slice(1).join('-').trim();
+      const li=document.createElement('li');
+      li.className='recap-item';
+      li.innerHTML=`
+        <div class="left">
+          <img src="images/${code}.jpg" alt="${name}" class="thumb" onerror="this.style.display='none'">
+          <span class="it-label">${name}</span>
+        </div>
+        <div class="it-ctrl">
+          <button class="btn recap-minus" data-item="${label}">−</button>
+          <span class="qty">${qty}</span>
+          <button class="btn recap-plus" data-item="${label}">+</button>
+        </div>`;
+      recapList.appendChild(li);
     });
-  });
-  document.querySelectorAll('.opt-minus').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const key = btn.dataset.opt;
-      const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
-      qtyEl.textContent = Math.max(0, parseInt(qtyEl.textContent) - 1);
-      bump(qtyEl); updateMiniRecap();
-    });
-  });
-
-  function collectOptions(){
-    const opts=[];
-    const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
-    optionKeys.forEach(key=>{
-      const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
-      const qty = el ? parseInt(el.textContent)||0 : 0;
-      if(qty>0){
-        const label = key.replace('sojaSucree','Soja sucrée')
-                         .replace('sojaSalee','Soja salée')
-                         .replace('wasabi','Wasabi')
-                         .replace('gingembre','Gingembre');
-        opts.push(`${label} x${qty}`);
-      }
-    });
-    const bag = parseInt(bagQty?.textContent)||0;
-    return {opts, bag};
   }
 
-  // CTA "Commander maintenant" → vers le menu
-  document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+  btnOpen.onclick=()=>{buildRecap();sheet.classList.add('open');};
+  btnClose.onclick=()=>sheet.classList.remove('open');
 
-  // Init
-  updateSticky();
-  updateMiniRecap();
-  </script>
-
-  <!-- Petit correctif ancien script d'ouverture/fermeture si doublon -->
-  <script>
-  document.addEventListener('DOMContentLoaded', function(){
-    var btnOpen    = document.getElementById('gotoOrder');
-    var sheet      = document.getElementById('cartSheet');
-    var sheetClose = document.getElementById('sheetClose');
-
-    function openSheet(){ if (!sheet) return; sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
-    function closeSheet(){ if (!sheet) return; sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
-
-    if (btnOpen)    btnOpen.addEventListener('click', openSheet);
-    if (sheetClose) sheetClose.addEventListener('click', closeSheet);
-
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape' && sheet && sheet.classList.contains('open')) closeSheet();
-    });
+  recapList.addEventListener('click',e=>{
+    const btn=e.target.closest('.recap-plus,.recap-minus');
+    if(!btn)return;
+    const item=btn.dataset.item;
+    const span=document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+    if(!span)return;
+    const inc=btn.classList.contains('recap-plus')?1:-1;
+    const v=Math.max(0,(parseInt(span.textContent)||0)+inc);
+    span.textContent=v;bump(span);updateSticky();setTimeout(buildRecap,50);
   });
   </script>
-
 </body>
 </html>
