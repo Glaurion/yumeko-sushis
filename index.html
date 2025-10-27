@@ -364,7 +364,7 @@
         });
       }
 
-      // Options masquées dans le tiroir
+      // Options masquées dans le tiroir (tu peux l’afficher si tu veux)
       recapOpt.textContent = '';
 
       // Livraison (date/heure)
@@ -505,7 +505,7 @@ Commentaire : ${c}`;
 
     // Mise à jour du récap quand on tape/choisit dans le tiroir
     sheet.addEventListener('input', (e)=>{
-      if (e.target.matches('textarea,input')) { buildRecap(); updateMiniRecap(); }
+      if (e.target.matches('textarea,input')) { buildRecap(); updateSticky(); }
     });
 
     // Réagir aux +/- de la liste récap
@@ -520,6 +520,23 @@ Commentaire : ${c}`;
       span.textContent = v; bump(span); updateSticky(); buildRecap();
     });
 
+    // ✅ Gestion des options (Soja sucrée/salée, Wasabi, Gingembre)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.opt-plus, .opt-minus');
+      if (!btn) return;
+
+      const key = btn.dataset.opt; // ex: "sojaSucree"
+      const span = document.querySelector(`.opt-qty[data-opt="${CSS.escape(key)}"]`);
+      if (!span) return;
+
+      const inc = btn.classList.contains('opt-plus') ? 1 : -1;
+      const v = Math.max(0, (parseInt(span.textContent) || 0) + inc);
+      span.textContent = v;
+      bump(span);
+      updateSticky();
+      buildRecap();
+    });
+
     // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
     document.addEventListener('click', (e)=>{
       if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
@@ -528,7 +545,7 @@ Commentaire : ${c}`;
       }
     });
 
-    // Observer les changements de quantité
+    // Observer les changements de quantité (articles)
     const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
     document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
 
@@ -608,7 +625,7 @@ Commentaire : ${c}`;
     updateMiniRecap();
   }
 
-  // Gestion plus/moins menu
+  // Gestion plus/moins menu (articles)
   document.addEventListener('click', e=>{
     if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
       const inc = e.target.classList.contains('plus') ? 1 : -1;
