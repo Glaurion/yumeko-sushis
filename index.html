@@ -141,7 +141,7 @@
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
         <!-- Téléphone devient OBLIGATOIRE -->
-        <input name="phone" type="tel" placeholder="Téléphone" required inputmode="tel" pattern="^\+?[0-9][0-9 .\-]{7,14}$" title="Numéro de téléphone (ex: 0601020304 ou +33 6 01 02 03 04)">
+        <input name="phone" type="tel" placeholder="Téléphone" required>
 
         <p class="muted" style="margin-top:8px">Options :</p>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:10px;">
@@ -213,8 +213,8 @@
         <div id="recapOptions" style="margin-top:6px;"></div>
         <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
-      <div id="recapTotal" style="margin-top:10px;font-weight:800;text-align:right"></div>
-      $1
+      </div>
+      <!-- ÉTAPE 2 : Infos client & livraison (le formulaire est déplacé ici) -->
       <div id="stepDetails" class="step">
         <!-- le formulaire sera injecté ici par JS -->
       </div>
@@ -292,20 +292,12 @@
     }
 
     function getCartItems(){
-      const map = new Map(); // key: code, value: {code, name, qty}
+      const items = [];
       document.querySelectorAll('.qty[data-item]').forEach(span=>{
-        const q = Math.max(0, parseInt(span.textContent)||0);
-        if (q>0){
+        const qty = safeInt(span);
+        if (qty > 0) {
           const full = span.dataset.item;
-          const code = (full.split('-')[0]||'').trim();
-          const name = full.split('-').slice(1).join('-').trim() || full.trim();
-          const prev = map.get(code) || {code, name, qty:0};
-          prev.qty += q;
-          map.set(code, prev);
-        }
-      });
-      return Array.from(map.values());
-    } = parseItem(full);
+          const {code, name} = parseItem(full);
           items.push({ code, name, qty });
         }
       });
@@ -313,9 +305,9 @@
     }
 
     function buildRecap(){
+      // Items
       const items = getCartItems();
       recapList.innerHTML = '';
-      let total = 0;
       if (items.length === 0) {
         recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
       } else {
@@ -323,13 +315,10 @@
           const li = document.createElement('li');
           li.className = 'recap-item';
           const codeLower = (code||'').toLowerCase();
-          const price = prices[code];
-          const line = (typeof price === 'number') ? (price * qty) : 0;
-          if (typeof price === 'number') total += line;
           li.innerHTML = `
             <div class="it-left">
               <img class="thumb sm" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
-              <span class="it-label">${name}${typeof price==='number' ? ` — ${price.toFixed(2)}€` : ''}</span>
+              <span class="it-label">${name}</span>
             </div>
             <div class="it-ctrl">
               <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer">−</button>
@@ -355,18 +344,9 @@
       // Commentaire
       const c = document.getElementById('comments')?.value?.trim() || '';
       recapCom.textContent = c ? `Commentaire : ${c}` : '';
-
-      // Total
-      const recapTotal = document.getElementById('recapTotal');
-      if (recapTotal) recapTotal.textContent = `Total : ${total.toFixed(2)}€`;
     }
 
     function openSheet(){
-      setStep('cart');
-      buildRecap();
-      sheet.classList.add('open');
-      sheet.setAttribute('aria-hidden','false');
-    }(){
       setStep('cart');
       buildRecap();
       sheet.classList.add('open');
@@ -443,7 +423,7 @@ Commentaire : ${c}`;
     // Envoi : le bouton du tiroir déclenche l’envoi du formulaire
     btnConfirm?.addEventListener('click', ()=>{
       if (!form) return;
-      // Vérifier les champs requis. Si invalide, basculer vers l'étape détails.
+      // Vérifier les champs requis. Si invalide, basculer vers l’étape détails.
       if (!form.reportValidity()) {
         setStep('details');
         form.reportValidity();
@@ -475,13 +455,35 @@ Commentaire : ${c}`;
             const bagInput = document.getElementById('bagInput');
             if (bagQtyEl) bagQtyEl.textContent = '1';
             if (bagInput) bagInput.value = '1';
-            document.getElementById('comments').value = '';
-            document.getElementById('deliveryDate').value = '';
-            document.getElementById('deliveryTime').value = '';
+            const comEl = document.getElementById('comments');
+            const dEl = document.getElementById('deliveryDate');
+            const tEl = document.getElementById('deliveryTime');
+            if (comEl) comEl.value = '';
+            if (dEl) dEl.value = '';
+            if (tEl) tEl.value = '';
             // Mettre à jour l’UI
             if (typeof updateSticky === 'function') updateSticky();
             buildRecap();
-            setStep('cart');
+
+            // ✅ Correctif : rester sur l'étape détails (= confirmation visible)
+            setStep('details');
+            if (btnConfirm) {
+              btnConfirm.disabled = true;
+              btnConfirm.textContent = 'Commande envoyée ✔';
+            }
+            // Ajouter un bouton "Fermer" si pas déjà présent
+            if (!footDetails.querySelector('[data-close-sheet]')) {
+              const closeBtn = document.createElement('button');
+              closeBtn.className = 'btn-ghost';
+              closeBtn.textContent = 'Fermer';
+              closeBtn.setAttribute('data-close-sheet','1');
+              closeBtn.onclick = () => {
+                const s = document.getElementById('cartSheet');
+                s?.classList.remove('open');
+                s?.setAttribute('aria-hidden','true');
+              };
+              footDetails?.prepend(closeBtn);
+            }
           } else {
             // Fallback vers soumission native si Formspree refuse la requête fetch
             form.submit();
@@ -589,15 +591,7 @@ Commentaire : ${c}`;
     'Nigiri 2 pièces': ['N1- Saumon','N2- Avocat']
   };
 
-  const prices = {
-    // 💶 Modifiez librement ces prix (en €)
-    M1:4.00, M2:4.20, M3:4.20, /*M4:4.20*/ M5:3.80, M6:3.80, M7:3.80, M8:4.00, M9:3.80,
-    C1:4.80, C2:5.00, C3:5.00, /*C4:5.00*/ C5:4.20, C6:4.20, C7:4.20, C8:4.50, C9:4.20,
-    P1:5.20, P2:5.20, P3:4.80, P4:4.80,
-    S1:5.80, S2:5.80,
-    N1:3.50, N2:3.20
-  }; // ex: {'M1':4.00}
-
+  const prices = {}; // ex: {'M1':4.00}
 
   /* ===================== Construction du menu ===================== */
   function buildMenu(){
@@ -637,28 +631,16 @@ Commentaire : ${c}`;
   /* ===================== Utilitaires ===================== */
   function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
   function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-  function getTotalPrice(){
-    let total=0;
-    document.querySelectorAll('.qty[data-item]').forEach(span=>{
-      const q = parseInt(span.textContent)||0;
-      if(q>0){
-        const code = (span.dataset.item.split('-')[0]||'').trim();
-        const p = prices[code];
-        if (typeof p === 'number') total += p*q;
-      }
-    });
-    return total;
-  }
 
   function updateMiniRecap(){
-    const items=[]; 
-    document.querySelectorAll('.qty[data-item]').forEach(span=>{ 
-      const q=parseInt(span.textContent)||0; 
+    const items=[];
+    document.querySelectorAll('.qty[data-item]').forEach(span=>{
+      const q=parseInt(span.textContent)||0;
       if(q>0){
         const full = span.dataset.item;
         const name = full.split('-').slice(1).join('-').trim();
         items.push(`${name} x${q}`);
-      } 
+      }
     });
     const c = document.getElementById('comments')?.value?.trim();
     const parts = [];
@@ -669,12 +651,7 @@ Commentaire : ${c}`;
   }
 
   function updateSticky(){
-    const count = getTotal();
-    const total = getTotalPrice();
-    const btn = document.getElementById('gotoOrder');
-    btn.textContent = total>0 ? `Panier (${count}) • ${total.toFixed(2)}€ • Valider` : `Panier (${count}) • Valider`;
-    updateMiniRecap();
-  }) • Valider`;
+    document.getElementById('gotoOrder').textContent = `Panier (${getTotal()}) • Valider`;
     updateMiniRecap();
   }
 
