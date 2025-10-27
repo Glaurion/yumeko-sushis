@@ -118,6 +118,9 @@
     .step{ display:none; }
     .step.active{ display:block; }
     .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
+
+    /* ⛔ Masquer le récap options dans le panier */
+    #recapOptions{ display:none !important; }
   </style>
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
@@ -285,8 +288,8 @@
       ];
       const opts=[];
       map.forEach(([key,label])=>{
-        const qty = safeInt(document.querySelector(`.opt-qty[data-opt="${key}"]`));
-        if (qty>0) opts.push(`${label} x${qty}`);
+        const qty = safeInt(document.querySelector(\`.opt-qty[data-opt="\${key}"]\`));
+        if (qty>0) opts.push(\`\${label} x\${qty}\`);
       });
       return { opts, bag };
     }
@@ -336,12 +339,8 @@
         });
       }
 
-      // Options (soja, wasabi, gingembre + baguettes)
-      const {opts, bag} = collectOptionsSafe();
-      const parts = [];
-      if (opts.length) parts.push(opts.join(' • '));
-      parts.push(`Baguettes x${bag}`);
-      recapOpt.textContent = parts.join(' — ');
+      // ⛔ Options masquées : ne rien afficher dans le tiroir
+      recapOpt.textContent = '';
 
       // Livraison (date/heure)
       const d = document.getElementById('deliveryDate')?.value || '';
@@ -387,7 +386,7 @@
     // Préparer le texte d’ordre pour Formspree (champ caché "order")
     function ensureHiddenField(name){
       if (!form) return null;
-      let input = form.querySelector(`input[name="${name}"]`);
+      let input = form.querySelector(\`input[name="\${name}"]\`);
       if (!input) {
         input = document.createElement('input');
         input.type = 'hidden';
@@ -651,7 +650,7 @@ Commentaire : ${c}`;
     if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
       const inc = e.target.classList.contains('plus') ? 1 : -1;
       const item = e.target.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const span = document.querySelector(\`.qty[data-item="\${CSS.escape(item)}"]\`);
       const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
       span.textContent = v; bump(span); updateSticky();
     }
@@ -671,7 +670,7 @@ Commentaire : ${c}`;
   document.querySelectorAll('.opt-plus').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const key = btn.dataset.opt;
-      const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      const qtyEl = document.querySelector(\`.opt-qty[data-opt="\${key}"]\`);
       qtyEl.textContent = parseInt(qtyEl.textContent) + 1;
       bump(qtyEl); updateMiniRecap();
     });
@@ -679,7 +678,7 @@ Commentaire : ${c}`;
   document.querySelectorAll('.opt-minus').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const key = btn.dataset.opt;
-      const qtyEl = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      const qtyEl = document.querySelector(\`.opt-qty[data-opt="\${key}"]\`);
       qtyEl.textContent = Math.max(0, parseInt(qtyEl.textContent) - 1);
       bump(qtyEl); updateMiniRecap();
     });
@@ -689,14 +688,14 @@ Commentaire : ${c}`;
     const opts=[];
     const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
     optionKeys.forEach(key=>{
-      const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      const el = document.querySelector(\`.opt-qty[data-opt="\${key}"]\`);
       const qty = el ? parseInt(el.textContent)||0 : 0;
       if(qty>0){
         const label = key.replace('sojaSucree','Soja sucrée')
                          .replace('sojaSalee','Soja salée')
                          .replace('wasabi','Wasabi')
                          .replace('gingembre','Gingembre');
-        opts.push(`${label} x${qty}`);
+        opts.push(\`\${label} x\${qty}\`);
       }
     });
     const bag = parseInt(bagQty?.textContent)||0;
