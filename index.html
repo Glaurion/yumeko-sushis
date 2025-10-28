@@ -1,23 +1,18 @@
+corrige le moi 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YUMEKO SUSHIS</title>
-  <meta name="description" content="YUMEKO SUSHIS — Commande en ligne : sushis, makis, rolls et plus. Frais, savoureux, rapide." />
-  <meta name="theme-color" content="#8b0000" />
 
   <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
-
   <style>
-    :root {
+    :root{
       --brand:#8b0000;
       --brand-2:#a31212;
       --text:#f8f8f8;
@@ -26,129 +21,110 @@
       --accent:#ffb6b6;
       --accent-2:#ff8c8c;
       --barShade:.35;
-      --focus:#ffd7d7;
     }
 
-    * { box-sizing: border-box; }
-    html:focus-within { scroll-behavior: smooth; }
-    @media (prefers-reduced-motion: reduce) {
-      html:focus-within { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-    }
+    #orderSection { display: none !important; }
 
-    body {
-      margin: 0;
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    *{ box-sizing: border-box; }
+    body{ margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh; }
 
-    a { color: inherit; }
-    button { font: inherit; }
-    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-      outline: 2px solid var(--focus);
-      outline-offset: 2px;
-      border-radius: 8px;
-    }
+    .hero{ background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat; padding:60px 20px; text-align:center; }
+    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
+    .cta{ background:var(--brand); border:none; color:#fff; padding:14px 18px; border-radius:10px; font-weight:800; cursor:pointer; }
+    .cta:hover{ background:var(--brand-2); }
 
-    .hero {
-      background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.75)), url('images/hero.jpg') center/cover no-repeat;
-      padding: 60px 20px;
-      text-align: center;
-    }
-    h1.brand { font-size: clamp(2rem, 2.5vw + 1rem, 2.75rem); margin: 10px 0; letter-spacing: 2px; font-weight: 800; }
-    .cta { background: var(--brand); border: none; color: #fff; padding: 14px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; }
-    .cta:hover { background: var(--brand-2); }
+    .container{ max-width:1100px; margin:0 auto; padding:20px; }
+    .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;}
+    .section-title{ color:#fff; font-size:1.8rem; margin-bottom:10px; }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-    .section { background: #160c0c; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.25); margin-bottom: 25px; }
-    .section-title { color: #fff; font-size: 1.8rem; margin-bottom: 10px; }
+    .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+    .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:0; display:flex; flex-direction:column; overflow:hidden; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+    .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+    .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
+    .thumb.sm{ width:40px; height:40px; border-radius:8px; }
+    .item-name{ font-weight:700; font-size:.98rem; padding:10px 12px 4px; }
 
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
-    .item-card { background: var(--card); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
-    .item-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
-    .thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #0d0d0d; }
-    .thumb.sm { width: 40px; height: 40px; border-radius: 8px; }
-    .item-name { font-weight: 700; font-size: .98rem; padding: 10px 12px 4px; }
+    .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
+    .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
+    .meta{ display:flex; flex-direction:column; line-height:1.1; gap:4px; }
+    .pieces{ font-size:.9rem; color:var(--muted); }
+    .price{ font-size:.95rem; font-weight:800; }
 
-    .card-body { padding: 0 12px 10px; display: flex; flex-direction: column; gap: 8px; }
-    .card-footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 12px; border-top: 1px dashed rgba(255,255,255,.08); }
-    .meta { display: flex; flex-direction: column; line-height: 1.1; gap: 4px; }
-    .pieces { font-size: .9rem; color: var(--muted); }
-    .price { font-size: .95rem; font-weight: 800; }
+    .ctrls{ display:flex; align-items:center; gap:8px; }
+    .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
+    .circle:hover{ background:var(--accent-2); }
+    .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
+    .qty-badge.is-zero{ visibility:hidden; }
 
-    .ctrls { display: flex; align-items: center; gap: 8px; }
-    .circle { background: var(--accent); border: none; color: #111; width: 36px; height: 36px; border-radius: 50%; font-weight: 900; cursor: pointer; }
-    .circle:hover { background: var(--accent-2); }
-    .qty-badge { min-width: 22px; text-align: center; font-weight: 800; }
-    .qty-badge.is-zero { visibility: hidden; }
+    .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
+    .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
+    .qty{ min-width:22px; text-align:center; font-weight:800; }
+    .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    .btn { background: var(--accent); border: none; color: #111; width: 34px; height: 34px; border-radius: 50%; font-weight: 900; cursor: pointer; transition: transform .15s; }
-    .btn:hover { background: var(--accent-2); transform: scale(1.1); }
-    .qty { min-width: 22px; text-align: center; font-weight: 800; }
-    .qty.bump { transform: scale(1.15); transition: transform .2s; }
+    form input, form textarea{ width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:10px; margin:6px auto; display:block; }
+    textarea{ resize:vertical; min-height:90px; }
+    .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    form input, form textarea { width: min(520px, 90%); background: #161616; color: #fff; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 10px; margin: 6px auto; display: block; }
-    textarea { resize: vertical; min-height: 90px; }
-    .muted { color: #cfcfcf; opacity: .95; font-size: 14px; }
+    #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade))); padding:10px; }
+    #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
+    #miniRecap{ display:none !important; font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #miniRecap::-webkit-scrollbar{ display:none; }
+    #gotoOrder{ width:auto; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; white-space:nowrap; }
 
-    #stickyBar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade))); padding: 10px; }
-    #stickyInner { width: min(96%,1100px); margin: 0 auto; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-    #miniRecap { display: none; font-size: 13px; color: #eee; opacity: .95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #miniRecap::-webkit-scrollbar { display: none; }
-    #gotoOrder { width: auto; background: var(--brand); color: #fff; font-weight: 900; border: none; border-radius: 12px; padding: 14px 18px; cursor: pointer; white-space: nowrap; }
+    #cartSheet{ position:fixed; left:50%; transform:translateX(-50%); bottom:-100%; width:min(96%,1100px); background:#1b1b1b; color:#fff; border:1px solid rgba(255,255,255,.12); border-radius:16px 16px 0 0; box-shadow:0 22px 60px rgba(0,0,0,.45); max-height:70vh; display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101; }
+    #cartSheet.open{ bottom:62px; }
+    #cartSheet header, #cartSheet footer{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
+    #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
+    #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
+    #cartSheet header h3{ margin:0; font-size:18px; }
+    #cartSheet header button{ background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; }
+    #cartSheet .body{ padding:10px; overflow:auto; }
+    .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+    .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
+    .recap-item .it-left{ display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+    .recap-item .it-label{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .recap-item .it-ctrl{ display:flex; align-items:center; gap:8px; }
 
-    #cartSheet { position: fixed; left: 50%; transform: translateX(-50%); bottom: -100%; width: min(96%,1100px); background: #1b1b1b; color: #fff; border: 1px solid rgba(255,255,255,.12); border-radius: 16px 16px 0 0; box-shadow: 0 22px 60px rgba(0,0,0,.45); max-height: 70vh; display: flex; flex-direction: column; transition: bottom .28s ease; z-index: 101; }
-    #cartSheet.open { bottom: 62px; }
-    #cartSheet header, #cartSheet footer { padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
-    #cartSheet header { border-bottom: 1px solid rgba(255,255,255,.1); }
-    #cartSheet footer { border-top: 1px solid rgba(255,255,255,.1); gap: 10px; justify-content: flex-end; }
-    #cartSheet header h3 { margin: 0; font-size: 18px; }
-    #cartSheet header button { background: transparent; border: none; color: #fff; font-size: 22px; cursor: pointer; }
-    #cartSheet .body { padding: 10px; overflow: auto; }
-    .recap-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-    .recap-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 6px; border-bottom: 1px dashed rgba(255,255,255,.1); }
-    .recap-item .it-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-    .recap-item .it-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .recap-item .it-ctrl { display: flex; align-items: center; gap: 8px; }
+    .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer; }
+    .btn-ghost{ background:#2a2a2a; color:#fff; }
+    .btn-ghost:hover{ filter:brightness(1.1); }
+    .btn-primary{ background:var(--brand); color:#fff; }
+    .btn-primary:hover{ background:var(--brand-2); }
 
-    .btn-ghost, .btn-primary { border: none; border-radius: 12px; padding: 12px 16px; font-weight: 900; cursor: pointer; }
-    .btn-ghost { background: #2a2a2a; color: #fff; }
-    .btn-ghost:hover { filter: brightness(1.1); }
-    .btn-primary { background: var(--brand); color: #fff; }
-    .btn-primary:hover { background: var(--brand-2); }
+    footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
 
-    footer { text-align: center; color: #d7d7d7; margin: 60px 0 120px; }
+    .step{ display:none; }
+    .step.active{ display:block; }
+    .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
 
-    .step { display: none; }
-    .step.active { display: block; }
-    .hr { border-top: 1px solid rgba(255,255,255,.08); margin: 10px 0; }
-
-    /* Visuellement masqué mais accessible si besoin */
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    #recapOptions{ display:none !important; }
+    .hero .logo{ width:160px; }
+    @media (min-width: 768px){ .hero .logo{ width:200px; } }
   </style>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#8b0000" />
 </head>
 <body>
+
   <section class="hero">
-    <img src="images/logo-yumeko.png" alt="Logo YUMEKO SUSHIS" class="logo" style="width:160px;border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)" loading="lazy" decoding="async">
+    <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
     <p class="muted" style="margin-top:6px;font-size:0.95rem;">Informations complémentaires</p>
-    <button class="cta" id="ctaOrder" type="button" aria-haspopup="dialog" aria-controls="cartSheet">Commander maintenant</button>
+    <button class="cta" id="ctaOrder">Commander maintenant</button>
   </section>
 
-  <main class="container" id="mainContent">
-    <section class="section" id="menuSection" aria-labelledby="menuTitle">
-      <h2 id="menuTitle" class="sr-only">Menu</h2>
-      <div id="menu" class="menu-grid" aria-live="polite"></div>
+  <main class="container">
+    <section class="section" id="menuSection">
+      <div id="menu"></div>
     </section>
 
     <!-- MODALE DÉTAIL PRODUIT -->
-    <div id="itemModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="mTitle" aria-modal="true" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:102;">
-      <div class="modal-card" style="width:min(680px,96vw);background:#1b1b1b;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:0 22px 60px rgba(0,0,0,.5)">
+    <div id="itemModal" class="modal" aria-hidden="true" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:102;">
+      <div class="modal-card" role="dialog" aria-modal="true" style="width:min(680px,96vw);background:#1b1b1b;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:0 22px 60px rgba(0,0,0,.5)">
         <div style="position:relative">
-          <img id="mImg" src="" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0d0d" loading="lazy">
-          <button id="mClose" type="button" aria-label="Fermer" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:10px;padding:8px 10px;cursor:pointer">✕</button>
+          <img id="mImg" src="" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0d0d">
+          <button id="mClose" aria-label="Fermer" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:10px;padding:8px 10px;cursor:pointer">✕</button>
         </div>
         <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
           <h3 id="mTitle" style="margin:0;font-size:1.25rem"></h3>
@@ -159,87 +135,79 @@
           <div><strong>Composition :</strong><br><span id="mComp">Non renseigné</span></div>
           <div><strong>Description :</strong><br><span id="mDesc">—</span></div>
           <div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:flex-end;gap:10px">
-            <button id="mMinus" class="circle" type="button" style="visibility:hidden" aria-label="Retirer une unité">−</button>
-            <span id="mQty" class="qty-badge" aria-live="polite">0</span>
-            <button id="mPlus" class="circle" type="button" aria-label="Ajouter une unité">+</button>
+            <button id="mMinus" class="circle" style="visibility:hidden">−</button>
+            <span id="mQty" class="qty-badge">0</span>
+            <button id="mPlus" class="circle">+</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- FORM COMMANDE (utilisé dans le tiroir) -->
-    <section class="section" id="orderSection" hidden>
+    <!-- FORM COMMANDE (déplacé dans le tiroir) -->
+    <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
-      <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST" novalidate>
-        <label class="sr-only" for="first_name">Prénom</label>
-        <input id="first_name" name="first_name" placeholder="Prénom" autocomplete="given-name" required>
-
-        <label class="sr-only" for="last_name">Nom</label>
-        <input id="last_name" name="last_name" placeholder="Nom" autocomplete="family-name" required>
-
-        <label class="sr-only" for="phone">Téléphone</label>
-        <input id="phone" name="phone" type="tel" inputmode="tel" placeholder="Téléphone" autocomplete="tel" required>
+      <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
+        <input name="first_name" placeholder="Prénom" required>
+        <input name="last_name" placeholder="Nom" required>
+        <input name="phone" type="tel" placeholder="Téléphone" required>
 
         <p class="muted" style="margin-top:8px">Options :</p>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:10px;">
           <div>
             <span class="muted">Soja sucrée :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="sojaSucree" aria-label="Retirer soja sucrée">−</button>
-            <span class="qty opt-qty" data-opt="sojaSucree" aria-live="polite">0</span>
-            <button type="button" class="btn opt-plus" data-opt="sojaSucree" aria-label="Ajouter soja sucrée">+</button>
+            <button type="button" class="btn opt-minus" data-opt="sojaSucree">−</button>
+            <span class="qty opt-qty" data-opt="sojaSucree">0</span>
+            <button type="button" class="btn opt-plus" data-opt="sojaSucree">+</button>
           </div>
           <div>
             <span class="muted">Soja salée :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="sojaSalee" aria-label="Retirer soja salée">−</button>
-            <span class="qty opt-qty" data-opt="sojaSalee" aria-live="polite">0</span>
-            <button type="button" class="btn opt-plus" data-opt="sojaSalee" aria-label="Ajouter soja salée">+</button>
+            <button type="button" class="btn opt-minus" data-opt="sojaSalee">−</button>
+            <span class="qty opt-qty" data-opt="sojaSalee">0</span>
+            <button type="button" class="btn opt-plus" data-opt="sojaSalee">+</button>
           </div>
           <div>
             <span class="muted">Wasabi :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="wasabi" aria-label="Retirer wasabi">−</button>
-            <span class="qty opt-qty" data-opt="wasabi" aria-live="polite">0</span>
-            <button type="button" class="btn opt-plus" data-opt="wasabi" aria-label="Ajouter wasabi">+</button>
+            <button type="button" class="btn opt-minus" data-opt="wasabi">−</button>
+            <span class="qty opt-qty" data-opt="wasabi">0</span>
+            <button type="button" class="btn opt-plus" data-opt="wasabi">+</button>
           </div>
           <div>
             <span class="muted">Gingembre :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="gingembre" aria-label="Retirer gingembre">−</button>
-            <span class="qty opt-qty" data-opt="gingembre" aria-live="polite">0</span>
-            <button type="button" class="btn opt-plus" data-opt="gingembre" aria-label="Ajouter gingembre">+</button>
+            <button type="button" class="btn opt-minus" data-opt="gingembre">−</button>
+            <span class="qty opt-qty" data-opt="gingembre">0</span>
+            <button type="button" class="btn opt-plus" data-opt="gingembre">+</button>
           </div>
         </div>
 
         <div style="margin:8px 0 12px">
           <span class="muted" style="display:block;margin-bottom:6px;">Baguettes :</span>
-          <button type="button" class="btn" id="bagMinus" aria-label="Retirer des baguettes">−</button>
-          <span class="qty" id="bagQty" aria-live="polite">1</span>
-          <button type="button" class="btn" id="bagPlus" aria-label="Ajouter des baguettes">+</button>
+          <button type="button" class="btn" id="bagMinus">−</button>
+          <span class="qty" id="bagQty">1</span>
+          <button type="button" class="btn" id="bagPlus">+</button>
           <input type="hidden" name="baguettes" id="bagInput" value="1">
         </div>
 
         <p class="muted" style="margin:8px 0 4px">Date & heure de livraison (facultatif)</p>
-        <label class="sr-only" for="deliveryDate">Date</label>
         <input type="date" id="deliveryDate" name="delivery_date">
-        <label class="sr-only" for="deliveryTime">Heure</label>
         <input type="time" id="deliveryTime" name="delivery_time" step="900">
 
-        <label class="sr-only" for="comments">Commentaire</label>
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
-        <div id="orderResult" style="margin-top:8px;font-size:14px;" aria-live="polite"></div>
+        <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
     </section>
   </main>
 
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
-      <span id="miniRecap" hidden></span>
-      <button id="gotoOrder" type="button" aria-haspopup="dialog" aria-controls="cartSheet">Panier (0) • Valider</button>
+      <span id="miniRecap"></span>
+      <button id="gotoOrder">Panier (0) • Valider</button>
     </div>
   </div>
 
-  <div id="cartSheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-hidden="true">
+  <div id="cartSheet" aria-hidden="true">
     <header>
-      <h3 id="cartTitle">Valider votre commande</h3>
-      <button id="sheetClose" type="button" aria-label="Fermer le panier">×</button>
+      <h3>Valider votre commande</h3>
+      <button id="sheetClose" aria-label="Fermer">×</button>
     </header>
     <div class="body">
       <div id="stepCart" class="step active">
@@ -249,15 +217,15 @@
         <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <div id="stepDetails" class="step" aria-live="polite"></div>
+      <div id="stepDetails" class="step"></div>
     </div>
     <footer>
       <div id="footerCart" class="step active">
-        <button class="btn-primary" id="goDetails" type="button">Valider le panier →</button>
+        <button class="btn-primary" id="goDetails">Valider le panier →</button>
       </div>
       <div id="footerDetails" class="step">
-        <button class="btn-ghost" id="backToCart" type="button">← Retour</button>
-        <button class="btn-primary" id="confirmSend" type="button">Confirmer et envoyer</button>
+        <button class="btn-ghost" id="backToCart">← Retour</button>
+        <button class="btn-primary" id="confirmSend">Confirmer et envoyer</button>
       </div>
     </footer>
   </div>
@@ -265,183 +233,8 @@
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
   <script>
-  // =====================
-  // Helpers & état simple
-  // =====================
-  const state = {
-    cartOpen: false,
-  };
-
-  const $ = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-  // Pièges focus pour le tiroir panier (basique)
-  function trapFocus(container) {
-    const focusables = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-    function onKey(e){
-      if (e.key !== 'Tab') return;
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-    container.addEventListener('keydown', onKey);
-    return () => container.removeEventListener('keydown', onKey);
-  }
-
-  // =====================
-  // Ouverture/fermeture panier
-  // =====================
-  const cartSheet = $('#cartSheet');
-  const gotoOrder = $('#gotoOrder');
-  const ctaOrder = $('#ctaOrder');
-  const sheetClose = $('#sheetClose');
-  let untrap = null;
-
-  function openCart(){
-    cartSheet.classList.add('open');
-    cartSheet.setAttribute('aria-hidden', 'false');
-    state.cartOpen = true;
-    untrap = trapFocus(cartSheet);
-    // focus le bouton fermer pour accessibilité
-    sheetClose.focus();
-  }
-  function closeCart(){
-    cartSheet.classList.remove('open');
-    cartSheet.setAttribute('aria-hidden', 'true');
-    state.cartOpen = false;
-    if (typeof untrap === 'function') untrap();
-  }
-
-  gotoOrder?.addEventListener('click', openCart);
-  ctaOrder?.addEventListener('click', openCart);
-  sheetClose?.addEventListener('click', closeCart);
-
-  // Fermer sur ESC
-  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && state.cartOpen) closeCart(); });
-
-  // Empêcher le scroll de fond quand le tiroir est ouvert (optionnel)
-  const observer = new MutationObserver(()=>{
-    document.body.style.overflow = state.cartOpen ? 'hidden' : '';
-  });
-  observer.observe(cartSheet, { attributes: true, attributeFilter: ['class'] });
-
-  // =====================
-  // PLACEHOLDERS FONCTIONNELS
-  // =====================
-  // – Gestion mini-récap
-  const miniRecap = $('#miniRecap');
-  function setMiniRecap(text){
-    if (!text) { miniRecap.setAttribute('hidden', ''); miniRecap.textContent=''; return; }
-    miniRecap.removeAttribute('hidden');
-    miniRecap.textContent = text;
-  }
-  setMiniRecap('Votre panier est vide.');
-
-  // – Baguettes
-  const bagMinus = $('#bagMinus');
-  const bagPlus = $('#bagPlus');
-  const bagQtyEl = $('#bagQty');
-  const bagInput = $('#bagInput');
-  let bagQty = 1;
-  function syncBags(){ bagQtyEl.textContent = String(bagQty); bagInput.value = String(bagQty); }
-  bagMinus?.addEventListener('click', ()=>{ bagQty = Math.max(0, bagQty-1); syncBags(); });
-  bagPlus?.addEventListener('click', ()=>{ bagQty = Math.min(20, bagQty+1); syncBags(); });
-  syncBags();
-
-  // – Options (soja, wasabi, etc.)
-  const optCounts = { sojaSucree:0, sojaSalee:0, wasabi:0, gingembre:0 };
-  $$('.opt-minus').forEach(btn => btn.addEventListener('click', ()=>{
-    const key = btn.dataset.opt; if (!key) return; optCounts[key] = Math.max(0, (optCounts[key]||0)-1);
-    $(`.opt-qty[data-opt="${key}"]`).textContent = String(optCounts[key]);
-  }));
-  $$('.opt-plus').forEach(btn => btn.addEventListener('click', ()=>{
-    const key = btn.dataset.opt; if (!key) return; optCounts[key] = Math.min(99, (optCounts[key]||0)+1);
-    $(`.opt-qty[data-opt="${key}"]`).textContent = String(optCounts[key]);
-  }));
-
-  // =====================
-  // MODALE Produit (hooks prêts)
-  // =====================
-  const itemModal = $('#itemModal');
-  const mClose = $('#mClose');
-  function openItemModal(){ itemModal.style.display='flex'; itemModal.setAttribute('aria-hidden','false'); mClose.focus(); }
-  function closeItemModal(){ itemModal.style.display='none'; itemModal.setAttribute('aria-hidden','true'); }
-  mClose?.addEventListener('click', closeItemModal);
-  itemModal?.addEventListener('click', (e)=>{ if (e.target === itemModal) closeItemModal(); });
-
-  // =====================
-  // MENU DYNAMIQUE (exemple minimal — à remplacer par vos données)
-  // =====================
-  const sampleMenu = [
-    { id:'m1', name:'California Saumon', price:6.5, pieces:6, img:'images/menu/california-saumon.jpg' },
-    { id:'m2', name:'Nigiri Thon', price:5.0, pieces:2, img:'images/menu/nigiri-thon.jpg' },
-    { id:'m3', name:'Maki Concombre', price:4.0, pieces:6, img:'images/menu/maki-concombre.jpg' },
-  ];
-  const menuRoot = $('#menu');
-  function renderMenu(list){
-    if (!menuRoot) return;
-    menuRoot.innerHTML = '';
-    list.forEach(it => {
-      const card = document.createElement('article');
-      card.className = 'item-card';
-      card.setAttribute('tabindex','0');
-      card.setAttribute('role','button');
-      card.setAttribute('aria-label', `${it.name}, ${it.pieces} pièces, ${it.price.toFixed(2)}€`);
-      card.innerHTML = `
-        <img src="${it.img}" alt="${it.name}" class="thumb" loading="lazy" decoding="async">
-        <div class="item-name">${it.name}</div>
-        <div class="card-body">
-          <div class="meta">
-            <span class="pieces">${it.pieces} pièces</span>
-            <span class="price">${it.price.toFixed(2)} €</span>
-          </div>
-        </div>`;
-      card.addEventListener('click', openItemModal);
-      card.addEventListener('keypress', (e)=>{ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openItemModal(); } });
-      menuRoot.appendChild(card);
-    });
-  }
-  renderMenu(sampleMenu);
-
-  // =====================
-  // Étapes panier (structure prête)
-  // =====================
-  const stepCart = $('#stepCart');
-  const stepDetails = $('#stepDetails');
-  const footerCart = $('#footerCart');
-  const footerDetails = $('#footerDetails');
-  $('#goDetails')?.addEventListener('click', ()=>{
-    stepCart.classList.remove('active');
-    footerCart.classList.remove('active');
-    stepDetails.classList.add('active');
-    footerDetails.classList.add('active');
-    // Déplacer le formulaire dans l'étape détails
-    const form = $('#orderSection #orderForm');
-    if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
-    form?.querySelector('#first_name')?.focus();
-  });
-  $('#backToCart')?.addEventListener('click', ()=>{
-    stepDetails.classList.remove('active');
-    footerDetails.classList.remove('active');
-    stepCart.classList.add('active');
-    footerCart.classList.add('active');
-  });
-
-  // Envoi de formulaire (exemple de validation minimale côté client)
-  $('#confirmSend')?.addEventListener('click', async ()=>{
-    const form = $('#orderForm');
-    if (!form) return;
-    const required = ['#first_name','#last_name','#phone'];
-    const invalid = required.map(sel=>form.querySelector(sel)).filter(el=>!el || !el.value.trim());
-    if (invalid.length) {
-      $('#orderResult').textContent = 'Merci de remplir les champs requis.';
-      invalid[0]?.focus();
-      return;
-    }
-    // Soumission classique pour compatibilité Formspree (évite fetch CORS ici)
-    form.submit();
-  });
-  </script>
-</body>
-</html>
+  (function(){
+    if (typeof window.CSS === 'undefined') window.CSS = {};
+    if (typeof window.CSS.escape !== 'function') {
+      window.CSS.escape = function(sel){
+        return String(sel).replace(/[
