@@ -52,13 +52,14 @@
     .section-title{ color:#fff; font-size:1.8rem; margin-bottom:10px; }
 
     /* MENU */
-    .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
-    .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .left{ display:flex; align-items:center; gap:10px; min-width:0; }
-    .thumb{ width:60px; height:60px; border-radius:10px; object-fit:cover; background:#0d0d0d; box-shadow:0 0 8px rgba(0,0,0,.35); }
-    .thumb.sm{ width:44px; height:44px; border-radius:8px; }
-    .item-name{ font-weight:700; white-space:normal; overflow:visible; word-break:break-word; }
-    .controls{ display:flex; align-items:center; gap:8px; }
+    .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+    .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:0; display:flex; flex-direction:column; overflow:hidden; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+    .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+    .left{ display:none; }
+    .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
+    .thumb.sm{ width:40px; height:40px; border-radius:8px; }
+    .item-name{ font-weight:700; font-size:.98rem; padding:10px 12px 4px; }
+    .controls{ display:flex; align-items:center; gap:8px; } /* legacy */
     .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
     .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
     .qty{ min-width:22px; text-align:center; font-weight:800; }
@@ -122,6 +123,14 @@
 
     /* ⛔ Masquer le récap options dans le panier */
     #recapOptions{ display:none !important; }
+    /* ===== Nouveau style cartes ===== */
+    .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
+    .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
+    .pieces{ font-size:.9rem; color:var(--muted); }
+    .ctrls{ display:flex; align-items:center; gap:8px; }
+    .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
+    .circle:hover{ background:var(--accent-2); }
+    .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
       .hero .logo{ width:160px; }
     @media (min-width: 768px){ .hero .logo{ width:200px; } }
   </style>
@@ -135,6 +144,8 @@
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
+    $1
+    <p class="muted" style="margin-top:6px;font-size:0.95rem;">Informations complémentaires</p>
     <button class="cta" id="ctaOrder">Commander maintenant</button>
   </section>
 
@@ -143,6 +154,29 @@
     <section class="section" id="menuSection">
       <div id="menu"></div>
     </section>
+
+    <!-- MODALE DÉTAIL PRODUIT -->
+    <div id="itemModal" class="modal" aria-hidden="true" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:102;">
+      <div class="modal-card" role="dialog" aria-modal="true" style="width:min(680px,96vw);background:#1b1b1b;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:0 22px 60px rgba(0,0,0,.5)">
+        <div style="position:relative">
+          <img id="mImg" src="" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0d0d">
+          <button id="mClose" aria-label="Fermer" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:10px;padding:8px 10px;cursor:pointer">✕</button>
+        </div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+          <h3 id="mTitle" style="margin:0;font-size:1.25rem"></h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.95rem;color:#ddd">
+            <div><strong>Pièces :</strong> <span id="mPieces">—</span></div>
+            <div><strong>Allergènes :</strong> <span id="mAllergens">Non renseigné</span></div>
+          </div>
+          <div><strong>Composition :</strong><br><span id="mComp">Non renseigné</span></div>
+          <div><strong>Description :</strong><br><span id="mDesc">—</span></div>
+        <div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:flex-end;gap:10px">
+          <button id="mMinus" class="circle" style="visibility:hidden">−</button>
+          <span id="mQty" class="qty-badge">0</span>
+          <button id="mPlus" class="circle">+</button>
+        </div>
+      </div>
+    </div>
 
     <!-- FORM COMMANDE (sera déplacé dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
@@ -564,58 +598,88 @@ Commentaire : ${c}`;
   <script>
   /* ===================== Données ===================== */
   const categories = {
-    'Les Maki': [
-      'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Fromage',
-      'M5- Concombre','M6- Concombre/Fromage','M7- Avocat','M8- Avocat/Fromage',
-      'M9- Fromage'
-    ],
-    'Les California': [
-      'C1- Saumon','C2- Saumon/Avocat','C3- Saumon/Fromage',
-      'C5- Concombre','C6- Concombre/Fromage','C7- Avocat','C8- Avocat/Fromage',
-      'C9- Fromage','C10- Saumon/Fromage/Oignons frits'
-    ],
-    'Les Maki printemps': [
-      'P1- Saumon/Avocat','P2- Saumon/Fromage','P3- Concombre/Fromage','P4- Avocat/Fromage'
-    ],
-    'Les Rolls': [
-      'R1- Saumon/Avocat/Fromage','R2- Avocat/Saumon/Fromage'
-    ],
-    'Les Sashimi': ['Saumon'],
-    'Les Nigiri': ['N1- Saumon','N2- Avocat'],
-    'Les Boissons': [
-      'Tsingtao','Asahi','Coca Cola Zero'
-    ]
+    'Les Maki': ['M1','M2','M3','M5','M6','M7','M8','M9'],
+    'Les California': ['C1','C2','C3','C5','C6','C7','C8','C9','C10'],
+    'Les Maki printemps': ['P1','P2','P3','P4'],
+    'Les Rolls': ['R1','R2'],
+    'Les Sashimi': ['S1'],
+    'Les Nigiri': ['N1','N2'],
+    'Les Boissons': ['B1','B2','B3']
   };
 
-  const prices = {}; // ex: { 'M1': 4.00 }
+  // Catalogue détaillé (à compléter au besoin)
+  const catalog = {
+    M1:{ name:'Saumon', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'Maki saumon classique.' },
+    M2:{ name:'Saumon/Avocat', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'Équilibre fondant/vert.' },
+    M3:{ name:'Saumon/Fromage', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:'Crémeux et iodé.' },
+    M5:{ name:'Concombre', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:'Ultra frais.' },
+    M6:{ name:'Concombre/Fromage', img:'m6.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'Le croquant + douceur.' },
+    M7:{ name:'Avocat', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:'Végétal et onctueux.' },
+    M8:{ name:'Avocat/Fromage', img:'m8.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'Gourmand veggie.' },
+    M9:{ name:'Fromage', img:'m9.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:'Simple et doux.' },
+
+    C1:{ name:'Saumon', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:'California au saumon.' },
+    C2:{ name:'Saumon/Avocat', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
+    C3:{ name:'Saumon/Fromage', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+    C5:{ name:'Concombre', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
+    C6:{ name:'Concombre/Fromage', img:'c6.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'' },
+    C7:{ name:'Avocat', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:'' },
+    C8:{ name:'Avocat/Fromage', img:'c8.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'' },
+    C9:{ name:'Fromage', img:'c9.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:'' },
+    C10:{ name:'Saumon/Fromage/Oignons frits', img:'c10.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:'' },
+
+    P1:{ name:'Saumon/Avocat', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:'' },
+    P2:{ name:'Saumon/Fromage', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+    P3:{ name:'Concombre/Fromage', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:'' },
+    P4:{ name:'Avocat/Fromage', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:'' },
+
+    R1:{ name:'Saumon/Avocat/Fromage', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:'' },
+    R2:{ name:'Avocat/Saumon/Fromage', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+
+    S1:{ name:'Saumon', img:'s1.jpg', pieces:6, comp:'Tranches de saumon', allergens:'Poisson', desc:'' },
+
+    N1:{ name:'Saumon', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:'' },
+    N2:{ name:'Avocat', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:'' },
+
+    B1:{ name:'Tsingtao', img:'b1.jpg' },
+    B2:{ name:'Asahi', img:'b2.jpg' },
+    B3:{ name:'Coca Cola Zero', img:'b3.jpg' }
+  };
+
+  const prices = { /* Exemple: 'M1': 4.50 */ }; // ex: { 'M1': 4.00 }
 
   /* ===================== Construction du menu ===================== */
   function buildMenu(){
     const menu=document.getElementById('menu');
-    for(const [cat,items] of Object.entries(categories)){
+    menu.innerHTML='';
+    for(const [cat,codes] of Object.entries(categories)){
       const wrap=document.createElement('div');
       wrap.className='category';
       wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
       const grid=wrap.querySelector('.menu-grid');
 
-      items.forEach(item=>{
-        const hasDash = item.includes('-');
-        const code= hasDash ? item.split('-')[0].trim() : item.trim();
-        const name= hasDash ? item.split('-').slice(1).join('-').trim() : item.trim();
-        const price=prices[code];
+      codes.forEach(code=>{
+        const d = catalog[code] || {name:code, img: code.toLowerCase()+'.jpg'};
+        const name = d.name || code;
+        const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
+        const pieces = d.pieces ?? '';
 
         const card=document.createElement('div');
         card.className='item-card';
+        card.dataset.code=code;
+        card.dataset.name=name;
         card.innerHTML=`
-          <div class="left">
-            <img class="thumb" src="images/${code.toLowerCase()}.jpg" alt="${name}" onerror="this.style.display='none'">
-            <div class="item-name">${name}</div>
-          </div>
-          <div class="controls">
-            ${price!==undefined?`<span class="muted" style="margin-right:6px">${price.toFixed(2)}€</span>`:''}
-            <button class="btn minus" data-item="${code}- ${name}">−</button>
-            <span class="qty" data-item="${code}- ${name}">0</span>
-            <button class="btn plus" data-item="${code}- ${name}">+</button>
+          <img class=\"thumb\" src=\"${img}\" alt=\"${name}\" onerror=\"this.style.display='none'\">
+          <div class=\"item-name\">${name}</div>
+          <div class=\"card-body\">
+            <div class=\"card-footer\">
+              <span class=\"pieces\">${pieces? pieces+' pcs' : ''}</span>
+              <div class=\"ctrls\">
+                <button class=\"circle card-minus\" data-item=\"${code}- ${name}\" style=\"visibility:hidden\">−</button>
+                <span class=\"qty-badge qty\" data-item=\"${code}- ${name}\">0</span>
+                <button class=\"circle card-plus\" data-item=\"${code}- ${name}\">+</button>
+              </div>
+            </div>
           </div>`;
         grid.appendChild(card);
       });
@@ -629,21 +693,106 @@ Commentaire : ${c}`;
   function updateMiniRecap(){ /* noop */ }
 
   function updateSticky(){
-    const total = (function(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; })();
+    const qtyNodes = document.querySelectorAll('.qty[data-item]');
+    let totalQty = 0; let totalPrice = 0;
+    qtyNodes.forEach(q=>{
+      const n = parseInt(q.textContent)||0; totalQty += n;
+      if(n>0){
+        const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
+        const p = prices[code] ?? (catalog[code]?.price);
+        if(typeof p === 'number') totalPrice += p * n;
+      }
+    });
+    const btn = document.getElementById('gotoOrder');
+    if(!btn) return;
+    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
+    else { btn.textContent = `Panier (${totalQty}) • Valider`; }
+    updateMiniRecap();
+  })();
     document.getElementById('gotoOrder').textContent = `Panier (${total}) • Valider`;
     updateMiniRecap();
   }
 
   // Gestion plus/moins menu (articles)
   document.addEventListener('click', e=>{
-    if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
-      const inc = e.target.classList.contains('plus') ? 1 : -1;
-      const item = e.target.dataset.item;
+    // Plus / Moins dans la carte
+    if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
+      const btn = e.target.closest('button');
+      const inc = btn.classList.contains('card-plus') ? 1 : -1;
+      const item = btn.dataset.item;
       const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
       const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v; span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
+      span.textContent = v;
+      if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+      span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
+      return;
+    }
+
+    // Ouverture modale en cliquant la carte (hors contrôles)
+    const card = e.target.closest('.item-card');
+    if(card && !e.target.closest('.ctrls')){
+      const code = card.dataset.code;
+      const name = card.dataset.name;
+      const d = catalog[code] || {};
+      const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
+      document.getElementById('mImg').src = img;
+      document.getElementById('mImg').alt = name;
+      document.getElementById('mTitle').textContent = name;
+      document.getElementById('mPieces').textContent = d.pieces ?? '—';
+      document.getElementById('mAllergens').textContent = d.allergens || 'Non renseigné';
+      document.getElementById('mComp').textContent = d.comp || 'Non renseigné';
+      document.getElementById('mDesc').textContent = d.desc || '—';
+
+      const itemKey = `${code}- ${name}`;
+      const qtySpan = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const current = parseInt(qtySpan?.textContent)||0;
+      const mQty = document.getElementById('mQty');
+      const mMinus = document.getElementById('mMinus');
+      mQty.textContent = current;
+      mMinus.style.visibility = current>0 ? 'visible' : 'hidden';
+      mMinus.dataset.item = itemKey;
+      document.getElementById('mPlus').dataset.item = itemKey;
+
+      const modal = document.getElementById('itemModal');
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+      return;
     }
   });
+
+  // Fermer la modale & contrôles modale
+  (function(){
+    const modal = document.getElementById('itemModal');
+    const closeBtn = document.getElementById('mClose');
+    const mMinus = document.getElementById('mMinus');
+    const mPlus = document.getElementById('mPlus');
+    const mQty = document.getElementById('mQty');
+
+    function setQty(itemKey, newVal){
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
+      if(!span) return;
+      span.textContent = newVal;
+      if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
+      mQty.textContent = newVal;
+      document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
+      updateSticky();
+    }
+
+    mMinus.addEventListener('click', ()=>{
+      const key = mMinus.dataset.item; if(!key) return;
+      const cur = parseInt(mQty.textContent)||0; const v=Math.max(0,cur-1); setQty(key,v);
+    });
+    mPlus.addEventListener('click', ()=>{
+      const key = mPlus.dataset.item; if(!key) return;
+      const cur = parseInt(mQty.textContent)||0; const v=cur+1; setQty(key,v);
+    });
+
+    closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+    modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+  })();
 
   // Baguettes
   (function(){
