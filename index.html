@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YUMEKO SUSHIS</title>
 
+  <!-- Police Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
       /* Couleurs du thème */
@@ -557,7 +562,6 @@ Commentaire : ${c}`;
   <script>
   /* ===================== Données ===================== */
   const categories = {
-   
     'Les Maki': [
       'M1- Saumon','M2- Saumon/Avocat','M3- Saumon/Fromage',
       'M5- Concombre','M6- Concombre/Fromage','M7- Avocat','M8- Avocat/Fromage',
@@ -571,18 +575,17 @@ Commentaire : ${c}`;
     'Les Maki printemps': [
       'P1- Saumon/Avocat','P2- Saumon/Fromage','P3- Concombre/Fromage','P4- Avocat/Fromage'
     ],
-     'Les Rols': [
-      'R1- Rols Saumon/Avocat/fromage','R2- Rols Avocat/saumon/fromage',
+    'Les Rolls': [
+      'R1- Saumon/Avocat/Fromage','R2- Avocat/Saumon/Fromage'
     ],
     'Les Sashimi': ['Saumon'],
-    'Les Nigiri': ['N1- Saumon','N2- Avocat']
-    ],
-     'Les Boissons': [
+    'Les Nigiri': ['N1- Saumon','N2- Avocat'],
+    'Les Boissons': [
       'Tsingtao','Asahi','Coca Cola Zero'
-    ],
+    ]
   };
 
-  const prices = {}; // ex: {'M1':4.00}
+  const prices = {}; // ex: { 'M1': 4.00 }
 
   /* ===================== Construction du menu ===================== */
   function buildMenu(){
