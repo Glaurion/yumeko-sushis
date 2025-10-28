@@ -309,173 +309,204 @@
   })();
   </script>
 
-  <!-- ===== Script B : Panier / tiroir / formulaire ===== -->
-  <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const sheet       = document.getElementById('cartSheet');
-    const sheetBody   = sheet?.querySelector('.body');
-    const sheetClose  = document.getElementById('sheetClose');
-    const btnOpen     = document.getElementById('gotoOrder');
-    const btnGoDetails= document.getElementById('goDetails');
-    const btnBack     = document.getElementById('backToCart');
-    const btnConfirm  = document.getElementById('confirmSend');
-    const recapList   = document.getElementById('recapList');
-    const recapOpt    = document.getElementById('recapOptions');
-    const recapPickup = document.getElementById('recapPickup');
-    const recapCom    = document.getElementById('recapComment');
-    const form        = document.getElementById('orderForm');
-    const orderResult = document.getElementById('orderResult');
-    const stepCart    = document.getElementById('stepCart');
-    const stepDetails = document.getElementById('stepDetails');
-    const footCart    = document.getElementById('footerCart');
-    const footDetails = document.getElementById('footerDetails');
-    if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
-      console.warn('[cart] éléments requis manquants');
-      return;
-    }
+<!-- ===== Script B : Panier / tiroir / formulaire ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const sheet       = document.getElementById('cartSheet');
+  const sheetBody   = sheet?.querySelector('.body');
+  const sheetClose  = document.getElementById('sheetClose');
+  const btnOpen     = document.getElementById('gotoOrder');
+  const btnGoDetails= document.getElementById('goDetails');
+  const btnBack     = document.getElementById('backToCart');
+  const btnConfirm  = document.getElementById('confirmSend');
+  const recapList   = document.getElementById('recapList');
+  const recapOpt    = document.getElementById('recapOptions');
+  const recapPickup = document.getElementById('recapPickup');
+  const recapCom    = document.getElementById('recapComment');
+  const form        = document.getElementById('orderForm');
+  const orderResult = document.getElementById('orderResult');
+  const stepCart    = document.getElementById('stepCart');
+  const stepDetails = document.getElementById('stepDetails');
+  const footCart    = document.getElementById('footerCart');
+  const footDetails = document.getElementById('footerDetails');
 
-    // Déplacer le formulaire dans l'étape 2 du tiroir
-    if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
+  if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
+    console.warn('[cart] éléments requis manquants');
+    return;
+  }
 
-    // ---- Utilitaires ----
-    function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
-    function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
-    function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
+  // On ajoute l’email client au formulaire
+  if (!form.querySelector('[name="email"]')) {
+    const email = document.createElement('input');
+    email.type = "email";
+    email.required = true;
+    email.name = "email";
+    email.placeholder = "Email";
+    form.insertBefore(email, form.querySelector("[name='phone']"));
+  }
 
-    // Options
-    function collectOptions(){
-      const opts=[];
-      const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
-      optionKeys.forEach(key=>{
-        const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
-        const qty = el ? parseInt(el.textContent)||0 : 0;
-        if(qty>0){
-          const label = key.replace('sojaSucree','Soja sucrée')
-                           .replace('sojaSalee','Soja salée')
-                           .replace('wasabi','Wasabi')
-                           .replace('gingembre','Gingembre');
-          opts.push(`${label} x${qty}`);
-        }
-      });
-      const bag = parseInt(document.getElementById('bagQty')?.textContent)||0;
-      return {opts, bag};
-    }
+  // ===== Déplacement du formulaire dans l’étape 2 du tiroir
+  if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
-    function collectOptionsSafe(){
-      try { return collectOptions(); } catch { return {opts:[], bag:0}; }
-    }
+  function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
+  function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
-    function parseItem(full){
-      const parts = String(full).split('-');
-      const code = (parts[0] || '').trim();
-      const name = parts.slice(1).join('-').trim() || full.trim();
-      return {code, name};
-    }
-
-    function getCartItems(){
-      const items = [];
-      document.querySelectorAll('.qty[data-item]').forEach(span=>{
-        const qty = safeInt(span);
-        if (qty > 0) {
-          const full = span.dataset.item;
-          const {code, name} = parseItem(full);
-          items.push({ code, name, qty });
-        }
-      });
-      return items;
-    }
-
-    function buildRecap(){
-      const items = getCartItems();
-      recapList.innerHTML = '';
-      if (items.length === 0) {
-        recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
-      } else {
-        items.forEach(({code, name, qty})=>{
-          const li = document.createElement('li');
-          li.className = 'recap-item';
-          const codeLower = (code||'').toLowerCase();
-          li.innerHTML = `
-            <div class="it-left">
-              <img class="thumb sm" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
-              <span class="it-label">${name}</span>
-            </div>
-            <div class="it-ctrl">
-              <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer">−</button>
-              <span class="qty" aria-live="polite">${qty}</span>
-              <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter">+</button>
-            </div>`;
-          recapList.appendChild(li);
-        });
+  // Options
+  function collectOptions(){
+    const opts=[];
+    const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
+    optionKeys.forEach(key=>{
+      const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+      const qty = el ? parseInt(el.textContent)||0 : 0;
+      if(qty>0){
+        const label = key.replace('sojaSucree','Soja sucrée')
+                         .replace('sojaSalee','Soja salée')
+                         .replace('wasabi','Wasabi')
+                         .replace('gingembre','Gingembre');
+        opts.push(`${label} x${qty}`);
       }
-
-      // Options masquées dans le tiroir (tu peux l’afficher si tu veux)
-      recapOpt.textContent = '';
-
-      // Livraison (date/heure)
-      const d = document.getElementById('deliveryDate')?.value || '';
-      const t = document.getElementById('deliveryTime')?.value || '';
-      recapPickup.textContent = (d || t) ? `Livraison : ${[d,t].filter(Boolean).join(' à ')}` : '';
-
-      // Commentaire
-      const c = document.getElementById('comments')?.value?.trim() || '';
-      recapCom.textContent = c ? `Commentaire : ${c}` : '';
-    }
-
-    function setStep(which){
-      const cartActive = which === 'cart';
-      stepCart.classList.toggle('active', cartActive);
-      footCart.classList.toggle('active', cartActive);
-      stepDetails.classList.toggle('active', !cartActive);
-      footDetails.classList.toggle('active', !cartActive);
-    }
-
-    function openSheet(){
-      setStep('cart');
-      buildRecap();
-      sheet.classList.add('open');
-      sheet.setAttribute('aria-hidden','false');
-    }
-    function closeSheet(){
-      sheet.classList.remove('open');
-      sheet.setAttribute('aria-hidden','true');
-    }
-
-    btnOpen.addEventListener('click', openSheet);
-    sheetClose?.addEventListener('click', closeSheet);
-    btnGoDetails?.addEventListener('click', ()=> setStep('details'));
-    btnBack?.addEventListener('click', ()=> setStep('cart'));
-
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
     });
+    const bag = parseInt(document.getElementById('bagQty')?.textContent)||0;
+    return {opts, bag};
+  }
 
-    // Champ caché "order" pour Formspree
-    function ensureHiddenField(name){
-      if (!form) return null;
-      let input = form.querySelector(`input[name="${name}"]`);
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        form.appendChild(input);
+  function parseItem(full){
+    const parts = String(full).split('-');
+    const code = (parts[0] || '').trim();
+    const name = parts.slice(1).join('-').trim() || full.trim();
+    return {code, name};
+  }
+
+  function getCartItems(){
+    const items = [];
+    document.querySelectorAll('.qty[data-item]').forEach(span=>{
+      const qty = safeInt(span);
+      if (qty > 0) {
+        const full = span.dataset.item;
+        const {code, name} = parseItem(full);
+
+        const price = prices[code] ?? 0;
+        const sub = price * qty;
+
+        items.push({ code, name, qty, price, sub });
       }
-      return input;
+    });
+    return items;
+  }
+
+  // ===== RÉCAP VISUEL DANS LE TIROIR
+  function buildRecap(){
+    const items = getCartItems();
+    recapList.innerHTML = '';
+
+    let total = 0;
+
+    if (items.length === 0) {
+      recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
+    } else {
+      items.forEach(({code, name, qty, price, sub})=>{
+        total += sub;
+        const li = document.createElement('li');
+        li.className = 'recap-item';
+        const codeLower = (code||'').toLowerCase();
+        li.innerHTML = `
+          <div class="it-left">
+            <img class="thumb sm" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
+            <span class="it-label">${name}</span>
+          </div>
+          <div style="margin-left:auto;margin-right:10px;font-size:0.85rem;text-align:right;">
+            ${price.toFixed(2)}€ <br>
+            <strong>${sub.toFixed(2)}€</strong>
+          </div>
+          <div class="it-ctrl">
+            <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer">−</button>
+            <span class="qty" aria-live="polite">${qty}</span>
+            <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter">+</button>
+          </div>`;
+        recapList.appendChild(li);
+      });
     }
 
-    function prepareOrderText(){
-      const itemsText = getCartItems().map(({name, qty})=>`- ${name} x${qty}`).join('\n');
-      const {opts, bag} = collectOptionsSafe();
-      const d = document.getElementById('deliveryDate')?.value || '—';
-      const t = document.getElementById('deliveryTime')?.value || '—';
-      const c = document.getElementById('comments')?.value?.trim() || '—';
-      const first = form?.querySelector('[name="first_name"]')?.value || '—';
-      const last  = form?.querySelector('[name="last_name"]')?.value || '—';
-      const phone = form?.querySelector('[name="phone"]')?.value || '—';
+    recapOpt.textContent = '';
 
-      const text =
+    const d = document.getElementById('deliveryDate')?.value || '';
+    const t = document.getElementById('deliveryTime')?.value || '';
+    recapPickup.textContent = (d || t) ? `Livraison : ${[d,t].filter(Boolean).join(' à ')}` : '';
+
+    const c = document.getElementById('comments')?.value?.trim() || '';
+    recapCom.textContent = c ? `Commentaire : ${c}` : '';
+
+    // Bandeau total dans le tiroir
+    if (!document.getElementById("drawerTotal")) {
+      const div = document.createElement("div");
+      div.id = "drawerTotal";
+      div.style = "margin-top:8px;text-align:right;font-weight:700;font-size:1.1rem;";
+      recapList.parentNode.appendChild(div);
+    }
+    document.getElementById("drawerTotal").textContent = `Total : ${total.toFixed(2)}€`;
+  }
+
+  function setStep(which){
+    const cartActive = which === 'cart';
+    stepCart.classList.toggle('active', cartActive);
+    footCart.classList.toggle('active', cartActive);
+    stepDetails.classList.toggle('active', !cartActive);
+    footDetails.classList.toggle('active', !cartActive);
+  }
+
+  function openSheet(){
+    setStep('cart');
+    buildRecap();
+    sheet.classList.add('open');
+    sheet.setAttribute('aria-hidden','false');
+  }
+  function closeSheet(){
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden','true');
+  }
+
+  btnOpen.addEventListener('click', openSheet);
+  sheetClose?.addEventListener('click', closeSheet);
+  btnGoDetails?.addEventListener('click', ()=> setStep('details'));
+  btnBack?.addEventListener('click', ()=> setStep('cart'));
+
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+  });
+
+  // ===== champ caché texte commande envoyé à Formspree
+  function ensureHiddenField(name){
+    if (!form) return null;
+    let input = form.querySelector(`input[name="${name}"]`);
+    if (!input) {
+      input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      form.appendChild(input);
+    }
+    return input;
+  }
+
+  function prepareOrderText(){
+    const items = getCartItems();
+    const itemsText = items.map(it =>
+      `- ${it.name} x${it.qty} (${it.price.toFixed(2)}€) = ${it.sub.toFixed(2)}€`).join('\n');
+
+    const {opts, bag} = collectOptions();
+    const d = document.getElementById('deliveryDate')?.value || '—';
+    const t = document.getElementById('deliveryTime')?.value || '—';
+    const c = document.getElementById('comments')?.value?.trim() || '—';
+    const first = form?.querySelector('[name="first_name"]')?.value || '—';
+    const last  = form?.querySelector('[name="last_name"]')?.value || '—';
+    const phone = form?.querySelector('[name="phone"]')?.value || '—';
+    const email = form?.querySelector('[name="email"]')?.value || '—';
+
+    const total = items.reduce((sum, i)=>sum+i.sub,0);
+
+    const text =
 `Commande YUMEKO
 Client : ${first} ${last}
+Email : ${email}
 Téléphone : ${phone}
 
 Articles :
@@ -484,347 +515,256 @@ ${itemsText || '(aucun)'}
 Options : ${opts.length ? opts.join(', ') : 'aucune'}
 Baguettes : ${bag}
 
+TOTAL : ${total.toFixed(2)} €
+
 Livraison : ${d} ${t}
 Commentaire : ${c}`;
 
-      const hidden = ensureHiddenField('order');
-      if (hidden) hidden.value = text;
+    const hidden = ensureHiddenField('order');
+    if (hidden) hidden.value = text;
+  }
+
+  // ===== ENVOI FORM
+  btnConfirm?.addEventListener('click', ()=>{
+    if (!form) return;
+    if (!form.reportValidity()) {
+      setStep('details');
+      form.reportValidity();
+      form.querySelector(':invalid')?.focus();
+      return;
     }
+    prepareOrderText();
+    if (typeof form.requestSubmit === 'function') form.requestSubmit();
+    else form.submit();
+  });
 
-    // Envoi : bouton du tiroir déclenche l’envoi du formulaire
-    btnConfirm?.addEventListener('click', ()=>{
-      if (!form) return;
-      if (!form.reportValidity()) {
-        setStep('details');
-        form.reportValidity();
-        form.querySelector(':invalid')?.focus();
-        return;
-      }
-      prepareOrderText();
-      if (typeof form.requestSubmit === 'function') form.requestSubmit(); else form.submit();
-    });
+  if (form) {
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if (orderResult) orderResult.innerHTML = 'Envoi en cours…⏳';
+      try{
+        const fd = new FormData(form);
+        const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+          if (orderResult) orderResult.innerHTML = 'Merci ! Votre commande a été envoyée ✅<br>Un email récapitulatif vous a été envoyé.';
 
-    // Soumission via fetch pour afficher un retour dans le tiroir
-    if (form) {
-      form.addEventListener('submit', async (e)=>{
-        e.preventDefault();
-        if (orderResult) orderResult.textContent = 'Envoi en cours…';
-        try{
-          const fd = new FormData(form);
-          const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
-          if (res.ok) {
-            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
-            // Reset panier + options + commentaire
-            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
-            const bagQtyEl = document.getElementById('bagQty');
-            const bagInput = document.getElementById('bagInput');
-            if (bagQtyEl) bagQtyEl.textContent = '1';
-            if (bagInput) bagInput.value = '1';
-            const comEl = document.getElementById('comments');
-            const dEl = document.getElementById('deliveryDate');
-            const tEl = document.getElementById('deliveryTime');
-            if (comEl) comEl.value = '';
-            if (dEl) dEl.value = '';
-            if (tEl) tEl.value = '';
-            // MAJ UI
-            if (typeof updateSticky === 'function') updateSticky();
-            buildRecap();
-            setStep('details');
-            if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.textContent = 'Commande envoyée ✔'; }
-            // Bouton Fermer (si absent)
-            if (!footDetails.querySelector('[data-close-sheet]')) {
-              const closeBtn = document.createElement('button');
-              closeBtn.className = 'btn-ghost';
-              closeBtn.textContent = 'Fermer';
-              closeBtn.setAttribute('data-close-sheet','1');
-              closeBtn.onclick = () => closeSheet();
-              footDetails?.prepend(closeBtn);
-            }
-          } else {
-            form.submit();
+          document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+          document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
+          const bagQtyEl = document.getElementById('bagQty');
+          const bagInput = document.getElementById('bagInput');
+          if (bagQtyEl) bagQtyEl.textContent = '1';
+          if (bagInput) bagInput.value = '1';
+          const comEl = document.getElementById('comments');
+          const dEl = document.getElementById('deliveryDate');
+          const tEl = document.getElementById('deliveryTime');
+          if (comEl) comEl.value = '';
+          if (dEl) dEl.value = '';
+          if (tEl) tEl.value = '';
+
+          if (typeof updateSticky === 'function') updateSticky();
+          buildRecap();
+          setStep('details');
+          if (btnConfirm) {
+            btnConfirm.disabled = true;
+            btnConfirm.textContent = 'Commande envoyée ✔';
           }
-        } catch(err){ form.submit(); }
-      });
-    }
 
-    // Mise à jour du récap quand on tape/choisit dans le tiroir
-    sheet.addEventListener('input', (e)=>{
-      if (e.target.matches('textarea,input')) { buildRecap(); updateSticky(); }
+          if (!footDetails.querySelector('[data-close-sheet]')) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'btn-ghost';
+            closeBtn.textContent = 'Fermer';
+            closeBtn.setAttribute('data-close-sheet','1');
+            closeBtn.onclick = () => closeSheet();
+            footDetails?.prepend(closeBtn);
+          }
+        } else {
+          form.submit();
+        }
+      } catch(err){ form.submit(); }
     });
+  }
 
-    // Réagir aux +/- de la liste récap
-    recapList.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.recap-plus, .recap-minus');
-      if (!btn) return;
-      const item = btn.dataset.item; // format "CODE- Nom"
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      if (!span) return;
-      const inc = btn.classList.contains('recap-plus') ? 1 : -1;
-      const cur = parseInt(span.textContent) || 0;
-      const v = Math.max(0, cur + inc);
-      span.textContent = v > 0 ? String(v) : '';
-      bump(span); updateSticky(); buildRecap();
-    });
+  sheet.addEventListener('input', ()=>{ buildRecap(); updateSticky(); });
 
-    // ✅ Gestion des options (Soja sucrée/salée, Wasabi, Gingembre)
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('.opt-plus, .opt-minus');
-      if (!btn) return;
-
-      const key = btn.dataset.opt; // ex: "sojaSucree"
-      const span = document.querySelector(`.opt-qty[data-opt="${CSS.escape(key)}"]`);
-      if (!span) return;
-
-      const inc = btn.classList.contains('opt-plus') ? 1 : -1;
-      const v = Math.max(0, (parseInt(span.textContent) || 0) + inc);
-      span.textContent = v;
-      bump(span);
-      updateSticky();
-      buildRecap();
-    });
-
-    // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
-    document.addEventListener('click', (e)=>{
-      if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
-          e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
-        setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
-      }
-    });
-
-    // Observer les changements de quantité (articles)
-    const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
-    document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
-
-    // Ouvre le tiroir si ancre #panier/#cart
-    if (location.hash === '#panier' || location.hash === '#cart') openSheet();
+  recapList.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.recap-plus, .recap-minus');
+    if (!btn) return;
+    const item = btn.dataset.item;
+    const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+    if (!span) return;
+    const inc = btn.classList.contains('recap-plus') ? 1 : -1;
+    const cur = parseInt(span.textContent) || 0;
+    const v = Math.max(0, cur + inc);
+    span.textContent = v > 0 ? String(v) : '';
+    bump(span); updateSticky(); buildRecap();
   });
-  </script>
 
-  <!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
-  <script>
-  /* ===================== Données ===================== */
-  const categories = {
-    'LES MAKI': ['M1','M2','M3','M4','M5','M6','M7','M8'],
-    'LES CALIFORNIA': ['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
-    'LES MAKI PRINTEMPS': ['P1','P2','P3','P4'],
-    'LES ROLLS': ['R1','R2'],
-    'LES SASHIMI': ['S1'],
-    'LES NIGIRI': ['N1','N2'],
-    'LES BOISSONS': ['B1','B2','B3']
-  };
+  document.addEventListener('click', (e)=>{
+    if (e.target.matches('.opt-plus, .opt-minus')) { buildRecap(); updateSticky(); }
+  });
 
-  // Catalogue détaillé (à compléter au besoin)
-  const catalog = {
-    M1:{ name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'Maki saumon classique.' },
-    M2:{ name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'Équilibre fondant/vert.' },
-    M3:{ name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:'Crémeux et iodé.' },
-    M4:{ name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:'Ultra frais.' },
-    M5:{ name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'Le croquant + douceur.' },
-    M6:{ name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:'Végétal et onctueux.' },
-    M7:{ name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'Gourmand veggie.' },
-    M8:{ name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:'Simple et doux.' },
+  const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
+  document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
 
-    C1:{ name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:'California au saumon.' },
-    C2:{ name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
-    C3:{ name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
-    C4:{ name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
-    C5:{ name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'' },
-    C6:{ name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:'' },
-    C7:{ name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'' },
-    C8:{ name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:'' },
-    C9:{ name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:'' },
+  if (location.hash === '#panier' || location.hash === '#cart') openSheet();
+});
+<!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
+<script>
+/* ===================== Données ===================== */
+const categories = {
+  'LES MAKI': ['M1','M2','M3','M4','M5','M6','M7','M8'],
+  'LES CALIFORNIA': ['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
+  'LES MAKI PRINTEMPS': ['P1','P2','P3','P4'],
+  'LES ROLLS': ['R1','R2'],
+  'LES SASHIMI': ['S1'],
+  'LES NIGIRI': ['N1','N2'],
+  'LES BOISSONS': ['B1','B2','B3']
+};
 
-    P1:{ name:'MAKI PRINTEMPS SAUMON AVOCAT', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:'' },
-    P2:{ name:'MAKI PRINTEMPS SAUMON CHEESE', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
-    P3:{ name:'MAKI PRINTEMPS CONCOMBRE CHEESE', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:'' },
-    P4:{ name:'MAKI PRINTEMPS AVOCAT CHEESE', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:'' },
+const catalog = {
+  M1:{ name:'MAKI SAUMON', img:'m1.jpg', pieces:6, allergens:'Poisson' },
+  M2:{ name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, allergens:'Poisson' },
+  M3:{ name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, allergens:'Poisson, Lait' },
+  M4:{ name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6 },
+  M5:{ name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, allergens:'Lait' },
+  M6:{ name:'MAKI AVOCAT', img:'m6.jpg', pieces:6 },
+  M7:{ name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, allergens:'Lait' },
+  M8:{ name:'MAKI CHEESE', img:'m8.jpg', pieces:6, allergens:'Lait' },
 
-    R1:{ name:'ROLLS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:'' },
-    R2:{ name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+  C1:{ name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8 },
+  C2:{ name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8 },
+  C3:{ name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8 },
+  C4:{ name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8 },
+  C5:{ name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:8 },
+  C6:{ name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:8 },
+  C7:{ name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:8 },
+  C8:{ name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:8 },
+  C9:{ name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:8 },
 
-    S1:{ name:'SASHIMI SAUMON', img:'s1.jpg', pieces:2, comp:'Tranches de saumon', allergens:'Poisson', desc:'' },
+  P1:{ name:'PRINTEMPS SAUMON AVOCAT', img:'p1.jpg', pieces:6 },
+  P2:{ name:'PRINTEMPS SAUMON CHEESE', img:'p2.jpg', pieces:6 },
+  P3:{ name:'PRINTEMPS CONCOMBRE CHEESE', img:'p3.jpg', pieces:6 },
+  P4:{ name:'PRINTEMPS AVOCAT CHEESE', img:'p4.jpg', pieces:6 },
 
-    N1:{ name:'NIGIRI SAUMON', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:'' },
-    N2:{ name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:'' },
+  R1:{ name:'ROLlS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:8 },
+  R2:{ name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:8 },
 
-    B1:{ name:'BIERE TSINGTAO', img:'b1.jpg' },
-    B2:{ name:'BIERE ASAHI', img:'b2.jpg' },
-    B3:{ name:'COCA COLA ZERO', img:'b3.jpg' }
-  };
+  S1:{ name:'SASHIMI SAUMON', img:'s1.jpg', pieces:2 },
 
-  /* 💶 Prix : remplis ce tableau au fur et à mesure.
-     Tout code absent affichera 0,00 € par défaut. */
-  const prices = { /* Exemple: 'M1': 4.50 */ };
+  N1:{ name:'NIGIRI SAUMON', img:'n1.jpg', pieces:2 },
+  N2:{ name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:2 },
 
-  /* ===================== Construction du menu ===================== */
-  function buildMenu(){
-    const menu=document.getElementById('menu');
-    menu.innerHTML='';
-    for(const [cat,codes] of Object.entries(categories)){
-      const wrap=document.createElement('div');
-      wrap.className='category';
-      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
-      const grid=wrap.querySelector('.menu-grid');
+  B1:{ name:'BIERE TSINGTAO', img:'b1.jpg' },
+  B2:{ name:'BIERE ASAHI', img:'b2.jpg' },
+  B3:{ name:'COCA COLA ZERO', img:'b3.jpg' }
+};
 
-      codes.forEach(code=>{
-        const d = catalog[code] || {name:code, img: code.toLowerCase()+'.jpg'};
-        const name = d.name || code;
-        const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
-        const pieces = d.pieces ?? '';
-        const p = prices[code] ?? 0;
-        const priceStr = p.toFixed(2).replace('.', ',') + ' €';
+/* 💶 Prix */
+const prices = {
+  M1:4.50, M2:4.70, M3:4.80, M4:3.90, M5:4.30, M6:4.20, M7:4.40, M8:4.00,
+  C1:6.90, C2:7.10, C3:7.20, C4:6.60, C5:6.80, C6:6.80, C7:7.00, C8:6.70, C9:7.40,
+  P1:6.90, P2:7.10, P3:6.50, P4:6.70,
+  R1:8.90, R2:8.90,
+  S1:5.80,
+  N1:3.20, N2:3.00,
+  B1:3.50, B2:3.50, B3:2.50
+};
 
-        const card=document.createElement('div');
-        card.className='item-card';
-        card.dataset.code=code;
-        card.dataset.name=name;
-        card.innerHTML=`
-          <img class="thumb" src="${img}" alt="${name}" onerror="this.style.display='none'">
-          <div class="item-name">${name}</div>
-          <div class="card-body">
-            <div class="card-footer">
-              <div class="meta">
-                <span class="pieces">${pieces? pieces+' pcs' : ''}</span>
-                <span class="price">${priceStr}</span>
-              </div>
-              <div class="ctrls">
-                <button class="circle card-minus" data-item="${code}- ${name}" style="visibility:hidden">−</button>
-                <span class="qty-badge qty" data-item="${code}- ${name}"></span>
-                <button class="circle card-plus" data-item="${code}- ${name}">+</button>
-              </div>
-            </div>
-          </div>`;
-        grid.appendChild(card);
-      });
+/* ===================== Construction du menu ===================== */
+function buildMenu(){
+  const menu=document.getElementById('menu');
+  menu.innerHTML='';
+  for(const [cat,codes] of Object.entries(categories)){
+    const wrap=document.createElement('div');
+    wrap.className='category';
+    wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+    const grid=wrap.querySelector('.menu-grid');
 
-      menu.appendChild(wrap);
-    }
-  }
-  buildMenu();
-
-  // mini récap désactivé
-  function updateMiniRecap(){ /* noop */ }
-
-  function updateSticky(){
-    const qtyNodes = document.querySelectorAll('.qty[data-item]');
-    let totalQty = 0; let totalPrice = 0;
-    qtyNodes.forEach(q=>{
-      const n = parseInt(q.textContent)||0; totalQty += n;
-      if(n>0){
-        const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
-        const p = prices[code] ?? (catalog[code]?.price);
-        if(typeof p === 'number') totalPrice += p * n;
-      }
-    });
-    const btn = document.getElementById('gotoOrder');
-    if(!btn) return;
-    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
-    else { btn.textContent = `Panier (${totalQty}) • Valider`; }
-    updateMiniRecap();
-  }
-
-  // Gestion plus/moins menu (articles)
-  document.addEventListener('click', e=>{
-    // Plus / Moins dans la carte
-    if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
-      const btn = e.target.closest('button');
-      const inc = btn.classList.contains('card-plus') ? 1 : -1;
-      const item = btn.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
-      const vBefore = parseInt(span.textContent) || 0;
-      const v = Math.max(0, vBefore + inc);
-      span.textContent = v > 0 ? String(v) : '';  // ← vide si 0, affiche "1" dès le premier ajout
-      if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
-      span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
-      return;
-    }
-
-    // Ouverture modale en cliquant la carte (hors contrôles)
-    const card = e.target.closest('.item-card');
-    if(card && !e.target.closest('.ctrls')){
-      const code = card.dataset.code;
-      const name = card.dataset.name;
-      const d = catalog[code] || {};
+    codes.forEach(code=>{
+      const d = catalog[code] || {name:code, img: code.toLowerCase()+'.jpg'};
+      const name = d.name || code;
       const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
-      document.getElementById('mImg').src = img;
-      document.getElementById('mImg').alt = name;
-      document.getElementById('mTitle').textContent = name;
-      document.getElementById('mPieces').textContent = d.pieces ?? '—';
-      document.getElementById('mAllergens').textContent = d.allergens || 'Non renseigné';
-      document.getElementById('mComp').textContent = d.comp || 'Non renseigné';
-      document.getElementById('mDesc').textContent = d.desc || '—';
+      const pieces = d.pieces ?? '';
+      const p = prices[code] ?? 0;
+      const priceStr = p.toFixed(2).replace('.', ',') + ' €';
 
-      const itemKey = `${code}- ${name}`;
-      const qtySpan = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-      const current = parseInt(qtySpan?.textContent)||0;
-      const mQty = document.getElementById('mQty');
-      const mMinus = document.getElementById('mMinus');
-      mQty.textContent = current;
-      mMinus.style.visibility = current>0 ? 'visible' : 'hidden';
-      mMinus.dataset.item = itemKey;
-      document.getElementById('mPlus').dataset.item = itemKey;
+      const card=document.createElement('div');
+      card.className='item-card';
+      card.dataset.code=code;
+      card.dataset.name=name;
+      card.innerHTML=`
+        <img class="thumb" src="${img}" alt="${name}">
+        <div class="item-name">${name}</div>
+        <div class="card-body">
+          <div class="card-footer">
+            <div class="meta">
+              <span class="pieces">${pieces? pieces+' pcs' : ''}</span>
+              <span class="price">${priceStr}</span>
+            </div>
+            <div class="ctrls">
+              <button class="circle card-minus" data-item="${code}- ${name}" style="visibility:hidden">−</button>
+              <span class="qty-badge qty" data-item="${code}- ${name}"></span>
+              <button class="circle card-plus" data-item="${code}- ${name}">+</button>
+            </div>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
 
-      const modal = document.getElementById('itemModal');
-      modal.style.display='flex';
-      modal.setAttribute('aria-hidden','false');
-      return;
+    menu.appendChild(wrap);
+  }
+}
+buildMenu();
+
+/* ===================== Mini recap désactivé ===================== */
+function updateMiniRecap(){}
+
+/* ===================== Mise à jour bouton sticky ===================== */
+function updateSticky(){
+  const qtyNodes = document.querySelectorAll('.qty[data-item]');
+  let totalQty = 0; let totalPrice = 0;
+  qtyNodes.forEach(q=>{
+    const n = parseInt(q.textContent)||0;
+    totalQty += n;
+    if(n>0){
+      const full = q.dataset.item; 
+      const code = (String(full).split('-')[0]||'').trim();
+      const p = prices[code] ?? 0;
+      totalPrice += p * n;
     }
   });
+  const btn = document.getElementById('gotoOrder');
+  if(!btn) return;
+  if (totalPrice>0){
+    btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`;
+  } else {
+    btn.textContent = `Panier (${totalQty}) • Valider`;
+  }
+}
 
-  // Fermer la modale & contrôles modale
-  (function(){
-    const modal = document.getElementById('itemModal');
-    const closeBtn = document.getElementById('mClose');
-    const mMinus = document.getElementById('mMinus');
-    const mPlus = document.getElementById('mPlus');
-    const mQty = document.getElementById('mQty');
+/* ===================== Écouteurs cartes ± ===================== */
+document.addEventListener('click', e=>{
+  if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
+    const btn = e.target.closest('button');
+    const inc = btn.classList.contains('card-plus') ? 1 : -1;
+    const item = btn.dataset.item;
+    const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+    const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
+    const vBefore = parseInt(span.textContent) || 0;
+    const v = Math.max(0, vBefore + inc);
+    span.textContent = v > 0 ? String(v) : '';
+    if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+    span.classList.add('bump');
+    setTimeout(()=>span.classList.remove('bump'),200);
+    updateSticky();
+    return;
+  }
+});
 
-    function setQty(itemKey, newVal){
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
-      if(!span) return;
-      span.textContent = newVal > 0 ? String(newVal) : '';   // ← vide si 0
-      if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
-      mQty.textContent = newVal; // 0 visible dans la modale pour l'édition
-      document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
-      updateSticky();
-    }
+updateSticky();
+updateMiniRecap();
+</script>
 
-    mMinus.addEventListener('click', ()=>{
-      const key = mMinus.dataset.item; if(!key) return;
-      const cur = parseInt(mQty.textContent)||0; const v=Math.max(0,cur-1); setQty(key,v);
-    });
-    mPlus.addEventListener('click', ()=>{
-      const key = mPlus.dataset.item; if(!key) return;
-      const cur = parseInt(mQty.textContent)||0; const v=cur+1; setQty(key,v);
-    });
-
-    closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
-    modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-  })();
-
-  // Baguettes
-  (function(){
-    const bagMinus = document.getElementById('bagMinus');
-    const bagPlus  = document.getElementById('bagPlus');
-    const bagQty   = document.getElementById('bagQty');
-    const bagInput = document.getElementById('bagInput');
-    if (bagMinus && bagPlus && bagQty && bagInput){
-      bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
-      bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
-    }
-  })();
-
-  // CTA "Commander maintenant"
-  document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
-
-  // Init bandeau
-  updateSticky();
-  updateMiniRecap();
-  </script>
 
 </body>
 </html>
