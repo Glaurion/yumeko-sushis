@@ -122,15 +122,22 @@
 
     /* ⛔ Masquer le récap options dans le panier */
     #recapOptions{ display:none !important; }
+
     /* ===== Nouveau style cartes ===== */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
     .pieces{ font-size:.9rem; color:var(--muted); }
+
+    /* >>> AJOUTS (prix + pastille vide à 0) */
+    .meta{ display:flex; flex-direction:column; line-height:1.15; }
+    .price{ font-size:.95rem; color:#fff; font-weight:700; }
     .ctrls{ display:flex; align-items:center; gap:8px; }
     .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
     .circle:hover{ background:var(--accent-2); }
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
-      .hero .logo{ width:160px; }
+    .qty-badge:empty{ display:none; } /* cache tant que quantité = 0 */
+
+    .hero .logo{ width:160px; }
     @media (min-width: 768px){ .hero .logo{ width:200px; } }
   </style>
   <link rel="icon" type="image/png" href="images/favicon.png" />
@@ -508,7 +515,7 @@ Commentaire : ${c}`;
           if (res.ok) {
             if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
             // Reset panier + options + commentaire
-            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
+            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
             document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
             const bagQtyEl = document.getElementById('bagQty');
             const bagInput = document.getElementById('bagInput');
@@ -554,8 +561,10 @@ Commentaire : ${c}`;
       const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
       if (!span) return;
       const inc = btn.classList.contains('recap-plus') ? 1 : -1;
-      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v; bump(span); updateSticky(); buildRecap();
+      const cur = parseInt(span.textContent) || 0;
+      const v = Math.max(0, cur + inc);
+      span.textContent = v > 0 ? String(v) : '';
+      bump(span); updateSticky(); buildRecap();
     });
 
     // ✅ Gestion des options (Soja sucrée/salée, Wasabi, Gingembre)
@@ -644,7 +653,9 @@ Commentaire : ${c}`;
     B3:{ name:'SOFT COCA COLA ZERO', img:'b3.jpg' }
   };
 
-  const prices = { /* Exemple: 'M1': 4.50 */ }; // ex: { 'M1': 4.00 }
+  /* 💶 Prix : remplis ce tableau au fur et à mesure.
+     Tout code absent affichera 0,00 € par défaut. */
+  const prices = { /* Exemple: 'M1': 4.50 */ };
 
   /* ===================== Construction du menu ===================== */
   function buildMenu(){
@@ -661,21 +672,26 @@ Commentaire : ${c}`;
         const name = d.name || code;
         const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
         const pieces = d.pieces ?? '';
+        const p = prices[code] ?? 0;
+        const priceStr = p.toFixed(2).replace('.', ',') + ' €';
 
         const card=document.createElement('div');
         card.className='item-card';
         card.dataset.code=code;
         card.dataset.name=name;
         card.innerHTML=`
-          <img class=\"thumb\" src=\"${img}\" alt=\"${name}\" onerror=\"this.style.display='none'\">
-          <div class=\"item-name\">${name}</div>
-          <div class=\"card-body\">
-            <div class=\"card-footer\">
-              <span class=\"pieces\">${pieces? pieces+' pcs' : ''}</span>
-              <div class=\"ctrls\">
-                <button class=\"circle card-minus\" data-item=\"${code}- ${name}\" style=\"visibility:hidden\">−</button>
-                <span class=\"qty-badge qty\" data-item=\"${code}- ${name}\">0</span>
-                <button class=\"circle card-plus\" data-item=\"${code}- ${name}\">+</button>
+          <img class="thumb" src="${img}" alt="${name}" onerror="this.style.display='none'">
+          <div class="item-name">${name}</div>
+          <div class="card-body">
+            <div class="card-footer">
+              <div class="meta">
+                <span class="pieces">${pieces? pieces+' pcs' : ''}</span>
+                <span class="price">${priceStr}</span>
+              </div>
+              <div class="ctrls">
+                <button class="circle card-minus" data-item="${code}- ${name}" style="visibility:hidden">−</button>
+                <span class="qty-badge qty" data-item="${code}- ${name}"></span>
+                <button class="circle card-plus" data-item="${code}- ${name}">+</button>
               </div>
             </div>
           </div>`;
@@ -717,8 +733,9 @@ Commentaire : ${c}`;
       const item = btn.dataset.item;
       const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
       const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
-      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
-      span.textContent = v;
+      const vBefore = parseInt(span.textContent) || 0;
+      const v = Math.max(0, vBefore + inc);
+      span.textContent = v > 0 ? String(v) : '';  // ← vide si 0, affiche "1" dès le premier ajout
       if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
       span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
       return;
@@ -768,9 +785,9 @@ Commentaire : ${c}`;
       const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
       const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
       if(!span) return;
-      span.textContent = newVal;
+      span.textContent = newVal > 0 ? String(newVal) : '';   // ← vide si 0
       if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
-      mQty.textContent = newVal;
+      mQty.textContent = newVal; // 0 visible dans la modale pour l'édition
       document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
       updateSticky();
     }
