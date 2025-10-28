@@ -1,3 +1,5 @@
+Jai ne errer quand jessaie denvoyer la commande
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -54,13 +56,20 @@
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:0; display:flex; flex-direction:column; overflow:hidden; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+    .left{ display:none; }
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
     .thumb.sm{ width:40px; height:40px; border-radius:8px; }
     .item-name{ font-weight:700; font-size:.98rem; padding:10px 12px 4px; }
+    .controls{ display:flex; align-items:center; gap:8px; } /* legacy */
     .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
     .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
+
+    /* FORM */
+    form input, form textarea{ width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:10px; margin:6px auto; display:block; }
+    textarea{ resize:vertical; min-height:90px; }
+    .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
     /* STICKY BAR */
     #stickyBar{
@@ -113,19 +122,22 @@
     .step.active{ display:block; }
     .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
 
+    /* ⛔ Masquer le récap options dans le panier */
+    #recapOptions{ display:none !important; }
+
     /* ===== Nouveau style cartes ===== */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
     .pieces{ font-size:.9rem; color:var(--muted); }
 
-    /* Prix + pastille vide à 0 */
+    /* >>> AJOUTS (prix + pastille vide à 0) */
     .meta{ display:flex; flex-direction:column; line-height:1.15; }
     .price{ font-size:.95rem; color:#fff; font-weight:700; }
     .ctrls{ display:flex; align-items:center; gap:8px; }
     .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
     .circle:hover{ background:var(--accent-2); }
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
-    .qty-badge:empty{ display:none; }
+    .qty-badge:empty{ display:none; } /* cache tant que quantité = 0 */
 
     .hero .logo{ width:160px; }
     @media (min-width: 768px){ .hero .logo{ width:200px; } }
@@ -173,17 +185,14 @@
       </div>
     </div>
 
-    <!-- FORM COMMANDE (déplacé dans le tiroir) -->
+    <!-- FORM COMMANDE (sera déplacé dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
+        <!-- Téléphone devient OBLIGATOIRE -->
         <input name="phone" type="tel" placeholder="Téléphone" required>
-        <input name="email" type="email" placeholder="Email (facultatif)">
-        <input type="hidden" name="_subject" value="Nouvelle commande YUMEKO">
-        <!-- Redirection custom (optionnel) -->
-        <!-- <input type="hidden" name="_redirect" value="https://ton-domaine.com/merci.html"> -->
 
         <p class="muted" style="margin-top:8px">Options :</p>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:10px;">
@@ -227,6 +236,7 @@
 
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
 
+        <!-- BOUTON D'ENVOI SUPPRIMÉ (on utilise celui du tiroir) -->
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
     </section>
@@ -235,6 +245,7 @@
   <!-- BANDEAU PANIER -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
+      <!-- mini recap supprimé visuellement -->
       <span id="miniRecap"></span>
       <button id="gotoOrder">Panier (0) • Valider</button>
     </div>
@@ -247,6 +258,7 @@
       <button id="sheetClose" aria-label="Fermer">×</button>
     </header>
     <div class="body">
+      <!-- ÉTAPE 1 : Récap & édition -->
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
@@ -254,7 +266,10 @@
         <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <div id="stepDetails" class="step"><!-- le formulaire sera injecté ici --></div>
+      <!-- ÉTAPE 2 : Infos client & livraison (le formulaire est déplacé ici) -->
+      <div id="stepDetails" class="step">
+        <!-- le formulaire sera injecté ici par JS -->
+      </div>
     </div>
     <footer>
       <div id="footerCart" class="step active">
@@ -271,7 +286,7 @@
 
   <!-- ===== Script A : utilitaires globaux & ombre bandeau ===== -->
   <script>
-  // Polyfill léger pour CSS.escape
+  // Polyfill léger pour CSS.escape sur vieux navigateurs
   (function(){
     if (typeof window.CSS === 'undefined') window.CSS = {};
     if (typeof window.CSS.escape !== 'function') {
@@ -286,8 +301,8 @@
     function updateBarShade(){
       const doc = document.documentElement;
       const max = (doc.scrollHeight - window.innerHeight) || 1;
-      const p = Math.min(1, Math.max(0, window.scrollY / max));
-      const shade = 0.35 + (0.85 - 0.35) * p;
+      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
+      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
       root.style.setProperty('--barShade', shade.toFixed(2));
     }
     updateBarShade();
@@ -316,18 +331,18 @@
     const stepDetails = document.getElementById('stepDetails');
     const footCart    = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
-
     if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
       console.warn('[cart] éléments requis manquants');
       return;
     }
 
-    // Déplacer le formulaire dans l’étape 2 du tiroir
+    // Déplacer le formulaire dans l'étape 2 du tiroir
     if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
     // ---- Utilitaires ----
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
+    function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
 
     // Options
     function collectOptions(){
@@ -347,7 +362,10 @@
       const bag = parseInt(document.getElementById('bagQty')?.textContent)||0;
       return {opts, bag};
     }
-    function collectOptionsSafe(){ try { return collectOptions(); } catch { return {opts:[], bag:0}; } }
+
+    function collectOptionsSafe(){
+      try { return collectOptions(); } catch { return {opts:[], bag:0}; }
+    }
 
     function parseItem(full){
       const parts = String(full).split('-');
@@ -355,6 +373,7 @@
       const name = parts.slice(1).join('-').trim() || full.trim();
       return {code, name};
     }
+
     function getCartItems(){
       const items = [];
       document.querySelectorAll('.qty[data-item]').forEach(span=>{
@@ -391,6 +410,9 @@
           recapList.appendChild(li);
         });
       }
+
+      // Options masquées dans le tiroir (tu peux l’afficher si tu veux)
+      recapOpt.textContent = '';
 
       // Livraison (date/heure)
       const d = document.getElementById('deliveryDate')?.value || '';
@@ -471,19 +493,62 @@ Commentaire : ${c}`;
       if (hidden) hidden.value = text;
     }
 
-    // Envoi natif : on prépare le champ "order" puis on laisse Formspree gérer la soumission
+    // Envoi : bouton du tiroir déclenche l’envoi du formulaire
     btnConfirm?.addEventListener('click', ()=>{
       if (!form) return;
       if (!form.reportValidity()) {
         setStep('details');
+        form.reportValidity();
         form.querySelector(':invalid')?.focus();
         return;
       }
       prepareOrderText();
-      if (typeof form.requestSubmit === 'function') form.requestSubmit();
-      else form.submit();
-      // Pas de reset ici : redirection Formspree
+      if (typeof form.requestSubmit === 'function') form.requestSubmit(); else form.submit();
     });
+
+    // Soumission via fetch pour afficher un retour dans le tiroir
+    if (form) {
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        if (orderResult) orderResult.textContent = 'Envoi en cours…';
+        try{
+          const fd = new FormData(form);
+          const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+          if (res.ok) {
+            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
+            // Reset panier + options + commentaire
+            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
+            const bagQtyEl = document.getElementById('bagQty');
+            const bagInput = document.getElementById('bagInput');
+            if (bagQtyEl) bagQtyEl.textContent = '1';
+            if (bagInput) bagInput.value = '1';
+            const comEl = document.getElementById('comments');
+            const dEl = document.getElementById('deliveryDate');
+            const tEl = document.getElementById('deliveryTime');
+            if (comEl) comEl.value = '';
+            if (dEl) dEl.value = '';
+            if (tEl) tEl.value = '';
+            // MAJ UI
+            if (typeof updateSticky === 'function') updateSticky();
+            buildRecap();
+            setStep('details');
+            if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.textContent = 'Commande envoyée ✔'; }
+            // Bouton Fermer (si absent)
+            if (!footDetails.querySelector('[data-close-sheet]')) {
+              const closeBtn = document.createElement('button');
+              closeBtn.className = 'btn-ghost';
+              closeBtn.textContent = 'Fermer';
+              closeBtn.setAttribute('data-close-sheet','1');
+              closeBtn.onclick = () => closeSheet();
+              footDetails?.prepend(closeBtn);
+            }
+          } else {
+            form.submit();
+          }
+        } catch(err){ form.submit(); }
+      });
+    }
 
     // Mise à jour du récap quand on tape/choisit dans le tiroir
     sheet.addEventListener('input', (e)=>{
@@ -494,7 +559,7 @@ Commentaire : ${c}`;
     recapList.addEventListener('click', (e)=>{
       const btn = e.target.closest('.recap-plus, .recap-minus');
       if (!btn) return;
-      const item = btn.dataset.item;
+      const item = btn.dataset.item; // format "CODE- Nom"
       const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
       if (!span) return;
       const inc = btn.classList.contains('recap-plus') ? 1 : -1;
@@ -504,135 +569,41 @@ Commentaire : ${c}`;
       bump(span); updateSticky(); buildRecap();
     });
 
-    // Gestion plus/moins du menu
-    document.addEventListener('click', e=>{
-      if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
-        const btn = e.target.closest('button');
-        const inc = btn.classList.contains('card-plus') ? 1 : -1;
-        const item = btn.dataset.item;
-        const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-        const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
-        const vBefore = parseInt(span.textContent) || 0;
-        const v = Math.max(0, vBefore + inc);
-        span.textContent = v > 0 ? String(v) : '';
-        if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
-        bump(span); updateSticky();
-        return;
-      }
+    // ✅ Gestion des options (Soja sucrée/salée, Wasabi, Gingembre)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.opt-plus, .opt-minus');
+      if (!btn) return;
 
-      // Ouverture modale en cliquant la carte (hors contrôles)
-      const card = e.target.closest('.item-card');
-      if(card && !e.target.closest('.ctrls')){
-        const code = card.dataset.code;
-        const name = card.dataset.name;
-        const d = catalog[code] || {};
-        const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
-        document.getElementById('mImg').src = img;
-        document.getElementById('mImg').alt = name;
-        document.getElementById('mTitle').textContent = name;
-        document.getElementById('mPieces').textContent = d.pieces ?? '—';
-        document.getElementById('mAllergens').textContent = d.allergens || 'Non renseigné';
-        document.getElementById('mComp').textContent = d.comp || 'Non renseigné';
-        document.getElementById('mDesc').textContent = d.desc || '—';
+      const key = btn.dataset.opt; // ex: "sojaSucree"
+      const span = document.querySelector(`.opt-qty[data-opt="${CSS.escape(key)}"]`);
+      if (!span) return;
 
-        const itemKey = `${code}- ${name}`;
-        const qtySpan = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        const current = parseInt(qtySpan?.textContent)||0;
-        const mQty = document.getElementById('mQty');
-        const mMinus = document.getElementById('mMinus');
-        mQty.textContent = current;
-        mMinus.style.visibility = current>0 ? 'visible' : 'hidden';
-        mMinus.dataset.item = itemKey;
-        document.getElementById('mPlus').dataset.item = itemKey;
+      const inc = btn.classList.contains('opt-plus') ? 1 : -1;
+      const v = Math.max(0, (parseInt(span.textContent) || 0) + inc);
+      span.textContent = v;
+      bump(span);
+      updateSticky();
+      buildRecap();
+    });
 
-        const modal = document.getElementById('itemModal');
-        modal.style.display='flex';
-        modal.setAttribute('aria-hidden','false');
-        return;
+    // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
+    document.addEventListener('click', (e)=>{
+      if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
+          e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
+        setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
       }
     });
 
-    // Fermer la modale & contrôles modale
-    (function(){
-      const modal = document.getElementById('itemModal');
-      const closeBtn = document.getElementById('mClose');
-      const mMinus = document.getElementById('mMinus');
-      const mPlus = document.getElementById('mPlus');
-      const mQty = document.getElementById('mQty');
-
-      function setQty(itemKey, newVal){
-        const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
-        if(!span) return;
-        span.textContent = newVal > 0 ? String(newVal) : '';
-        if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
-        mQty.textContent = newVal;
-        document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
-        updateSticky();
-      }
-
-      mMinus.addEventListener('click', ()=>{
-        const key = mMinus.dataset.item; if(!key) return;
-        const cur = parseInt(mQty.textContent)||0; const v=Math.max(0,cur-1); setQty(key,v);
-      });
-      mPlus.addEventListener('click', ()=>{
-        const key = mPlus.dataset.item; if(!key) return;
-        const cur = parseInt(mQty.textContent)||0; const v=cur+1; setQty(key,v);
-      });
-
-      closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
-      modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-    })();
-
-    // Baguettes
-    (function(){
-      const bagMinus = document.getElementById('bagMinus');
-      const bagPlus  = document.getElementById('bagPlus');
-      const bagQty   = document.getElementById('bagQty');
-      const bagInput = document.getElementById('bagInput');
-      if (bagMinus && bagPlus && bagQty && bagInput){
-        bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-        bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bump(bagQty); };
-      }
-    })();
-
-    // CTA "Commander maintenant"
-    document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+    // Observer les changements de quantité (articles)
+    const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
+    document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
 
     // Ouvre le tiroir si ancre #panier/#cart
-    function updateSticky(){
-      const qtyNodes = document.querySelectorAll('.qty[data-item]');
-      let totalQty = 0; let totalPrice = 0;
-      qtyNodes.forEach(q=>{
-        const n = parseInt(q.textContent)||0; totalQty += n;
-        if(n>0){
-          const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
-          const p = prices[code] ?? (catalog[code]?.price);
-          if(typeof p === 'number') totalPrice += p * n;
-        }
-      });
-      const btn = document.getElementById('gotoOrder');
-      if(!btn) return;
-      if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
-      else { btn.textContent = `Panier (${totalQty}) • Valider`; }
-    }
-
-    function updateMiniRecap(){ /* noop */ }
-
     if (location.hash === '#panier' || location.hash === '#cart') openSheet();
-
-    // Expose pour d'autres appels
-    window.updateSticky = updateSticky;
-    window.updateMiniRecap = updateMiniRecap;
-
-    // Init bandeau
-    updateSticky();
-    updateMiniRecap();
   });
   </script>
 
-  <!-- ===== Script C : Données + Construction du menu ===== -->
+  <!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
   <script>
   /* ===================== Données ===================== */
   const categories = {
@@ -645,6 +616,7 @@ Commentaire : ${c}`;
     'LES BOISSONS': ['B1','B2','B3']
   };
 
+  // Catalogue détaillé (à compléter au besoin)
   const catalog = {
     M1:{ name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'Maki saumon classique.' },
     M2:{ name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'Équilibre fondant/vert.' },
@@ -683,8 +655,9 @@ Commentaire : ${c}`;
     B3:{ name:'COCA COLA ZERO', img:'b3.jpg' }
   };
 
-  /* 💶 Prix : remplis ce tableau. Tout code absent affichera 0,00 €. */
-  const prices = { /* ex: M1: 4.50, C1: 6.90 */ };
+  /* 💶 Prix : remplis ce tableau au fur et à mesure.
+     Tout code absent affichera 0,00 € par défaut. */
+  const prices = { /* Exemple: 'M1': 4.50 */ };
 
   /* ===================== Construction du menu ===================== */
   function buildMenu(){
@@ -731,6 +704,128 @@ Commentaire : ${c}`;
     }
   }
   buildMenu();
+
+  // mini récap désactivé
+  function updateMiniRecap(){ /* noop */ }
+
+  function updateSticky(){
+    const qtyNodes = document.querySelectorAll('.qty[data-item]');
+    let totalQty = 0; let totalPrice = 0;
+    qtyNodes.forEach(q=>{
+      const n = parseInt(q.textContent)||0; totalQty += n;
+      if(n>0){
+        const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
+        const p = prices[code] ?? (catalog[code]?.price);
+        if(typeof p === 'number') totalPrice += p * n;
+      }
+    });
+    const btn = document.getElementById('gotoOrder');
+    if(!btn) return;
+    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
+    else { btn.textContent = `Panier (${totalQty}) • Valider`; }
+    updateMiniRecap();
+  }
+
+  // Gestion plus/moins menu (articles)
+  document.addEventListener('click', e=>{
+    // Plus / Moins dans la carte
+    if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
+      const btn = e.target.closest('button');
+      const inc = btn.classList.contains('card-plus') ? 1 : -1;
+      const item = btn.dataset.item;
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
+      const vBefore = parseInt(span.textContent) || 0;
+      const v = Math.max(0, vBefore + inc);
+      span.textContent = v > 0 ? String(v) : '';  // ← vide si 0, affiche "1" dès le premier ajout
+      if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+      span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
+      return;
+    }
+
+    // Ouverture modale en cliquant la carte (hors contrôles)
+    const card = e.target.closest('.item-card');
+    if(card && !e.target.closest('.ctrls')){
+      const code = card.dataset.code;
+      const name = card.dataset.name;
+      const d = catalog[code] || {};
+      const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
+      document.getElementById('mImg').src = img;
+      document.getElementById('mImg').alt = name;
+      document.getElementById('mTitle').textContent = name;
+      document.getElementById('mPieces').textContent = d.pieces ?? '—';
+      document.getElementById('mAllergens').textContent = d.allergens || 'Non renseigné';
+      document.getElementById('mComp').textContent = d.comp || 'Non renseigné';
+      document.getElementById('mDesc').textContent = d.desc || '—';
+
+      const itemKey = `${code}- ${name}`;
+      const qtySpan = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const current = parseInt(qtySpan?.textContent)||0;
+      const mQty = document.getElementById('mQty');
+      const mMinus = document.getElementById('mMinus');
+      mQty.textContent = current;
+      mMinus.style.visibility = current>0 ? 'visible' : 'hidden';
+      mMinus.dataset.item = itemKey;
+      document.getElementById('mPlus').dataset.item = itemKey;
+
+      const modal = document.getElementById('itemModal');
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+      return;
+    }
+  });
+
+  // Fermer la modale & contrôles modale
+  (function(){
+    const modal = document.getElementById('itemModal');
+    const closeBtn = document.getElementById('mClose');
+    const mMinus = document.getElementById('mMinus');
+    const mPlus = document.getElementById('mPlus');
+    const mQty = document.getElementById('mQty');
+
+    function setQty(itemKey, newVal){
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
+      if(!span) return;
+      span.textContent = newVal > 0 ? String(newVal) : '';   // ← vide si 0
+      if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
+      mQty.textContent = newVal; // 0 visible dans la modale pour l'édition
+      document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
+      updateSticky();
+    }
+
+    mMinus.addEventListener('click', ()=>{
+      const key = mMinus.dataset.item; if(!key) return;
+      const cur = parseInt(mQty.textContent)||0; const v=Math.max(0,cur-1); setQty(key,v);
+    });
+    mPlus.addEventListener('click', ()=>{
+      const key = mPlus.dataset.item; if(!key) return;
+      const cur = parseInt(mQty.textContent)||0; const v=cur+1; setQty(key,v);
+    });
+
+    closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+    modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+  })();
+
+  // Baguettes
+  (function(){
+    const bagMinus = document.getElementById('bagMinus');
+    const bagPlus  = document.getElementById('bagPlus');
+    const bagQty   = document.getElementById('bagQty');
+    const bagInput = document.getElementById('bagInput');
+    if (bagMinus && bagPlus && bagQty && bagInput){
+      bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
+      bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
+    }
+  })();
+
+  // CTA "Commander maintenant"
+  document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+
+  // Init bandeau
+  updateSticky();
+  updateMiniRecap();
   </script>
 
 </body>
