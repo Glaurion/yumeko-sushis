@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YUMEKO SUSHIS</title>
-  <title>YUMEKO SUSHIS</title>
 
   <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -144,7 +143,6 @@
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
-    $1
     <p class="muted" style="margin-top:6px;font-size:0.95rem;">Informations complémentaires</p>
     <button class="cta" id="ctaOrder">Commander maintenant</button>
   </section>
@@ -170,10 +168,11 @@
           </div>
           <div><strong>Composition :</strong><br><span id="mComp">Non renseigné</span></div>
           <div><strong>Description :</strong><br><span id="mDesc">—</span></div>
-        <div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:flex-end;gap:10px">
-          <button id="mMinus" class="circle" style="visibility:hidden">−</button>
-          <span id="mQty" class="qty-badge">0</span>
-          <button id="mPlus" class="circle">+</button>
+          <div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:flex-end;gap:10px">
+            <button id="mMinus" class="circle" style="visibility:hidden">−</button>
+            <span id="mQty" class="qty-badge">0</span>
+            <button id="mPlus" class="circle">+</button>
+          </div>
         </div>
       </div>
     </div>
@@ -707,9 +706,6 @@ Commentaire : ${c}`;
     if(!btn) return;
     if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
     else { btn.textContent = `Panier (${totalQty}) • Valider`; }
-    updateMiniRecap();
-  })();
-    document.getElementById('gotoOrder').textContent = `Panier (${total}) • Valider`;
     updateMiniRecap();
   }
 
