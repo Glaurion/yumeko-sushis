@@ -1,4 +1,3 @@
-corrige le moi 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,65 +12,85 @@ corrige le moi
 
   <style>
     :root{
-      --brand:#8b0000;
-      --brand-2:#a31212;
+      /* Couleurs du thème */
+      --brand:#8b0000;          /* rouge foncé */
+      --brand-2:#a31212;        /* rouge hover */
       --text:#f8f8f8;
       --card:#1b1b1b;
       --muted:#cfcfcf;
       --accent:#ffb6b6;
       --accent-2:#ff8c8c;
-      --barShade:.35;
+
+      /* Opacité du dégradé du bandeau (mise à jour au scroll via JS) */
+      --barShade: .35;
     }
 
+    /* On retire totalement la section de la page (on gère tout dans le tiroir) */
     #orderSection { display: none !important; }
 
     *{ box-sizing: border-box; }
-    body{ margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh; }
 
-    .hero{ background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat; padding:60px 20px; text-align:center; }
+    body{
+      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%);
+      color:var(--text); min-height:100vh;
+    }
+
+    /* HERO */
+    .hero{
+      background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
+      padding:60px 20px; text-align:center;
+    }
     h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
     .cta{ background:var(--brand); border:none; color:#fff; padding:14px 18px; border-radius:10px; font-weight:800; cursor:pointer; }
     .cta:hover{ background:var(--brand-2); }
 
+    /* LAYOUT & SECTIONS */
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;}
     .section-title{ color:#fff; font-size:1.8rem; margin-bottom:10px; }
 
+    /* MENU */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:0; display:flex; flex-direction:column; overflow:hidden; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+    .left{ display:none; }
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
     .thumb.sm{ width:40px; height:40px; border-radius:8px; }
     .item-name{ font-weight:700; font-size:.98rem; padding:10px 12px 4px; }
-
-    .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
-    .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
-    .meta{ display:flex; flex-direction:column; line-height:1.1; gap:4px; }
-    .pieces{ font-size:.9rem; color:var(--muted); }
-    .price{ font-size:.95rem; font-weight:800; }
-
-    .ctrls{ display:flex; align-items:center; gap:8px; }
-    .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
-    .circle:hover{ background:var(--accent-2); }
-    .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
-    .qty-badge.is-zero{ visibility:hidden; }
-
+    .controls{ display:flex; align-items:center; gap:8px; } /* legacy */
     .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
     .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
+    /* FORM */
     form input, form textarea{ width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:10px; margin:6px auto; display:block; }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade))); padding:10px; }
+    /* STICKY BAR */
+    #stickyBar{
+      position:fixed; bottom:0; left:0; right:0; z-index:100;
+      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade)));
+      padding:10px;
+    }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
+
+    /* 🔕 Mini récap totalement masqué */
     #miniRecap{ display:none !important; font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #miniRecap::-webkit-scrollbar{ display:none; }
+
     #gotoOrder{ width:auto; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; white-space:nowrap; }
 
-    #cartSheet{ position:fixed; left:50%; transform:translateX(-50%); bottom:-100%; width:min(96%,1100px); background:#1b1b1b; color:#fff; border:1px solid rgba(255,255,255,.12); border-radius:16px 16px 0 0; box-shadow:0 22px 60px rgba(0,0,0,.45); max-height:70vh; display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101; }
+    /* TIROIR RÉCAP */
+    #cartSheet{
+      position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
+      width:min(96%,1100px); background:#1b1b1b; color:#fff;
+      border:1px solid rgba(255,255,255,.12); border-radius:16px 16px 0 0;
+      box-shadow:0 22px 60px rgba(0,0,0,.45); max-height:70vh;
+      display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101;
+    }
     #cartSheet.open{ bottom:62px; }
     #cartSheet header, #cartSheet footer{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
@@ -85,6 +104,7 @@ corrige le moi
     .recap-item .it-label{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .recap-item .it-ctrl{ display:flex; align-items:center; gap:8px; }
 
+    /* Boutons du tiroir */
     .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer; }
     .btn-ghost{ background:#2a2a2a; color:#fff; }
     .btn-ghost:hover{ filter:brightness(1.1); }
@@ -92,13 +112,25 @@ corrige le moi
     .btn-primary:hover{ background:var(--brand-2); }
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
+    .shake{ animation:shake .35s; }
+    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);} }
 
+    /* Stepper du tiroir */
     .step{ display:none; }
     .step.active{ display:block; }
     .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
 
+    /* ⛔ Masquer le récap options dans le panier */
     #recapOptions{ display:none !important; }
-    .hero .logo{ width:160px; }
+    /* ===== Nouveau style cartes ===== */
+    .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
+    .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
+    .pieces{ font-size:.9rem; color:var(--muted); }
+    .ctrls{ display:flex; align-items:center; gap:8px; }
+    .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
+    .circle:hover{ background:var(--accent-2); }
+    .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
+      .hero .logo{ width:160px; }
     @media (min-width: 768px){ .hero .logo{ width:200px; } }
   </style>
   <link rel="icon" type="image/png" href="images/favicon.png" />
@@ -107,14 +139,15 @@ corrige le moi
 </head>
 <body>
 
+  <!-- HERO -->
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
-    <p class="muted" style="margin-top:6px;font-size:0.95rem;">Informations complémentaires</p>
     <button class="cta" id="ctaOrder">Commander maintenant</button>
   </section>
 
   <main class="container">
+    <!-- MENU -->
     <section class="section" id="menuSection">
       <div id="menu"></div>
     </section>
@@ -143,12 +176,13 @@ corrige le moi
       </div>
     </div>
 
-    <!-- FORM COMMANDE (déplacé dans le tiroir) -->
+    <!-- FORM COMMANDE (sera déplacé dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
+        <!-- Téléphone devient OBLIGATOIRE -->
         <input name="phone" type="tel" placeholder="Téléphone" required>
 
         <p class="muted" style="margin-top:8px">Options :</p>
@@ -192,24 +226,30 @@ corrige le moi
         <input type="time" id="deliveryTime" name="delivery_time" step="900">
 
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
+
+        <!-- BOUTON D'ENVOI SUPPRIMÉ (on utilise celui du tiroir) -->
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
     </section>
   </main>
 
+  <!-- BANDEAU PANIER -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
+      <!-- mini recap supprimé visuellement -->
       <span id="miniRecap"></span>
       <button id="gotoOrder">Panier (0) • Valider</button>
     </div>
   </div>
 
+  <!-- TIROIR RÉCAP / 2 ÉTAPES -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
       <button id="sheetClose" aria-label="Fermer">×</button>
     </header>
     <div class="body">
+      <!-- ÉTAPE 1 : Récap & édition -->
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
@@ -217,7 +257,10 @@ corrige le moi
         <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <div id="stepDetails" class="step"></div>
+      <!-- ÉTAPE 2 : Infos client & livraison (le formulaire est déplacé ici) -->
+      <div id="stepDetails" class="step">
+        <!-- le formulaire sera injecté ici par JS -->
+      </div>
     </div>
     <footer>
       <div id="footerCart" class="step active">
@@ -232,9 +275,539 @@ corrige le moi
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
+  <!-- ===== Script A : utilitaires globaux & ombre bandeau ===== -->
   <script>
+  // Polyfill léger pour CSS.escape sur vieux navigateurs
   (function(){
     if (typeof window.CSS === 'undefined') window.CSS = {};
     if (typeof window.CSS.escape !== 'function') {
       window.CSS.escape = function(sel){
-        return String(sel).replace(/[
+        return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g, '\\$&');
+      };
+    }
+  })();
+
+  (function(){
+    const root = document.documentElement;
+    function updateBarShade(){
+      const doc = document.documentElement;
+      const max = (doc.scrollHeight - window.innerHeight) || 1;
+      const p = Math.min(1, Math.max(0, window.scrollY / max)); // 0 top → 1 bottom
+      const shade = 0.35 + (0.85 - 0.35) * p; // de 0.35 à 0.85
+      root.style.setProperty('--barShade', shade.toFixed(2));
+    }
+    updateBarShade();
+    window.addEventListener('scroll', updateBarShade, { passive:true });
+    window.addEventListener('resize', updateBarShade);
+  })();
+  </script>
+
+  <!-- ===== Script B : Panier / tiroir / formulaire ===== -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sheet       = document.getElementById('cartSheet');
+    const sheetBody   = sheet?.querySelector('.body');
+    const sheetClose  = document.getElementById('sheetClose');
+    const btnOpen     = document.getElementById('gotoOrder');
+    const btnGoDetails= document.getElementById('goDetails');
+    const btnBack     = document.getElementById('backToCart');
+    const btnConfirm  = document.getElementById('confirmSend');
+    const recapList   = document.getElementById('recapList');
+    const recapOpt    = document.getElementById('recapOptions');
+    const recapPickup = document.getElementById('recapPickup');
+    const recapCom    = document.getElementById('recapComment');
+    const form        = document.getElementById('orderForm');
+    const orderResult = document.getElementById('orderResult');
+    const stepCart    = document.getElementById('stepCart');
+    const stepDetails = document.getElementById('stepDetails');
+    const footCart    = document.getElementById('footerCart');
+    const footDetails = document.getElementById('footerDetails');
+    if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
+      console.warn('[cart] éléments requis manquants');
+      return;
+    }
+
+    // Déplacer le formulaire dans l'étape 2 du tiroir
+    if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
+
+    // ---- Utilitaires ----
+    function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
+    function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
+    function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
+
+    // Options
+    function collectOptions(){
+      const opts=[];
+      const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
+      optionKeys.forEach(key=>{
+        const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
+        const qty = el ? parseInt(el.textContent)||0 : 0;
+        if(qty>0){
+          const label = key.replace('sojaSucree','Soja sucrée')
+                           .replace('sojaSalee','Soja salée')
+                           .replace('wasabi','Wasabi')
+                           .replace('gingembre','Gingembre');
+          opts.push(`${label} x${qty}`);
+        }
+      });
+      const bag = parseInt(document.getElementById('bagQty')?.textContent)||0;
+      return {opts, bag};
+    }
+
+    function collectOptionsSafe(){
+      try { return collectOptions(); } catch { return {opts:[], bag:0}; }
+    }
+
+    function parseItem(full){
+      const parts = String(full).split('-');
+      const code = (parts[0] || '').trim();
+      const name = parts.slice(1).join('-').trim() || full.trim();
+      return {code, name};
+    }
+
+    function getCartItems(){
+      const items = [];
+      document.querySelectorAll('.qty[data-item]').forEach(span=>{
+        const qty = safeInt(span);
+        if (qty > 0) {
+          const full = span.dataset.item;
+          const {code, name} = parseItem(full);
+          items.push({ code, name, qty });
+        }
+      });
+      return items;
+    }
+
+    function buildRecap(){
+      const items = getCartItems();
+      recapList.innerHTML = '';
+      if (items.length === 0) {
+        recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
+      } else {
+        items.forEach(({code, name, qty})=>{
+          const li = document.createElement('li');
+          li.className = 'recap-item';
+          const codeLower = (code||'').toLowerCase();
+          li.innerHTML = `
+            <div class="it-left">
+              <img class="thumb sm" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
+              <span class="it-label">${name}</span>
+            </div>
+            <div class="it-ctrl">
+              <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer">−</button>
+              <span class="qty" aria-live="polite">${qty}</span>
+              <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter">+</button>
+            </div>`;
+          recapList.appendChild(li);
+        });
+      }
+
+      // Options masquées dans le tiroir (tu peux l’afficher si tu veux)
+      recapOpt.textContent = '';
+
+      // Livraison (date/heure)
+      const d = document.getElementById('deliveryDate')?.value || '';
+      const t = document.getElementById('deliveryTime')?.value || '';
+      recapPickup.textContent = (d || t) ? `Livraison : ${[d,t].filter(Boolean).join(' à ')}` : '';
+
+      // Commentaire
+      const c = document.getElementById('comments')?.value?.trim() || '';
+      recapCom.textContent = c ? `Commentaire : ${c}` : '';
+    }
+
+    function setStep(which){
+      const cartActive = which === 'cart';
+      stepCart.classList.toggle('active', cartActive);
+      footCart.classList.toggle('active', cartActive);
+      stepDetails.classList.toggle('active', !cartActive);
+      footDetails.classList.toggle('active', !cartActive);
+    }
+
+    function openSheet(){
+      setStep('cart');
+      buildRecap();
+      sheet.classList.add('open');
+      sheet.setAttribute('aria-hidden','false');
+    }
+    function closeSheet(){
+      sheet.classList.remove('open');
+      sheet.setAttribute('aria-hidden','true');
+    }
+
+    btnOpen.addEventListener('click', openSheet);
+    sheetClose?.addEventListener('click', closeSheet);
+    btnGoDetails?.addEventListener('click', ()=> setStep('details'));
+    btnBack?.addEventListener('click', ()=> setStep('cart'));
+
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+    });
+
+    // Champ caché "order" pour Formspree
+    function ensureHiddenField(name){
+      if (!form) return null;
+      let input = form.querySelector(`input[name="${name}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        form.appendChild(input);
+      }
+      return input;
+    }
+
+    function prepareOrderText(){
+      const itemsText = getCartItems().map(({name, qty})=>`- ${name} x${qty}`).join('\n');
+      const {opts, bag} = collectOptionsSafe();
+      const d = document.getElementById('deliveryDate')?.value || '—';
+      const t = document.getElementById('deliveryTime')?.value || '—';
+      const c = document.getElementById('comments')?.value?.trim() || '—';
+      const first = form?.querySelector('[name="first_name"]')?.value || '—';
+      const last  = form?.querySelector('[name="last_name"]')?.value || '—';
+      const phone = form?.querySelector('[name="phone"]')?.value || '—';
+
+      const text =
+`Commande YUMEKO
+Client : ${first} ${last}
+Téléphone : ${phone}
+
+Articles :
+${itemsText || '(aucun)'}
+
+Options : ${opts.length ? opts.join(', ') : 'aucune'}
+Baguettes : ${bag}
+
+Livraison : ${d} ${t}
+Commentaire : ${c}`;
+
+      const hidden = ensureHiddenField('order');
+      if (hidden) hidden.value = text;
+    }
+
+    // Envoi : bouton du tiroir déclenche l’envoi du formulaire
+    btnConfirm?.addEventListener('click', ()=>{
+      if (!form) return;
+      if (!form.reportValidity()) {
+        setStep('details');
+        form.reportValidity();
+        form.querySelector(':invalid')?.focus();
+        return;
+      }
+      prepareOrderText();
+      if (typeof form.requestSubmit === 'function') form.requestSubmit(); else form.submit();
+    });
+
+    // Soumission via fetch pour afficher un retour dans le tiroir
+    if (form) {
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        if (orderResult) orderResult.textContent = 'Envoi en cours…';
+        try{
+          const fd = new FormData(form);
+          const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+          if (res.ok) {
+            if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
+            // Reset panier + options + commentaire
+            document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='0');
+            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
+            const bagQtyEl = document.getElementById('bagQty');
+            const bagInput = document.getElementById('bagInput');
+            if (bagQtyEl) bagQtyEl.textContent = '1';
+            if (bagInput) bagInput.value = '1';
+            const comEl = document.getElementById('comments');
+            const dEl = document.getElementById('deliveryDate');
+            const tEl = document.getElementById('deliveryTime');
+            if (comEl) comEl.value = '';
+            if (dEl) dEl.value = '';
+            if (tEl) tEl.value = '';
+            // MAJ UI
+            if (typeof updateSticky === 'function') updateSticky();
+            buildRecap();
+            setStep('details');
+            if (btnConfirm) { btnConfirm.disabled = true; btnConfirm.textContent = 'Commande envoyée ✔'; }
+            // Bouton Fermer (si absent)
+            if (!footDetails.querySelector('[data-close-sheet]')) {
+              const closeBtn = document.createElement('button');
+              closeBtn.className = 'btn-ghost';
+              closeBtn.textContent = 'Fermer';
+              closeBtn.setAttribute('data-close-sheet','1');
+              closeBtn.onclick = () => closeSheet();
+              footDetails?.prepend(closeBtn);
+            }
+          } else {
+            form.submit();
+          }
+        } catch(err){ form.submit(); }
+      });
+    }
+
+    // Mise à jour du récap quand on tape/choisit dans le tiroir
+    sheet.addEventListener('input', (e)=>{
+      if (e.target.matches('textarea,input')) { buildRecap(); updateSticky(); }
+    });
+
+    // Réagir aux +/- de la liste récap
+    recapList.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.recap-plus, .recap-minus');
+      if (!btn) return;
+      const item = btn.dataset.item; // format "CODE- Nom"
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      if (!span) return;
+      const inc = btn.classList.contains('recap-plus') ? 1 : -1;
+      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
+      span.textContent = v; bump(span); updateSticky(); buildRecap();
+    });
+
+    // ✅ Gestion des options (Soja sucrée/salée, Wasabi, Gingembre)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.opt-plus, .opt-minus');
+      if (!btn) return;
+
+      const key = btn.dataset.opt; // ex: "sojaSucree"
+      const span = document.querySelector(`.opt-qty[data-opt="${CSS.escape(key)}"]`);
+      if (!span) return;
+
+      const inc = btn.classList.contains('opt-plus') ? 1 : -1;
+      const v = Math.max(0, (parseInt(span.textContent) || 0) + inc);
+      span.textContent = v;
+      bump(span);
+      updateSticky();
+      buildRecap();
+    });
+
+    // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
+    document.addEventListener('click', (e)=>{
+      if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
+          e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
+        setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
+      }
+    });
+
+    // Observer les changements de quantité (articles)
+    const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
+    document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
+
+    // Ouvre le tiroir si ancre #panier/#cart
+    if (location.hash === '#panier' || location.hash === '#cart') openSheet();
+  });
+  </script>
+
+  <!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
+  <script>
+  /* ===================== Données ===================== */
+  const categories = {
+    'Les Maki': ['M1','M2','M3','M5','M6','M7','M8','M9'],
+    'Les California': ['C1','C2','C3','C5','C6','C7','C8','C9','C10'],
+    'Les Maki printemps': ['P1','P2','P3','P4'],
+    'Les Rolls': ['R1','R2'],
+    'Les Sashimi': ['S1'],
+    'Les Nigiri': ['N1','N2'],
+    'Les Boissons': ['B1','B2','B3']
+  };
+
+  // Catalogue détaillé (à compléter au besoin)
+  const catalog = {
+    M1:{ name:'Saumon', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'Maki saumon classique.' },
+    M2:{ name:'Saumon/Avocat', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'Équilibre fondant/vert.' },
+    M3:{ name:'Saumon/Fromage', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:'Crémeux et iodé.' },
+    M5:{ name:'Concombre', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:'Ultra frais.' },
+    M6:{ name:'Concombre/Fromage', img:'m6.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'Le croquant + douceur.' },
+    M7:{ name:'Avocat', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:'Végétal et onctueux.' },
+    M8:{ name:'Avocat/Fromage', img:'m8.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'Gourmand veggie.' },
+    M9:{ name:'Fromage', img:'m9.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:'Simple et doux.' },
+
+    C1:{ name:'Saumon', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:'California au saumon.' },
+    C2:{ name:'Saumon/Avocat', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
+    C3:{ name:'Saumon/Fromage', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+    C5:{ name:'Concombre', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
+    C6:{ name:'Concombre/Fromage', img:'c6.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'' },
+    C7:{ name:'Avocat', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:'' },
+    C8:{ name:'Avocat/Fromage', img:'c8.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'' },
+    C9:{ name:'Fromage', img:'c9.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:'' },
+    C10:{ name:'Saumon/Fromage/Oignons frits', img:'c10.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:'' },
+
+    P1:{ name:'Saumon/Avocat', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:'' },
+    P2:{ name:'Saumon/Fromage', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+    P3:{ name:'Concombre/Fromage', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:'' },
+    P4:{ name:'Avocat/Fromage', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:'' },
+
+    R1:{ name:'Saumon/Avocat/Fromage', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:'' },
+    R2:{ name:'Avocat/Saumon/Fromage', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
+
+    S1:{ name:'Saumon', img:'s1.jpg', pieces:6, comp:'Tranches de saumon', allergens:'Poisson', desc:'' },
+
+    N1:{ name:'Saumon', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:'' },
+    N2:{ name:'Avocat', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:'' },
+
+    B1:{ name:'Tsingtao', img:'b1.jpg' },
+    B2:{ name:'Asahi', img:'b2.jpg' },
+    B3:{ name:'Coca Cola Zero', img:'b3.jpg' }
+  };
+
+  const prices = { /* Exemple: 'M1': 4.50 */ }; // ex: { 'M1': 4.00 }
+
+  /* ===================== Construction du menu ===================== */
+  function buildMenu(){
+    const menu=document.getElementById('menu');
+    menu.innerHTML='';
+    for(const [cat,codes] of Object.entries(categories)){
+      const wrap=document.createElement('div');
+      wrap.className='category';
+      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+      const grid=wrap.querySelector('.menu-grid');
+
+      codes.forEach(code=>{
+        const d = catalog[code] || {name:code, img: code.toLowerCase()+'.jpg'};
+        const name = d.name || code;
+        const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
+        const pieces = d.pieces ?? '';
+
+        const card=document.createElement('div');
+        card.className='item-card';
+        card.dataset.code=code;
+        card.dataset.name=name;
+        card.innerHTML=`
+          <img class=\"thumb\" src=\"${img}\" alt=\"${name}\" onerror=\"this.style.display='none'\">
+          <div class=\"item-name\">${name}</div>
+          <div class=\"card-body\">
+            <div class=\"card-footer\">
+              <span class=\"pieces\">${pieces? pieces+' pcs' : ''}</span>
+              <div class=\"ctrls\">
+                <button class=\"circle card-minus\" data-item=\"${code}- ${name}\" style=\"visibility:hidden\">−</button>
+                <span class=\"qty-badge qty\" data-item=\"${code}- ${name}\">0</span>
+                <button class=\"circle card-plus\" data-item=\"${code}- ${name}\">+</button>
+              </div>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      menu.appendChild(wrap);
+    }
+  }
+  buildMenu();
+
+  // mini récap désactivé
+  function updateMiniRecap(){ /* noop */ }
+
+  function updateSticky(){
+    const qtyNodes = document.querySelectorAll('.qty[data-item]');
+    let totalQty = 0; let totalPrice = 0;
+    qtyNodes.forEach(q=>{
+      const n = parseInt(q.textContent)||0; totalQty += n;
+      if(n>0){
+        const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
+        const p = prices[code] ?? (catalog[code]?.price);
+        if(typeof p === 'number') totalPrice += p * n;
+      }
+    });
+    const btn = document.getElementById('gotoOrder');
+    if(!btn) return;
+    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
+    else { btn.textContent = `Panier (${totalQty}) • Valider`; }
+    updateMiniRecap();
+  }
+
+  // Gestion plus/moins menu (articles)
+  document.addEventListener('click', e=>{
+    // Plus / Moins dans la carte
+    if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
+      const btn = e.target.closest('button');
+      const inc = btn.classList.contains('card-plus') ? 1 : -1;
+      const item = btn.dataset.item;
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
+      const v = Math.max(0, (parseInt(span.textContent)||0) + inc);
+      span.textContent = v;
+      if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+      span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
+      return;
+    }
+
+    // Ouverture modale en cliquant la carte (hors contrôles)
+    const card = e.target.closest('.item-card');
+    if(card && !e.target.closest('.ctrls')){
+      const code = card.dataset.code;
+      const name = card.dataset.name;
+      const d = catalog[code] || {};
+      const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
+      document.getElementById('mImg').src = img;
+      document.getElementById('mImg').alt = name;
+      document.getElementById('mTitle').textContent = name;
+      document.getElementById('mPieces').textContent = d.pieces ?? '—';
+      document.getElementById('mAllergens').textContent = d.allergens || 'Non renseigné';
+      document.getElementById('mComp').textContent = d.comp || 'Non renseigné';
+      document.getElementById('mDesc').textContent = d.desc || '—';
+
+      const itemKey = `${code}- ${name}`;
+      const qtySpan = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const current = parseInt(qtySpan?.textContent)||0;
+      const mQty = document.getElementById('mQty');
+      const mMinus = document.getElementById('mMinus');
+      mQty.textContent = current;
+      mMinus.style.visibility = current>0 ? 'visible' : 'hidden';
+      mMinus.dataset.item = itemKey;
+      document.getElementById('mPlus').dataset.item = itemKey;
+
+      const modal = document.getElementById('itemModal');
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+      return;
+    }
+  });
+
+  // Fermer la modale & contrôles modale
+  (function(){
+    const modal = document.getElementById('itemModal');
+    const closeBtn = document.getElementById('mClose');
+    const mMinus = document.getElementById('mMinus');
+    const mPlus = document.getElementById('mPlus');
+    const mQty = document.getElementById('mQty');
+
+    function setQty(itemKey, newVal){
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
+      if(!span) return;
+      span.textContent = newVal;
+      if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
+      mQty.textContent = newVal;
+      document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
+      updateSticky();
+    }
+
+    mMinus.addEventListener('click', ()=>{
+      const key = mMinus.dataset.item; if(!key) return;
+      const cur = parseInt(mQty.textContent)||0; const v=Math.max(0,cur-1); setQty(key,v);
+    });
+    mPlus.addEventListener('click', ()=>{
+      const key = mPlus.dataset.item; if(!key) return;
+      const cur = parseInt(mQty.textContent)||0; const v=cur+1; setQty(key,v);
+    });
+
+    closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+    modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+  })();
+
+  // Baguettes
+  (function(){
+    const bagMinus = document.getElementById('bagMinus');
+    const bagPlus  = document.getElementById('bagPlus');
+    const bagQty   = document.getElementById('bagQty');
+    const bagInput = document.getElementById('bagInput');
+    if (bagMinus && bagPlus && bagQty && bagInput){
+      bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
+      bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
+    }
+  })();
+
+  // CTA "Commander maintenant"
+  document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+
+  // Init bandeau
+  updateSticky();
+  updateMiniRecap();
+  </script>
+
+</body>
+</html>
