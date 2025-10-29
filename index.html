@@ -48,7 +48,6 @@
     /* LAYOUT & SECTIONS */
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;}
-    .section-title{ color:#fff; font-size:1.8rem; margin-bottom:10px; }
 
     /* MENU */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
@@ -139,6 +138,34 @@
 
     .hero .logo{ width:160px; }
     @media (min-width: 768px){ .hero .logo{ width:200px; } }
+
+    /* =========================
+       >>> AJOUTS POUR OPTION A
+       ========================= */
+    /* Séparation nette des grandes familles */
+    .category{
+      border: 2px solid #000;     /* contour noir */
+      border-radius: 14px;
+      padding: 18px;
+      background: #130909;        /* léger contraste interne pour faire ressortir les cartes */
+      margin-bottom: 40px;        /* grand espace entre familles */
+    }
+    /* Titre de chaque famille */
+    .category h3{
+      font-size: 1.6rem;
+      margin: 0 0 18px 0;
+      text-align: center;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    /* On rend la section menu transparente pour laisser le dégradé visible */
+    #menuSection.section{
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      padding: 0; /* le padding est géré par .container + .category */
+    }
   </style>
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
@@ -552,7 +579,11 @@ Commentaire : ${c}`;
     for(const [cat,codes] of Object.entries(categories)){
       const wrap=document.createElement('div');
       wrap.className='category';
-      wrap.innerHTML=`<h3>${cat}</n></h3><div class="menu-grid"></div>`;
+      /* >>> Correctif ici : fermeture de balise </h3> */
+      wrap.innerHTML=`
+        <h3>${cat}</h3>
+        <div class="menu-grid"></div>
+      `;
       const grid=wrap.querySelector('.menu-grid');
 
       codes.forEach(code=>{
