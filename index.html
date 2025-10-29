@@ -189,9 +189,8 @@
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
-        <!-- Téléphone OBLIGATOIRE -->
-        <input name="phone" type="tel" placeholder="Téléphone" required>
-        <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
+        $1        <input name="email" type="email" placeholder="Adresse email" required>
+        $2 name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
         <!-- BOUTON D'ENVOI SUPPRIMÉ (on utilise celui du tiroir) -->
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
@@ -386,16 +385,34 @@
     }
 
     function prepareOrderText(){
-      const itemsText = getCartItems().map(({name, qty})=>`- ${name} x${qty}`).join('\n');
+      const items = getCartItems();
+      const itemsText = items.map(({name, qty})=>`- ${name} x${qty}`).join('
+');
+      const totalQty = items.reduce((a,i)=>a+i.qty,0);
       const c = document.getElementById('comments')?.value?.trim() || '—';
       const first = form?.querySelector('[name="first_name"]')?.value || '—';
       const last  = form?.querySelector('[name="last_name"]')?.value || '—';
       const phone = form?.querySelector('[name="phone"]')?.value || '—';
+      const email = form?.querySelector('[name="email"]')?.value || '—';
 
       const text =
 `Commande YUMEKO
 Client : ${first} ${last}
 Téléphone : ${phone}
+Email : ${email}
+
+Articles :
+${itemsText || '(aucun)'}
+
+Commentaire : ${c}`;
+
+      const hidden = ensureHiddenField('order');
+      if (hidden) hidden.value = text;
+
+      // Sujet personnalisé pour votre notification Formspree
+      const subj = ensureHiddenField('subject');
+      if (subj) subj.value = `Commande YUMEKO – ${first} ${last} – ${totalQty} article(s)`;
+    }
 
 Articles :
 ${itemsText || '(aucun)'}
