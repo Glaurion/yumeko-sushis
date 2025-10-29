@@ -175,9 +175,9 @@
 
   <!-- HERO -->
   <section class="hero">
-    <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
+    <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
-    <button class="cta" id="ctaOrder">Commander maintenant</button>
+    <button class="cta" id="ctaOrder" type="button">Commander maintenant</button>
   </section>
 
   <main class="container">
@@ -190,7 +190,7 @@
     <div id="itemModal" class="modal" aria-hidden="true" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:102;">
       <div class="modal-card" role="dialog" aria-modal="true" style="width:min(680px,96vw);background:#1b1b1b;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:0 22px 60px rgba(0,0,0,.5)">
         <div style="position:relative">
-          <img id="mImg" src="" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0d0d">
+          <img id="mImg" loading="lazy" decoding="async" src="" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d0d0d">
           <button id="mClose" aria-label="Fermer" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:10px;padding:8px 10px;cursor:pointer">✕</button>
         </div>
         <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
@@ -202,9 +202,9 @@
           <div><strong>Composition :</strong><br><span id="mComp">Non renseigné</span></div>
           <div><strong>Description :</strong><br><span id="mDesc">—</span></div>
           <div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:flex-end;gap:10px">
-            <button id="mMinus" class="circle" style="visibility:hidden">−</button>
+            <button id="mMinus" class="circle" type="button" style="visibility:hidden">−</button>
             <span id="mQty" class="qty-badge">0</span>
-            <button id="mPlus" class="circle">+</button>
+            <button id="mPlus" class="circle" type="button">+</button>
           </div>
         </div>
       </div>
@@ -217,7 +217,7 @@
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
         <!-- Téléphone OBLIGATOIRE -->
-        <input name="phone" type="tel" placeholder="Téléphone" required>
+        <input name="phone" type="tel" pattern="^(\+?\d{1,3})?0?[1-9]\d{8}$" placeholder="Téléphone" required>
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
         <!-- BOUTON D'ENVOI SUPPRIMÉ (on utilise celui du tiroir) -->
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
@@ -230,7 +230,7 @@
     <div id="stickyInner">
       <!-- mini recap supprimé visuellement -->
       <span id="miniRecap"></span>
-      <button id="gotoOrder">Panier (0) • Valider</button>
+      <button id="gotoOrder" type="button">Panier (0) • Valider</button>
     </div>
   </div>
 
@@ -238,7 +238,7 @@
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
-      <button id="sheetClose" aria-label="Fermer">×</button>
+      <button id="sheetClose" aria-label="Fermer" type="button">×</button>
     </header>
     <div class="body">
       <!-- ÉTAPE 1 : Récap & édition -->
@@ -254,11 +254,11 @@
     </div>
     <footer>
       <div id="footerCart" class="step active">
-        <button class="btn-primary" id="goDetails">Valider le panier →</button>
+        <button class="btn-primary" id="goDetails" type="button">Valider le panier →</button>
       </div>
       <div id="footerDetails" class="step">
-        <button class="btn-ghost" id="backToCart">← Retour</button>
-        <button class="btn-primary" id="confirmSend">Confirmer et envoyer</button>
+        <button class="btn-ghost" id="backToCart" type="button">← Retour</button>
+        <button class="btn-primary" id="confirmSend" type="button">Confirmer et envoyer</button>
       </div>
     </footer>
   </div>
@@ -354,13 +354,13 @@
           const codeLower = (code||'').toLowerCase();
           li.innerHTML = `
             <div class="it-left">
-              <img class="thumb sm" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
+              <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
               <span class="it-label">${name}</span>
             </div>
             <div class="it-ctrl">
-              <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer">−</button>
+              <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer" type="button">−</button>
               <span class="qty" aria-live="polite">${qty}</span>
-              <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter">+</button>
+              <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter" type="button">+</button>
             </div>`;
           recapList.appendChild(li);
         });
@@ -569,8 +569,33 @@ Commentaire : ${c}`;
   };
 
   /* 💶 Prix : remplis ce tableau au fur et à mesure.
-     Tout code absent affichera 0,00 € par défaut. */
+     Tout code absent n'affiche pas de prix (—) par défaut. */
   const prices = { /* Exemple: 'M1': 4.50 */ };
+
+  /* ====== Formatage monétaire (FR) ====== */
+  const fmt = new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR' });
+
+  /* ====== Persistance panier ====== */
+  const CART_KEY = 'yumeko_cart_v1';
+  function saveCart(){
+    const cart = [];
+    document.querySelectorAll('.qty[data-item]').forEach(q=>{
+      const n = parseInt(q.textContent)||0;
+      if(n>0) cart.push({ key:q.dataset.item, qty:n });
+    });
+    try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+  }
+  function restoreCart(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      saved.forEach(({key, qty})=>{
+        const span = document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
+        const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(key)}"]`);
+        if(span){ span.textContent = qty; if(minusBtn) minusBtn.style.visibility = 'visible'; }
+      });
+      if (typeof updateSticky === 'function') updateSticky();
+    }catch(e){}
+  }
 
   /* ===================== Construction du menu ===================== */
   function buildMenu(){
@@ -591,15 +616,15 @@ Commentaire : ${c}`;
         const name = d.name || code;
         const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
         const pieces = d.pieces ?? '';
-        const p = prices[code] ?? 0;
-        const priceStr = p.toFixed(2).replace('.', ',') + ' €';
+        const basePrice = (prices.hasOwnProperty(code) ? prices[code] : (typeof d.price === 'number' ? d.price : undefined));
+        const priceStr = (typeof basePrice === 'number') ? fmt.format(basePrice) : '—';
 
         const card=document.createElement('div');
         card.className='item-card';
         card.dataset.code=code;
         card.dataset.name=name;
         card.innerHTML=`
-          <img class="thumb" src="${img}" alt="${name}" onerror="this.style.display='none'">
+          <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
           <div class="item-name">${name}</div>
           <div class="card-body">
             <div class="card-footer">
@@ -608,9 +633,9 @@ Commentaire : ${c}`;
                 <span class="price">${priceStr}</span>
               </div>
               <div class="ctrls">
-                <button class="circle card-minus" data-item="${code}- ${name}" style="visibility:hidden">−</button>
+                <button class="circle card-minus" data-item="${code}- ${name}" type="button" style="visibility:hidden">−</button>
                 <span class="qty-badge qty" data-item="${code}- ${name}"></span>
-                <button class="circle card-plus" data-item="${code}- ${name}">+</button>
+                <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
               </div>
             </div>
           </div>`;
@@ -621,6 +646,7 @@ Commentaire : ${c}`;
     }
   }
   buildMenu();
+  restoreCart(); // ← restaure le panier après création du menu
 
   // mini récap désactivé
   function updateMiniRecap(){ /* noop */ }
@@ -632,15 +658,17 @@ Commentaire : ${c}`;
       const n = parseInt(q.textContent)||0; totalQty += n;
       if(n>0){
         const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
-        const p = prices[code] ?? (catalog[code]?.price);
+        const d = catalog[code] || {};
+        const p = (prices.hasOwnProperty(code) ? prices[code] : (typeof d.price === 'number' ? d.price : undefined));
         if(typeof p === 'number') totalPrice += p * n;
       }
     });
     const btn = document.getElementById('gotoOrder');
     if(!btn) return;
-    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${totalPrice.toFixed(2)}€ • Valider`; }
+    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider`; }
     else { btn.textContent = `Panier (${totalQty}) • Valider`; }
     updateMiniRecap();
+    saveCart(); // ← sauvegarde à chaque mise à jour
   }
 
   // Gestion plus/moins menu (articles)
