@@ -120,8 +120,8 @@
     .step.active{ display:block; }
     .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
 
-    /* ⛔ Masquer le récap options dans le panier */
-    #recapOptions{ display:none !important; }
+    /* ⛔ Masquer l'ancien récap options dans le panier (supprimé) */
+    #recapOptions, #recapPickup{ display:none !important; }
 
     /* ===== Nouveau style cartes ===== */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
@@ -189,51 +189,9 @@
       <form id="orderForm" action="https://formspree.io/f/xblzvgjr" method="POST">
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
-        <!-- Téléphone devient OBLIGATOIRE -->
+        <!-- Téléphone OBLIGATOIRE -->
         <input name="phone" type="tel" placeholder="Téléphone" required>
-
-        <p class="muted" style="margin-top:8px">Options :</p>
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:10px;">
-          <div>
-            <span class="muted">Soja sucrée :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="sojaSucree">−</button>
-            <span class="qty opt-qty" data-opt="sojaSucree">0</span>
-            <button type="button" class="btn opt-plus" data-opt="sojaSucree">+</button>
-          </div>
-          <div>
-            <span class="muted">Soja salée :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="sojaSalee">−</button>
-            <span class="qty opt-qty" data-opt="sojaSalee">0</span>
-            <button type="button" class="btn opt-plus" data-opt="sojaSalee">+</button>
-          </div>
-          <div>
-            <span class="muted">Wasabi :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="wasabi">−</button>
-            <span class="qty opt-qty" data-opt="wasabi">0</span>
-            <button type="button" class="btn opt-plus" data-opt="wasabi">+</button>
-          </div>
-          <div>
-            <span class="muted">Gingembre :</span><br>
-            <button type="button" class="btn opt-minus" data-opt="gingembre">−</button>
-            <span class="qty opt-qty" data-opt="gingembre">0</span>
-            <button type="button" class="btn opt-plus" data-opt="gingembre">+</button>
-          </div>
-        </div>
-
-        <div style="margin:8px 0 12px">
-          <span class="muted" style="display:block;margin-bottom:6px;">Baguettes :</span>
-          <button type="button" class="btn" id="bagMinus">−</button>
-          <span class="qty" id="bagQty">1</span>
-          <button type="button" class="btn" id="bagPlus">+</button>
-          <input type="hidden" name="baguettes" id="bagInput" value="1">
-        </div>
-
-        <p class="muted" style="margin:8px 0 4px">Date & heure de livraison (facultatif)</p>
-        <input type="date" id="deliveryDate" name="delivery_date">
-        <input type="time" id="deliveryTime" name="delivery_time" step="900">
-
         <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
-
         <!-- BOUTON D'ENVOI SUPPRIMÉ (on utilise celui du tiroir) -->
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
@@ -260,11 +218,9 @@
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
-        <div id="recapOptions" style="margin-top:6px;"></div>
-        <div id="recapPickup" class="muted" style="margin-top:6px;"></div>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <!-- ÉTAPE 2 : Infos client & livraison (le formulaire est déplacé ici) -->
+      <!-- ÉTAPE 2 : Infos client (le formulaire est déplacé ici) -->
       <div id="stepDetails" class="step">
         <!-- le formulaire sera injecté ici par JS -->
       </div>
@@ -320,8 +276,6 @@
     const btnBack     = document.getElementById('backToCart');
     const btnConfirm  = document.getElementById('confirmSend');
     const recapList   = document.getElementById('recapList');
-    const recapOpt    = document.getElementById('recapOptions');
-    const recapPickup = document.getElementById('recapPickup');
     const recapCom    = document.getElementById('recapComment');
     const form        = document.getElementById('orderForm');
     const orderResult = document.getElementById('orderResult');
@@ -329,7 +283,7 @@
     const stepDetails = document.getElementById('stepDetails');
     const footCart    = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
-    if (!sheet || !sheetBody || !btnOpen || !recapList || !recapOpt || !recapPickup || !recapCom) {
+    if (!sheet || !sheetBody || !btnOpen || !recapList) {
       console.warn('[cart] éléments requis manquants');
       return;
     }
@@ -340,30 +294,6 @@
     // ---- Utilitaires ----
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
-    function getTotal(){ let t=0; document.querySelectorAll('.qty[data-item]').forEach(q=>t+=parseInt(q.textContent)||0); return t; }
-
-    // Options
-    function collectOptions(){
-      const opts=[];
-      const optionKeys = ['sojaSucree','sojaSalee','wasabi','gingembre'];
-      optionKeys.forEach(key=>{
-        const el = document.querySelector(`.opt-qty[data-opt="${key}"]`);
-        const qty = el ? parseInt(el.textContent)||0 : 0;
-        if(qty>0){
-          const label = key.replace('sojaSucree','Soja sucrée')
-                           .replace('sojaSalee','Soja salée')
-                           .replace('wasabi','Wasabi')
-                           .replace('gingembre','Gingembre');
-          opts.push(`${label} x${qty}`);
-        }
-      });
-      const bag = parseInt(document.getElementById('bagQty')?.textContent)||0;
-      return {opts, bag};
-    }
-
-    function collectOptionsSafe(){
-      try { return collectOptions(); } catch { return {opts:[], bag:0}; }
-    }
 
     function parseItem(full){
       const parts = String(full).split('-');
@@ -408,14 +338,6 @@
           recapList.appendChild(li);
         });
       }
-
-      // Options masquées dans le tiroir (tu peux l’afficher si tu veux)
-      recapOpt.textContent = '';
-
-      // Livraison (date/heure)
-      const d = document.getElementById('deliveryDate')?.value || '';
-      const t = document.getElementById('deliveryTime')?.value || '';
-      recapPickup.textContent = (d || t) ? `Livraison : ${[d,t].filter(Boolean).join(' à ')}` : '';
 
       // Commentaire
       const c = document.getElementById('comments')?.value?.trim() || '';
@@ -465,9 +387,6 @@
 
     function prepareOrderText(){
       const itemsText = getCartItems().map(({name, qty})=>`- ${name} x${qty}`).join('\n');
-      const {opts, bag} = collectOptionsSafe();
-      const d = document.getElementById('deliveryDate')?.value || '—';
-      const t = document.getElementById('deliveryTime')?.value || '—';
       const c = document.getElementById('comments')?.value?.trim() || '—';
       const first = form?.querySelector('[name="first_name"]')?.value || '—';
       const last  = form?.querySelector('[name="last_name"]')?.value || '—';
@@ -481,10 +400,6 @@ Téléphone : ${phone}
 Articles :
 ${itemsText || '(aucun)'}
 
-Options : ${opts.length ? opts.join(', ') : 'aucune'}
-Baguettes : ${bag}
-
-Livraison : ${d} ${t}
 Commentaire : ${c}`;
 
       const hidden = ensureHiddenField('order');
@@ -514,19 +429,10 @@ Commentaire : ${c}`;
           const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
           if (res.ok) {
             if (orderResult) orderResult.textContent = 'Merci ! Votre commande a été envoyée ✅';
-            // Reset panier + options + commentaire
+            // Reset panier + commentaire
             document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-            document.querySelectorAll('.opt-qty').forEach(q=>q.textContent='0');
-            const bagQtyEl = document.getElementById('bagQty');
-            const bagInput = document.getElementById('bagInput');
-            if (bagQtyEl) bagQtyEl.textContent = '1';
-            if (bagInput) bagInput.value = '1';
             const comEl = document.getElementById('comments');
-            const dEl = document.getElementById('deliveryDate');
-            const tEl = document.getElementById('deliveryTime');
             if (comEl) comEl.value = '';
-            if (dEl) dEl.value = '';
-            if (tEl) tEl.value = '';
             // MAJ UI
             if (typeof updateSticky === 'function') updateSticky();
             buildRecap();
@@ -567,27 +473,9 @@ Commentaire : ${c}`;
       bump(span); updateSticky(); buildRecap();
     });
 
-    // ✅ Gestion des options (Soja sucrée/salée, Wasabi, Gingembre)
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('.opt-plus, .opt-minus');
-      if (!btn) return;
-
-      const key = btn.dataset.opt; // ex: "sojaSucree"
-      const span = document.querySelector(`.opt-qty[data-opt="${CSS.escape(key)}"]`);
-      if (!span) return;
-
-      const inc = btn.classList.contains('opt-plus') ? 1 : -1;
-      const v = Math.max(0, (parseInt(span.textContent) || 0) + inc);
-      span.textContent = v;
-      bump(span);
-      updateSticky();
-      buildRecap();
-    });
-
-    // Rebuild récap à chaque clic +/- sur les articles ou options (menu)
+    // Rebuild récap à chaque clic +/- sur les articles
     document.addEventListener('click', (e)=>{
-      if (e.target.classList.contains('plus') || e.target.classList.contains('minus') ||
-          e.target.classList.contains('opt-plus') || e.target.classList.contains('opt-minus')) {
+      if (e.target.classList.contains('plus') || e.target.classList.contains('minus')) {
         setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
       }
     });
@@ -664,7 +552,7 @@ Commentaire : ${c}`;
     for(const [cat,codes] of Object.entries(categories)){
       const wrap=document.createElement('div');
       wrap.className='category';
-      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+      wrap.innerHTML=`<h3>${cat}</n></h3><div class="menu-grid"></div>`;
       const grid=wrap.querySelector('.menu-grid');
 
       codes.forEach(code=>{
@@ -804,18 +692,6 @@ Commentaire : ${c}`;
     closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
     modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-  })();
-
-  // Baguettes
-  (function(){
-    const bagMinus = document.getElementById('bagMinus');
-    const bagPlus  = document.getElementById('bagPlus');
-    const bagQty   = document.getElementById('bagQty');
-    const bagInput = document.getElementById('bagInput');
-    if (bagMinus && bagPlus && bagQty && bagInput){
-      bagMinus.onclick = ()=>{ const v=Math.max(0,(parseInt(bagQty.textContent)||0)-1); bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
-      bagPlus.onclick  = ()=>{ const v=(parseInt(bagQty.textContent)||0)+1; bagQty.textContent=v; bagInput.value=v; bagQty.classList.add('bump'); setTimeout(()=>bagQty.classList.remove('bump'),200); };
-    }
   })();
 
   // CTA "Commander maintenant"
