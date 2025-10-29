@@ -504,16 +504,16 @@ Commentaire : ${c}`;
 
   // Catalogue détaillé (à compléter au besoin)
   const catalog = {
-    M1:{ name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'Maki saumon classique.' },
-    M2:{ name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'Équilibre fondant/vert.' },
-    M3:{ name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:'Crémeux et iodé.' },
-    M4:{ name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:'Ultra frais.' },
-    M5:{ name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'Le croquant + douceur.' },
-    M6:{ name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:'Végétal et onctueux.' },
-    M7:{ name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'Gourmand veggie.' },
-    M8:{ name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:'Simple et doux.' },
+    M1:{ name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'' },
+    M2:{ name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
+    M3:{ name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:'' },
+    M4:{ name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
+    M5:{ name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'' },
+    M6:{ name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:'' },
+    M7:{ name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'' },
+    M8:{ name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:'' },
 
-    C1:{ name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:'California au saumon.' },
+    C1:{ name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:'' },
     C2:{ name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
     C3:{ name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
     C4:{ name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
@@ -573,7 +573,7 @@ Commentaire : ${c}`;
           <div class="card-body">
             <div class="card-footer">
               <div class="meta">
-                <span class="pieces">${pieces? pieces+' pcs' : ''}</span>
+                <span class="pieces">${pieces? pieces+'PIECES' : ''}</span>
                 <span class="price">${priceStr}</span>
               </div>
               <div class="ctrls">
