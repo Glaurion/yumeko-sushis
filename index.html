@@ -22,7 +22,7 @@
     }
     *{ box-sizing:border-box; }
 
-    /* ===== Header - Style Japonais Premium ===== */
+    /* ===== Header ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
       border-bottom: 1px solid rgba(255,255,255,.08);
@@ -39,12 +39,7 @@
     @media (min-width:768px){ .site-header .logo{ width:200px; } }
     .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .brand-text h1{
-      margin:0; letter-spacing:2px; font-weight:800;
-      font-size:1.4rem; color:var(--text); text-align:center;
-    }
-    .brand-text .jp-top{
-      display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em;
-      text-align:center; opacity:.85;
+      margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:var(--text); text-align:center;
     }
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#e9d9d9; opacity:.6; }
@@ -60,9 +55,9 @@
       transition:all .18s ease;
     }
     .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
+
     @media (max-width:480px){
       .brand-text h1{ font-size:1.2rem; }
-      .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
     }
 
     /* ===== Base ===== */
@@ -72,14 +67,7 @@
     }
     body.modal-open{ overflow:hidden; }
 
-    /* Hero */
-    .hero{
-      background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
-      padding:60px 20px; text-align:center;
-    }
-    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
-    .hero .logo{ width:160px; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
-    @media (min-width:768px){ .hero .logo{ width:200px; } }
+    /* (HERO supprimé pour enlever le bandeau rouge + l'image + le titre doublon) */
 
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px; }
@@ -151,7 +139,6 @@
     .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
     .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    /* Cartes */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
     .meta{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; }
@@ -165,7 +152,6 @@
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
     .qty-badge:empty{ display:none; }
 
-    /* Catégories */
     .category{ border:2px solid #000; border-radius:14px; padding:18px; background:#130909; margin-bottom:40px; }
     .category h3{ font-size:1.6rem; margin:0 0 18px; text-align:center; color:#fff; text-transform:uppercase; letter-spacing:1px; }
     #menuSection.section{ border:0; background:transparent; box-shadow:none; padding:0; }
@@ -180,7 +166,7 @@
       <a href="accueil.html" class="brand">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
         <div class="brand-text">
-          <span class="jp-top">夢猫鮨</span> <!-- clin d’œil -->
+          <!-- caractère japonais retiré -->
           <h1>YUMEKO SUSHIS</h1>
         </div>
       </a>
@@ -189,29 +175,12 @@
         <a href="accueil.html">Accueil</a>
         <span class="sep">・</span>
         <a href="index.html" class="active">Menu</a>
-        <span class="sep">・</span>
-        <a href="#panier" id="navPanier">Panier</a>
+        <!-- Panier retiré du header -->
       </nav>
     </div>
   </header>
 
-  <!-- ===== HERO ===== -->
-  <section class="hero">
-    <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
-    <h1 class="brand">YUMEKO SUSHIS</h1>
-  </section>
-
-  <div class="cta-row" style="margin-top:8px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-    <a class="btn btn-ghost" href="accueil.html">Accueil</a>
-    <button class="btn btn-primary" id="gotoOrderTop" type="button">Commander</button>
-    <!-- correction: ancre vers #menuSection -->
-    <a class="btn btn-ghost" href="#menuSection">Voir le menu</a>
-  </div>
-  <script>
-    document.getElementById('gotoOrderTop')?.addEventListener('click', ()=>{
-      document.getElementById('gotoOrder')?.click();
-    });
-  </script>
+  <!-- HERO supprimé (image + titre doublon + bandeau) -->
 
   <main class="container">
     <!-- MENU -->
@@ -263,7 +232,7 @@
     </section>
   </main>
 
-  <!-- BANDEAU PANIER -->
+  <!-- BANDEAU PANIER (en bas, conservé) -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
       <span id="miniRecap"></span>
@@ -385,7 +354,7 @@
     document.addEventListener('DOMContentLoaded', buildMenu);
   </script>
 
-  <!-- ===== Utilitaires & bandeau ===== -->
+  <!-- Utilitaires & bandeau -->
   <script>
     (function(){
       if(typeof window.CSS==='undefined') window.CSS={};
@@ -408,7 +377,7 @@
     })();
   </script>
 
-  <!-- ===== Panier / tiroir / formulaire ===== -->
+  <!-- Panier / tiroir / formulaire -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const sheet = document.getElementById('cartSheet');
@@ -709,7 +678,7 @@ ${c}`;
     });
   </script>
 
-  <!-- Nav active + lien Panier inter-page -->
+  <!-- Nav active (plus de lien Panier en haut) -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
@@ -717,17 +686,6 @@ ${c}`;
         const href = a.getAttribute('href');
         if(href && !href.startsWith('#') && here === href) a.classList.add('active');
       });
-
-      const panier = document.getElementById('navPanier');
-      if(panier){
-        panier.addEventListener('click', (e)=>{
-          const here = location.pathname.split('/').pop() || 'index.html';
-          if(here !== 'index.html'){
-            e.preventDefault();
-            window.location.href = 'index.html#panier';
-          }
-        });
-      }
     })();
   </script>
 </body>
