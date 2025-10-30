@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Merci pour votre commande — YUMEKO SUSHIS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Merci — YUMEKO SUSHIS</title>
 
-  <!-- Fonts -->
+  <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -13,45 +13,55 @@
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-      --card:#1b1b1b; --muted:#cfcfcf;
+      --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
+      --barShade:.35;
     }
     *{ box-sizing:border-box; }
+    html, body{ height:100%; }
     body{
-      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ====== HERO (même placement que l'index) ====== */
+    /* HERO (identique à l’index, sans CTA) */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center;
     }
+    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
     .hero .logo{ width:160px; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
     @media (min-width:768px){ .hero .logo{ width:200px; } }
-    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
 
-    /* ====== CONTENU ====== */
-    .container{ max-width:900px; margin:0 auto; padding:20px; }
-    .wrap{
+    /* Layout */
+    .container{ max-width:1100px; margin:0 auto; padding:20px; }
+    .section{
       background:#160c0c; border:1px solid rgba(255,255,255,.08);
-      border-radius:18px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.25);
+      border-radius:18px; padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;
     }
-    .muted{ color:var(--muted); }
+    .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    .card{ background:#1b1b1b; border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:16px; }
-    .section-title{ margin:0 0 8px; font-size:1.25rem; }
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
-    .grid div strong{ display:block; font-size:.9rem; color:#fff; }
-    ul{ margin:10px 0 0; padding-left:18px; }
-
-    .btn{
-      display:inline-block; margin-top:16px; background:var(--brand); color:#fff; font-weight:800;
-      border:none; border-radius:12px; padding:12px 16px; text-decoration:none;
+    /* MERCI */
+    .thanks-wrap{ display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; }
+    .thanks-title{ margin:0 0 6px; font-size:1.6rem; }
+    .recap-block{
+      width:min(800px,100%);
+      text-align:left;
+      background:#111; color:#fff;
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:12px; padding:14px;
+      white-space:pre-wrap; overflow:auto; max-height:50vh;
     }
-    .btn:hover{ background:var(--brand-2); }
-    .empty{ padding:14px; border-radius:12px; background:#1b1b1b; border:1px dashed rgba(255,255,255,.15); }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+    .button{
+      background:var(--brand); color:#fff; border:none; border-radius:10px;
+      font-weight:800; padding:10px 14px; cursor:pointer; text-decoration:none;
+    }
+    .button:hover{ background:var(--brand-2); }
 
-    @media (max-width:640px){ .grid{ grid-template-columns:1fr; } }
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
   </style>
 
@@ -61,76 +71,48 @@
 </head>
 <body>
 
-  <!-- HERO (identique à l’index, sans bouton) -->
+  <!-- HERO (même place que sur index) -->
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async">
     <h1 class="brand">YUMEKO SUSHIS</h1>
   </section>
 
   <main class="container">
-    <div class="wrap">
-      <h2 class="section-title">Merci pour votre commande 🥢</h2>
-      <p class="muted">Nous l’avons bien reçue. Voici votre récapitulatif.</p>
+    <section class="section">
+      <div class="thanks-wrap">
+        <h2 class="thanks-title">Merci pour votre commande ❤️</h2>
+        <p class="muted">Nous avons bien reçu votre demande. Voici votre récapitulatif :</p>
 
-      <div id="recap" class="card" aria-live="polite"></div>
+        <!-- On n’affiche PAS de rubrique “Articles” séparée.
+             On nettoie aussi la ligne “Articles :” dans le texte. -->
+        <pre id="orderRecap" class="recap-block">(Chargement du récapitulatif…)</pre>
 
-      <a class="btn" href="index.html#menu">← Retour au menu</a>
-    </div>
+        <div class="actions">
+          <a class="button" href="index.html">Retour à l’accueil</a>
+          <a class="button" href="index.html#menu">Nouvelle commande</a>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer>© 2025 YUMEKO SUSHIS — À bientôt !</footer>
+  <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
   <script>
-    // Récupère le texte de commande sauvegardé par la page de commande
-    const raw = localStorage.getItem('yumeko_last_order') || '';
-    const recapEl = document.getElementById('recap');
+    // Récupère le récap de l’index et supprime la ligne "Articles :" (mais garde la liste).
+    document.addEventListener('DOMContentLoaded', () => {
+      const recapEl = document.getElementById('orderRecap');
+      let text = '';
+      try { text = localStorage.getItem('yumeko_last_order') || ''; } catch(e){}
 
-    function parseOrder(text){
-      const lines = text.split('\\n').map(l=>l.trim());
-      const data = { client:'—', email:'—', notes:'—', items:[] };
-      let mode = 'head';
-      for(let i=0;i<lines.length;i++){
-        const L = lines[i];
-        if(!L) continue;
-        if(L.startsWith('Client :')){
-          data.client = L.replace('Client :','').trim() || '—';
-        }else if(L.startsWith('Email :')){
-          data.email = L.replace('Email :','').trim() || '—';
-        }else if(L.startsWith('Articles :')){
-          mode='items';
-        }else if(L.startsWith('Allergies / autres')){
-          mode='notes-title';
-        }else if(mode==='items' && L.startsWith('- ')){
-          data.items.push(L.replace('- ',''));
-        }else if(mode==='notes-title'){
-          data.notes = (lines[i+1]||'—').trim() || '—';
-          mode='done';
-        }
+      if(!text.trim()){
+        recapEl.textContent = "Aucun récapitulatif trouvé.\n\nAstuce : passez une commande depuis l’accueil pour voir le détail ici.";
+        return;
       }
-      return data;
-    }
 
-    function renderRecap(data){
-      const itemsHtml = data.items.length
-        ? `<ul>${data.items.map(it=>`<li>${it}</li>`).join('')}</ul>`
-        : `<div class="muted">Aucun article</div>`;
-
-      // Un seul récapitulatif (pas de rubrique "Articles" séparée en doublon)
-      recapEl.innerHTML = `
-        <div class="grid">
-          <div><strong>Client</strong><div>${data.client}</div></div>
-          <div><strong>Email</strong><div>${data.email}</div></div>
-        </div>
-        <div><strong>Détails de la commande</strong>${itemsHtml}</div>
-        <div style="margin-top:12px"><strong>Allergies / autres</strong><div>${data.notes || '—'}</div></div>
-      `;
-    }
-
-    if(raw){
-      renderRecap(parseOrder(raw));
-    }else{
-      recapEl.innerHTML = `<div class="empty">Aucun récapitulatif trouvé. Retournez au menu et validez une commande.</div>`;
-    }
+      // Supprime uniquement l’intitulé “Articles :” (la ligne), conserve le reste.
+      const cleaned = text.replace(/\n?Articles\s*:\s*\n?/i, '');
+      recapEl.textContent = cleaned.trim();
+    });
   </script>
 </body>
 </html>
