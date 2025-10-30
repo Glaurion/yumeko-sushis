@@ -44,14 +44,17 @@
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    form input, form textarea{ width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:10px; margin:6px auto; display:block; }
+    form input, form textarea{
+      width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2);
+      border-radius:10px; padding:10px; margin:6px auto; display:block;
+    }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,var(--barShade))); padding:10px; }
+    #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,var(--barShade))); padding:6px; }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
-    #gotoOrder{ background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; white-space:nowrap; }
+    #gotoOrder{ background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; white-space:nowrap; }
 
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
@@ -60,18 +63,19 @@
       box-shadow:0 22px 60px rgba(0,0,0,.45); max-height:70vh;
       display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101;
     }
-    #cartSheet.open{ bottom:62px; }
-    #cartSheet header, #cartSheet footer{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
+    #cartSheet.open{ bottom:50px; }
+    #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
-    .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer; }
+    .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:10px 14px; font-weight:900; cursor:pointer; }
     .btn-ghost{ background:#2a2a2a; color:#fff; } .btn-ghost:hover{ filter:brightness(1.1); }
     .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
+    .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
+    footer{ text-align:center; color:#d7d7d7; margin:40px 0 40px; }
 
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
@@ -88,16 +92,14 @@
     .hero .logo{ width:160px; }
     @media (min-width:768px){ .hero .logo{ width:200px; } }
 
-    /* Séparateurs de catégories */
+    /* Familles de produits */
     .category{ border:2px solid #000; border-radius:14px; padding:18px; background:#130909; margin-bottom:40px; }
     .category h3{ font-size:1.6rem; margin:0 0 18px; text-align:center; color:#fff; text-transform:uppercase; letter-spacing:1px; }
     #menuSection.section{ border:0; background:transparent; box-shadow:none; padding:0; }
 
-    /* Étapes tiroir (bug fix) */
+    /* Étapes tiroir */
     .step{ display:none; }
     .step.active{ display:block; }
-    /* Petit état désactivé sur bouton envoyer */
-    .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
   </style>
 
   <link rel="icon" type="image/png" href="images/favicon.png" />
@@ -147,29 +149,33 @@
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
 
-      <!-- ⚠️ Remplace TON_EMAIL@domaine.com par ton adresse -->
-      <form id="orderForm" action="https://formsubmit.co/TON_EMAIL@domaine.com" method="POST" target="fs_target" accept-charset="UTF-8" autocomplete="on" novalidate>
+      <!-- Envoi à ton adresse + auto-réponse client -->
+      <form id="orderForm"
+            action="https://formsubmit.co/yumeko.sushis@gmail.com"
+            method="POST"
+            accept-charset="UTF-8"
+            autocomplete="on">
+
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
-        <input name="email" type="email" placeholder="Email (pour la confirmation)" required>
-        <input name="phone" type="tel" pattern="^(\+?\d{1,3})?0?[1-9]\d{8}$" placeholder="Téléphone" required>
-        <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
+        <input name="email" type="email" placeholder="Email" required>
+        <textarea name="comments" id="comments" placeholder="Allergies ou autres"></textarea>
 
         <!-- Champs cachés FormSubmit -->
-        <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Retrouvez votre récapitulatif ci-dessous.">
-        <input type="hidden" name="_subject" value="Votre commande YUMEKO SUSHIS — Confirmation">
+        <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
+        <!-- envoie aussi une copie à une autre boîte si besoin (exemple) -->
+        <!-- <input type="hidden" name="_cc" value="[email protected]"> -->
         <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Voici votre récapitulatif.">
         <input type="hidden" name="_next" value="merci.html">
-        <input type="hidden" name="_captcha" value="false">
+        <!-- Laisser le CAPTCHA actif pour que l’auto-réponse fonctionne -->
+        <!-- <input type="hidden" name="_captcha" value="false">  --> 
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
         <!-- Récap (rempli en JS) -->
         <input type="hidden" name="order" id="hiddenOrder">
-        <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
+        <div id="orderResult" class="muted" style="margin-top:6px;"></div>
       </form>
-
-      <!-- IFRAME CACHÉ : reçoit la réponse FormSubmit sans changer de page -->
-      <iframe name="fs_target" style="display:none;width:0;height:0;border:0;" aria-hidden="true"></iframe>
     </section>
   </main>
 
@@ -235,7 +241,6 @@
   <script>
   document.addEventListener('DOMContentLoaded', function () {
     const sheet = document.getElementById('cartSheet');
-    const sheetBody = sheet?.querySelector('.body');
     const sheetClose = document.getElementById('sheetClose');
     const btnOpen = document.getElementById('gotoOrder');
     const btnGoDetails = document.getElementById('goDetails');
@@ -250,12 +255,8 @@
     const footCart = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
 
-    if(!sheet || !sheetBody || !btnOpen || !recapList){ console.warn('[cart] éléments requis manquants'); return; }
-
-    // Déplacer le formulaire vers l'étape 2
     if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
-    // Utils
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
@@ -278,7 +279,6 @@
       return items;
     }
 
-    // Build recap
     function buildRecap(){
       const items=getCartItems();
       recapList.innerHTML='';
@@ -302,11 +302,11 @@
           recapList.appendChild(li);
         });
       }
+      // afficher le commentaire si saisi
       const c=document.getElementById('comments')?.value?.trim()||'';
-      recapCom.textContent = c ? `Commentaire : ${c}` : '';
+      recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
     }
 
-    // Étapes
     function setStep(which){
       const cartActive = which==='cart';
       stepCart.classList.toggle('active', cartActive);
@@ -324,7 +324,6 @@
     btnBack?.addEventListener('click', ()=> setStep('cart'));
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
-    // Form hidden field helper
     function ensureHiddenField(name){
       if(!form) return null;
       let input=form.querySelector(`input[name="${name}"]`);
@@ -332,24 +331,22 @@
       return input;
     }
 
-    // Préparer le récapitulatif (email + merci.html)
     function prepareOrderText(){
       const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
       const c=document.getElementById('comments')?.value?.trim() || '—';
       const first=form?.querySelector('[name="first_name"]')?.value || '—';
       const last =form?.querySelector('[name="last_name"]')?.value || '—';
-      const phone=form?.querySelector('[name="phone"]')?.value || '—';
       const email=form?.querySelector('[name="email"]')?.value || '—';
 
       const text=`Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
-Téléphone : ${phone}
 
 Articles :
 ${itemsText || '(aucun)'}
 
-Commentaire : ${c}`;
+Allergies / autres :
+${c}`;
 
       const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
       const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
@@ -357,7 +354,6 @@ Commentaire : ${c}`;
       try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
     }
 
-    // Soumission silencieuse + redirection merci
     btnConfirm?.addEventListener('click', ()=>{
       if(!form) return;
       if(!form.reportValidity()){
@@ -368,11 +364,12 @@ Commentaire : ${c}`;
       prepareOrderText();
       btnConfirm.disabled = true;
       btnConfirm.textContent = 'Envoi…';
-      form.submit();                    // POST vers FormSubmit (iframe caché)
-      window.location.href='merci.html'; // Aller direct à la page de remerciement
+      form.submit();               // Soumission "normale" (pour activer l’auto-réponse)
+      // Redirection gérée par FormSubmit via _next -> merci.html
     });
 
-    // === Écouteurs +/− dans le RÉCAP (bug fix) ===
+    sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
+
     recapList.addEventListener('click', (e)=>{
       const plus = e.target.closest('.recap-plus');
       const minus = e.target.closest('.recap-minus');
@@ -392,56 +389,57 @@ Commentaire : ${c}`;
       buildRecap();
     });
 
-    // === Écouteurs +/− dans les CARTES ===
+    // Clics cartes : le “+” ouvre la modale (ne modifie pas la quantité)
     document.addEventListener('click', (e)=>{
-      // Plus / Moins
-      if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
-        const btn = e.target.closest('button');
-        const inc = btn.classList.contains('card-plus') ? 1 : -1;
-        const item = btn.dataset.item;
-        const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-        const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
-        const vBefore = parseInt(span.textContent) || 0;
-        const v = Math.max(0, vBefore + inc);
-        span.textContent = v>0 ? String(v) : '';
-        if(minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
-        bump(span); updateSticky(); buildRecap();
+      const plusBtn = e.target.closest('.card-plus');
+      const card = e.target.closest('.item-card');
+
+      if(plusBtn){
+        const itemKey = plusBtn.dataset.item;
+        openItemModalByKey(itemKey);
         return;
       }
 
-      // Ouverture modale (hors contrôles)
-      const card=e.target.closest('.item-card');
       if(card && !e.target.closest('.ctrls')){
         const code=card.dataset.code;
         const name=card.dataset.name;
-        const d=catalog[code]||{};
-        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-        document.getElementById('mImg').src=img;
-        document.getElementById('mImg').alt=name;
-        document.getElementById('mTitle').textContent=name;
-        document.getElementById('mPieces').textContent=d.pieces ?? '—';
-        document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
-        document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
-        document.getElementById('mDesc').textContent=d.desc || '—';
-
-        const itemKey=`${code}- ${name}`;
-        const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        const current=parseInt(qtySpan?.textContent)||0;
-        const mQty=document.getElementById('mQty');
-        const mMinus=document.getElementById('mMinus');
-        mQty.textContent=current;
-        mMinus.style.visibility=current>0?'visible':'hidden';
-        mMinus.dataset.item=itemKey;
-        document.getElementById('mPlus').dataset.item=itemKey;
-
-        const modal=document.getElementById('itemModal');
-        modal.style.display='flex';
-        modal.setAttribute('aria-hidden','false');
+        openItemModal(code, name);
         return;
       }
     });
 
-    // === Modale +/− (bug fix : synchronise carte + sticky + recap) ===
+    function openItemModal(code, name){
+      const d=catalog[code]||{};
+      const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+      document.getElementById('mImg').src=img;
+      document.getElementById('mImg').alt=name;
+      document.getElementById('mTitle').textContent=name;
+      document.getElementById('mPieces').textContent=d.pieces ?? '—';
+      document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
+      document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
+      document.getElementById('mDesc').textContent=d.desc || '—';
+
+      const itemKey=`${code}- ${name}`;
+      const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const current=parseInt(qtySpan?.textContent)||0;
+      const mQty=document.getElementById('mQty');
+      const mMinus=document.getElementById('mMinus');
+      mQty.textContent=current;
+      mMinus.style.visibility=current>0?'visible':'hidden';
+      mMinus.dataset.item=itemKey;
+      document.getElementById('mPlus').dataset.item=itemKey;
+
+      const modal=document.getElementById('itemModal');
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+    }
+    function openItemModalByKey(itemKey){
+      const code = (String(itemKey).split('-')[0]||'').trim();
+      const name = String(itemKey).split('-').slice(1).join('-').trim();
+      if(!code || !name) return;
+      openItemModal(code, name);
+    }
+
     (function(){
       const modal=document.getElementById('itemModal');
       const closeBtn=document.getElementById('mClose');
@@ -462,16 +460,49 @@ Commentaire : ${c}`;
       mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
       mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
 
-      closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+      closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
       modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     })();
 
-    // Rebuild récap quand on tape dans le tiroir
-    sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
+    function updateMiniRecap(){}
+    function updateSticky(){
+      const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
+      qtyNodes.forEach(q=>{
+        const n=parseInt(q.textContent)||0; totalQty+=n;
+        if(n>0){
+          const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
+          const d=catalog[code]||{};
+          const p=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
+          if(typeof p==='number') totalPrice += p*n;
+        }
+      });
+      const btn=document.getElementById('gotoOrder'); if(!btn) return;
+      btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
+      updateMiniRecap(); saveCart();
+    }
 
     // Ouvre le tiroir si #panier
-    if(location.hash==='#panier' || location.hash==='#cart') openSheet();
+    if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen.click(),0); }
+
+    // Sauvegarde panier
+    const CART_KEY='yumeko_cart_v1';
+    function saveCart(){
+      const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
+      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+    }
+    function restoreCart(){
+      try{
+        const saved=JSON.parse(localStorage.getItem(CART_KEY)||'[]');
+        saved.forEach(({key,qty})=>{
+          const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
+          const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(key)}"]`);
+          if(span){ span.textContent=qty; if(minusBtn) minusBtn.style.visibility='visible'; }
+        });
+        updateSticky();
+      }catch(e){}
+    }
+    restoreCart();
   });
   </script>
 
@@ -517,86 +548,8 @@ Commentaire : ${c}`;
     B2:{name:'BIERE ASAHI', img:'b2.jpg'},
     B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
   };
-
-  const prices={ /* 'M1': 4.50, etc. */ };
+  const prices={}; // Optionnel : renseigne les prix si besoin
   const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
-  const CART_KEY='yumeko_cart_v1';
-
-  function saveCart(){
-    const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
-    try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
-  }
-  function restoreCart(){
-    try{
-      const saved=JSON.parse(localStorage.getItem(CART_KEY)||'[]');
-      saved.forEach(({key,qty})=>{
-        const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-        const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(key)}"]`);
-        if(span){ span.textContent=qty; if(minusBtn) minusBtn.style.visibility='visible'; }
-      });
-      if(typeof updateSticky==='function') updateSticky();
-    }catch(e){}
-  }
-
-  function buildMenu(){
-    const menu=document.getElementById('menu'); menu.innerHTML='';
-    for(const [cat,codes] of Object.entries(categories)){
-      const wrap=document.createElement('div'); wrap.className='category';
-      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
-      const grid=wrap.querySelector('.menu-grid');
-      codes.forEach(code=>{
-        const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
-        const name=d.name||code;
-        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-        const pieces=d.pieces ?? '';
-        const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
-        const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
-        const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
-        card.innerHTML=`
-          <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
-          <div class="item-name">${name}</div>
-          <div class="card-body">
-            <div class="card-footer">
-              <div class="meta">
-                <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
-                <span class="price">${priceStr}</span>
-              </div>
-              <div class="ctrls">
-                <button class="circle card-minus" data-item="${code}- ${name}" type="button" style="visibility:hidden">−</button>
-                <span class="qty-badge qty" data-item="${code}- ${name}"></span>
-                <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
-              </div>
-            </div>
-          </div>`;
-        grid.appendChild(card);
-      });
-      menu.appendChild(wrap);
-    }
-  }
-  buildMenu(); restoreCart();
-
-  function updateMiniRecap(){} // noop
-  function updateSticky(){
-    const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
-    qtyNodes.forEach(q=>{
-      const n=parseInt(q.textContent)||0; totalQty+=n;
-      if(n>0){
-        const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-        const d=catalog[code]||{};
-        const p=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
-        if(typeof p==='number') totalPrice += p*n;
-      }
-    });
-    const btn=document.getElementById('gotoOrder'); if(!btn) return;
-    btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
-    updateMiniRecap(); saveCart();
-  }
-
-  // scroll CTA
-  document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
-
-  // init
-  updateSticky();
   </script>
 </body>
 </html>
