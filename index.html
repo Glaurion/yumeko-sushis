@@ -217,10 +217,6 @@
         <input name="last_name" placeholder="Nom" required>
         <!-- Email du client (obligatoire pour l'autoreply FormSubmit) -->
         <input name="email" type="email" placeholder="Email" required>
-        <!-- Téléphone OBLIGATOIRE -->
-        <input name="phone" type="tel" pattern="^(\+?\d{1,3})?0?[1-9]\d{8}$" placeholder="Téléphone" required>
-        <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
-
         <!-- ====== Champs cachés FormSubmit ====== -->
         <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Retrouvez votre récapitulatif ci-dessous.">
         <input type="hidden" name="_subject" value="Votre commande YUMEKO SUSHIS — Confirmation">
@@ -432,7 +428,6 @@
 `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
-Téléphone : ${phone}
 
 Articles :
 ${itemsText || '(aucun)'}
