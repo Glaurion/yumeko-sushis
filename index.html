@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>YUMEKO SUSHIS</title>
 
   <!-- Police Poppins -->
@@ -39,17 +39,33 @@
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
     .thumb.sm{ width:40px; height:40px; border-radius:8px; }
     .item-name{ font-weight:700; font-size:.98rem; padding:10px 12px 4px; }
+
     .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
     .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
+    /* Form champs (desktop par défaut) */
     form input, form textarea{
       width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2);
       border-radius:10px; padding:10px; margin:6px auto; display:block;
+      font-size:16px; /* >=16px pour empêcher le zoom iOS */
+      text-align:left;
     }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
+
+    /* Mobile: on réduit visuellement sans déclencher le zoom iOS */
+    @media (max-width: 480px){
+      form input, form textarea{
+        max-width:360px; width:100%;
+        padding:10px 12px;
+        font-size:16px;             /* garder 16px pour stopper le zoom */
+        line-height:1.2;
+        text-align:center;          /* centré */
+      }
+      .section-title{ margin-bottom:8px; }
+    }
 
     #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,var(--barShade))); padding:6px; }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
@@ -67,7 +83,7 @@
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
-    #cartSheet .body{ padding:8px 10px; }              /* ← réduit l'espace vertical */
+    #cartSheet .body{ padding:8px 10px; }
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
@@ -76,7 +92,7 @@
     .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
     .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; } /* ← réduit */
+    footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
 
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
@@ -150,26 +166,22 @@
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
 
-      <!-- Envoi à ton adresse + auto-réponse client -->
+      <!-- Envoi à votre adresse ; pas de redirection ; pas d'autoresponse -->
       <form id="orderForm"
             action="https://formsubmit.co/yumeko.sushis@gmail.com"
             method="POST"
             accept-charset="UTF-8"
             autocomplete="on">
-
-        <input name="first_name" placeholder="Prénom" required>
-        <input name="last_name" placeholder="Nom" required>
-        <input name="email" type="email" placeholder="Email" required>
+        <input name="first_name" placeholder="Prénom" required inputmode="text" />
+        <input name="last_name" placeholder="Nom" required inputmode="text" />
+        <input name="email" type="email" placeholder="Email" required inputmode="email" />
         <textarea name="comments" id="comments" placeholder="Allergies ou autres"></textarea>
 
         <!-- Champs cachés FormSubmit -->
         <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
-        <!-- En option, envoi d'une copie : dé-commente et remplace l'adresse -->
-        <!-- <input type="hidden" name="_cc" value="autre-boite@exemple.com"> -->
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Voici votre récapitulatif.">
-        <input type="hidden" name="_next" value="merci.html">
-        <!-- Important : laisser le CAPTCHA actif pour l'autoresponse -->
+        <input type="hidden" name="_captcha" value="false"><!-- désactive captcha -->
+        <!-- Anti-spam -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
         <!-- Récap (rempli en JS) -->
@@ -187,19 +199,27 @@
     </div>
   </div>
 
-  <!-- TIROIR RÉCAP / 2 ÉTAPES -->
+  <!-- TIROIR RÉCAP / 3 ÉTAPES -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
       <button id="sheetClose" aria-label="Fermer" type="button">×</button>
     </header>
     <div class="body">
+      <!-- ÉTAPE 1 : Récap & édition -->
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
+      <!-- ÉTAPE 2 : Infos client -->
       <div id="stepDetails" class="step"></div>
+      <!-- ÉTAPE 3 : Merci -->
+      <div id="stepThanks" class="step">
+        <h4 style="margin:6px 0 8px;">Merci pour votre commande ❤️</h4>
+        <p class="muted" style="margin:0 0 8px;">Un récapitulatif s’affiche ci-dessous. Nous vous contactons dès que possible.</p>
+        <pre id="thanksRecap" style="white-space:pre-wrap;background:#111;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);max-height:180px;overflow:auto;margin:0;"></pre>
+      </div>
     </div>
     <footer>
       <div id="footerCart" class="step active">
@@ -209,6 +229,10 @@
         <button class="btn-ghost" id="backToCart" type="button">← Retour</button>
         <button class="btn-primary" id="confirmSend" type="button">Confirmer et envoyer</button>
       </div>
+      <div id="footerThanks" class="step">
+        <button class="btn-ghost" id="newOrder" type="button">Nouvelle commande</button>
+        <button class="btn-primary" id="closeThanks" type="button">Fermer</button>
+      </div>
     </footer>
   </div>
 
@@ -216,10 +240,11 @@
 
   <!-- =========================
        Script C : Données + Menu
-       (PLACÉ AVANT Script B pour éviter les erreurs de référence)
   ========================== -->
   <script>
-    // Catégories / Catalogue
+    // Numéro WhatsApp pour recevoir le récap (optionnel) — EX: '+262612345678'
+    const OWNER_WHATSAPP = '+33627595143'; // ← mets ton numéro ici si tu veux le WhatsApp
+
     const categories={
       'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
       'LES CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
@@ -261,11 +286,8 @@
       B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
     };
     const prices={}; // optionnel : remplir pour total €
-
-    // Format monétaire (FR)
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
-    // Construction du menu
     function buildMenu(){
       const menu=document.getElementById('menu'); menu.innerHTML='';
       for(const [cat,codes] of Object.entries(categories)){
@@ -304,7 +326,6 @@
         menu.appendChild(wrap);
       }
     }
-    // Construit le menu dès que possible
     document.addEventListener('DOMContentLoaded', buildMenu);
   </script>
 
@@ -340,14 +361,23 @@
     const btnGoDetails = document.getElementById('goDetails');
     const btnBack = document.getElementById('backToCart');
     const btnConfirm = document.getElementById('confirmSend');
+
     const recapList = document.getElementById('recapList');
     const recapCom = document.getElementById('recapComment');
     const form = document.getElementById('orderForm');
     const orderResult = document.getElementById('orderResult');
+
     const stepCart = document.getElementById('stepCart');
     const stepDetails = document.getElementById('stepDetails');
+    const stepThanks = document.getElementById('stepThanks');
+
     const footCart = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
+    const footThanks = document.getElementById('footerThanks');
+
+    const thanksRecap = document.getElementById('thanksRecap');
+    const closeThanks = document.getElementById('closeThanks');
+    const newOrder = document.getElementById('newOrder');
 
     // Injecte le formulaire dans l'étape 2
     if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
@@ -402,16 +432,24 @@
     }
 
     function setStep(which){
-      const cartActive = which==='cart';
-      stepCart.classList.toggle('active', cartActive);
-      footCart.classList.toggle('active', cartActive);
-      stepDetails.classList.toggle('active', !cartActive);
-      footDetails.classList.toggle('active', !cartActive);
+      const showCart = which==='cart';
+      const showDetails = which==='details';
+      const showThanks = which==='thanks';
+
+      stepCart.classList.toggle('active', showCart);
+      footCart.classList.toggle('active', showCart);
+
+      stepDetails.classList.toggle('active', showDetails);
+      footDetails.classList.toggle('active', showDetails);
+
+      stepThanks.classList.toggle('active', showThanks);
+      footThanks.classList.toggle('active', showThanks);
     }
 
     function openSheet(){ setStep('cart'); buildRecap(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
     function closeSheet(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
 
+    document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
     btnOpen.addEventListener('click', openSheet);
     sheetClose?.addEventListener('click', closeSheet);
     btnGoDetails?.addEventListener('click', ()=> setStep('details'));
@@ -425,14 +463,14 @@
       return input;
     }
 
-    function prepareOrderText(){
+    function buildOrderText(){
       const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
       const c=document.getElementById('comments')?.value?.trim() || '—';
       const first=form?.querySelector('[name="first_name"]')?.value || '—';
       const last =form?.querySelector('[name="last_name"]')?.value || '—';
       const email=form?.querySelector('[name="email"]')?.value || '—';
 
-      const text=`Commande YUMEKO
+      return `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
 
@@ -441,27 +479,65 @@ ${itemsText || '(aucun)'}
 
 Allergies / autres :
 ${c}`;
-
-      const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
-      const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
-
-      try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
     }
 
-    btnConfirm?.addEventListener('click', ()=>{
+    function prepareOrderText(){
+      const text = buildOrderText();
+      const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
+      const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
+      try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
+      return text;
+    }
+
+    // Envoi SANS redirection : fetch + merci in-app (+ WhatsApp optionnel)
+    btnConfirm?.addEventListener('click', async ()=>{
       if(!form) return;
       if(!form.reportValidity()){
         setStep('details');
         form.querySelector(':invalid')?.focus();
         return;
       }
-      prepareOrderText();
+      const text = prepareOrderText();
       btnConfirm.disabled = true;
       btnConfirm.textContent = 'Envoi…';
-      form.submit();               // FormSubmit gère l'envoi + redirection _next → merci.html
+
+      const fd = new FormData(form);
+      try{
+        const res = await fetch(form.action, { method:'POST', body:fd, headers:{ 'Accept':'application/json' } });
+        // Quoi qu’il arrive, on affiche la page Merci (même si l’API renvoie autre chose) :
+      }catch(e){
+        // En cas d’erreur réseau, on affiche quand même le merci local (tu recevras peut-être pas le mail)
+      }
+
+      // Reset UI + recap Merci
+      thanksRecap.textContent = text;
+
+      // Vide panier + commentaire + boutons "-"
+      document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+      document.querySelectorAll('.card-minus').forEach(b=> b.style.visibility='hidden');
+      const comEl = document.getElementById('comments'); if(comEl) comEl.value='';
+      updateSticky(); buildRecap();
+
+      // Ouvre l’étape Merci
+      setStep('thanks');
+
+      // WhatsApp au restaurateur (optionnel)
+      if(OWNER_WHATSAPP && OWNER_WHATSAPP.replace(/\D/g,'').length >= 8){
+        const to = OWNER_WHATSAPP.replace(/^\+/, '');
+        const url = `https://wa.me/${encodeURIComponent(to)}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank','noopener');
+      }
+
+      btnConfirm.disabled = false;
+      btnConfirm.textContent = 'Confirmer et envoyer';
     });
 
-    sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
+    // Merci : actions
+    closeThanks?.addEventListener('click', closeSheet);
+    newOrder?.addEventListener('click', ()=>{ setStep('cart'); });
+
+    // Écoutes formulaire & récap
+    document.getElementById('cartSheet').addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
 
     recapList.addEventListener('click', (e)=>{
       const plus = e.target.closest('.recap-plus');
@@ -579,7 +655,6 @@ ${c}`;
 
     function updateMiniRecap(){}
     function updateSticky(){
-      // sécurité si jamais catalog/prices non définis
       if(typeof catalog==='undefined') return;
       const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
       qtyNodes.forEach(q=>{
@@ -596,11 +671,8 @@ ${c}`;
       updateMiniRecap(); saveCart();
     }
 
-    // Ouvre le tiroir si #panier
+    // hash panier
     if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
-
-    // CTA "Commander maintenant"
-    document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
 
     // Init
     restoreCart();
