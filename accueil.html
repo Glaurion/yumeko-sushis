@@ -4,15 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>YUMEKO SUSHIS — Accueil</title>
-<!-- Favicon / Icônes -->
+
+  <!-- Favicons / Icônes -->
   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
   <link rel="icon" type="image/png" sizes="192x192" href="images/icon-192x192-round.png">
-
-  <!-- Apple / iOS -->
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png">
-
-  <!-- (Optionnel) PWA / Android -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#8b0000">
 
   <!-- Police Poppins -->
@@ -20,27 +17,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Favicon (existez en 32/48/64 si possible) -->
-  <link rel="icon" type="image/png" href="images/favicon-32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="images/favicon-48.png" sizes="48x48" />
-  <link rel="apple-touch-icon" href="images/favicon-180.png" />
-  <link rel="manifest" href="manifest.webmanifest" />
-
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
       --card:#1b1b1b; --muted:#cfcfcf; --gold:#d8b26e;
+      --bg-top:#0f0f0f; --bg-bottom:#8b0000;
     }
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
     body{
-      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text);
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,var(--bg-top) 0%, var(--bg-bottom) 100%);
+      color:var(--text);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ===== Header ===== */
-    .site-header.jp{
+    /* ===== Header (commun avec index) ===== */
+    .site-header{
       background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
       border-bottom: 1px solid rgba(255,255,255,.08);
     }
@@ -51,8 +45,7 @@
     .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .logo{
       width:160px; height:160px; border-radius:50%;
-      object-fit:cover; /* évite tout rognage disgracieux */
-      background:#000; box-shadow:0 0 10px rgba(0,0,0,.3);
+      object-fit:cover; background:#000; box-shadow:0 0 10px rgba(0,0,0,.3);
       display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
@@ -65,10 +58,16 @@
     }
     .main-nav .sep{ color:#e9d9d9; opacity:.6; }
     .main-nav a{
-      color:var(--text); text-decoration:none; padding:4px 6px; border-radius:6px; opacity:.95;
+      position:relative; color:var(--text); text-decoration:none;
+      padding:4px 6px; border-radius:6px; opacity:.95;
     }
     .main-nav a:hover{ opacity:1; }
-    .main-nav a.active{ text-decoration:none; }
+    .main-nav a::after{
+      content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
+      background:linear-gradient(90deg, transparent, var(--brand), transparent);
+      opacity:0; transform:translateY(2px); transition:all .18s ease;
+    }
+    .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
 
     @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
@@ -115,8 +114,8 @@
     Aller au contenu
   </a>
 
-  <!-- ===== Header ===== -->
-  <header class="site-header jp">
+  <!-- ===== Header (identique à index) ===== -->
+  <header class="site-header">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
@@ -124,7 +123,7 @@
       </a>
 
       <nav class="main-nav" aria-label="Navigation principale">
-        <a href="accueil.html" class="active">Accueil</a>
+        <a href="accueil.html">Accueil</a>
         <span class="sep" aria-hidden="true">・</span>
         <a href="index.html">Menu</a>
       </nav>
@@ -151,8 +150,7 @@
           </p>
         </div>
 
-        <!-- Bloc latéral optionnel (vide pour alléger visuel)
-             Si tu veux y remettre un message plus tard, ajoute un <div class="card">...</div> ici -->
+        <!-- Bloc latéral (vide pour alléger visuel, prêt à être utilisé plus tard) -->
       </div>
     </section>
 
@@ -160,7 +158,7 @@
     <section class="cta-band" aria-labelledby="cta-titre">
       <div>
         <h3 id="cta-titre" style="margin:0 0 6px">Prêt à vous remplir le ventre ?</h3>
-        <p class="muted" style="margin:0">Passez commande en quelques clics rapide, simple et 100% à votre goût.</p>
+        <p class="muted" style="margin:0">Passez commande en quelques clics — rapide, simple et 100% à votre goût.</p>
       </div>
       <div>
         <a class="btn" href="index.html#menu" aria-label="Aller au menu pour commander">Commander maintenant</a>
@@ -170,13 +168,16 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- JS : nav actif (robuste, sans interactions panier) -->
+  <!-- JS : onglet actif (mêmes règles que sur index) -->
   <script>
     (function(){
-      const here = location.pathname.split('/').pop() || 'index.html';
+      const here = (location.pathname.split('/').pop() || 'accueil.html').toLowerCase();
       document.querySelectorAll('.main-nav a').forEach(a=>{
-        const href = a.getAttribute('href');
-        if(href && !href.startsWith('#') && here === href) a.classList.add('active');
+        const href = (a.getAttribute('href')||'').toLowerCase();
+        if(href && !href.startsWith('#')){
+          const target = href.split('?')[0].split('#')[0];
+          if(here === target) a.classList.add('active');
+        }
       });
     })();
   </script>
