@@ -92,6 +92,12 @@
     .category{ border:2px solid #000; border-radius:14px; padding:18px; background:#130909; margin-bottom:40px; }
     .category h3{ font-size:1.6rem; margin:0 0 18px; text-align:center; color:#fff; text-transform:uppercase; letter-spacing:1px; }
     #menuSection.section{ border:0; background:transparent; box-shadow:none; padding:0; }
+
+    /* Étapes tiroir (bug fix) */
+    .step{ display:none; }
+    .step.active{ display:block; }
+    /* Petit état désactivé sur bouton envoyer */
+    .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
   </style>
 
   <link rel="icon" type="image/png" href="images/favicon.png" />
@@ -142,7 +148,6 @@
       <h2 class="section-title">Validez votre commande</h2>
 
       <!-- ⚠️ Remplace TON_EMAIL@domaine.com par ton adresse -->
-      <!-- IMPORTANT: target=fs_target (iframe caché) pour empêcher tout changement de page -->
       <form id="orderForm" action="https://formsubmit.co/TON_EMAIL@domaine.com" method="POST" target="fs_target" accept-charset="UTF-8" autocomplete="on" novalidate>
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
@@ -155,9 +160,7 @@
         <input type="hidden" name="_subject" value="Votre commande YUMEKO SUSHIS — Confirmation">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_next" value="merci.html">
-        <!-- Désactive la vérification robot FormSubmit -->
         <input type="hidden" name="_captcha" value="false">
-        <!-- Anti-spam -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
         <!-- Récap (rempli en JS) -->
@@ -249,8 +252,10 @@
 
     if(!sheet || !sheetBody || !btnOpen || !recapList){ console.warn('[cart] éléments requis manquants'); return; }
 
+    // Déplacer le formulaire vers l'étape 2
     if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
+    // Utils
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
@@ -273,6 +278,7 @@
       return items;
     }
 
+    // Build recap
     function buildRecap(){
       const items=getCartItems();
       recapList.innerHTML='';
@@ -284,11 +290,11 @@
           li.className='recap-item';
           const codeLower=(code||'').toLowerCase();
           li.innerHTML=`
-            <div class="it-left">
+            <div class="it-left" style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
               <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
-              <span class="it-label">${name}</span>
+              <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
             </div>
-            <div class="it-ctrl">
+            <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
               <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer" type="button">−</button>
               <span class="qty" aria-live="polite">${qty}</span>
               <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter" type="button">+</button>
@@ -300,6 +306,7 @@
       recapCom.textContent = c ? `Commentaire : ${c}` : '';
     }
 
+    // Étapes
     function setStep(which){
       const cartActive = which==='cart';
       stepCart.classList.toggle('active', cartActive);
@@ -317,7 +324,7 @@
     btnBack?.addEventListener('click', ()=> setStep('cart'));
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
-    // Ajoute/assure un input hidden par nom
+    // Form hidden field helper
     function ensureHiddenField(name){
       if(!form) return null;
       let input=form.querySelector(`input[name="${name}"]`);
@@ -325,6 +332,7 @@
       return input;
     }
 
+    // Préparer le récapitulatif (email + merci.html)
     function prepareOrderText(){
       const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
       const c=document.getElementById('comments')?.value?.trim() || '—';
@@ -349,7 +357,7 @@ Commentaire : ${c}`;
       try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
     }
 
-    // Soumission en arrière-plan + navigation immédiate vers merci.html
+    // Soumission silencieuse + redirection merci
     btnConfirm?.addEventListener('click', ()=>{
       if(!form) return;
       if(!form.reportValidity()){
@@ -358,34 +366,56 @@ Commentaire : ${c}`;
         return;
       }
       prepareOrderText();
-      form.submit();              // POST vers FormSubmit dans l'iframe caché
-      window.location.href='merci.html'; // on emmène l’utilisateur direct au merci
+      btnConfirm.disabled = true;
+      btnConfirm.textContent = 'Envoi…';
+      form.submit();                    // POST vers FormSubmit (iframe caché)
+      window.location.href='merci.html'; // Aller direct à la page de remerciement
     });
 
-    // MAJ récap / quantités
-    sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
+    // === Écouteurs +/− dans le RÉCAP (bug fix) ===
     recapList.addEventListener('click', (e)=>{
-      const btn=e.target.closest('.recap-plus, .recap-minus'); if(!btn) return;
-      const item=btn.dataset.item;
-      const span=document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const plus = e.target.closest('.recap-plus');
+      const minus = e.target.closest('.recap-minus');
+      const btn = plus || minus;
+      if(!btn) return;
+      const item = btn.dataset.item;
+      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
       if(!span) return;
-      const inc=btn.classList.contains('recap-plus')?1:-1;
-      const cur=parseInt(span.textContent)||0;
-      const v=Math.max(0, cur+inc);
+      const cur = parseInt(span.textContent)||0;
+      const inc = plus ? 1 : -1;
+      const v = Math.max(0, cur + inc);
       span.textContent = v>0 ? String(v) : '';
-      bump(span); updateSticky(); buildRecap();
+      if(minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+      bump(span);
+      updateSticky();
+      buildRecap();
     });
 
+    // === Écouteurs +/− dans les CARTES ===
     document.addEventListener('click', (e)=>{
-      if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
-        setTimeout(()=>{ buildRecap(); updateSticky(); },0);
+      // Plus / Moins
+      if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
+        const btn = e.target.closest('button');
+        const inc = btn.classList.contains('card-plus') ? 1 : -1;
+        const item = btn.dataset.item;
+        const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+        const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
+        const vBefore = parseInt(span.textContent) || 0;
+        const v = Math.max(0, vBefore + inc);
+        span.textContent = v>0 ? String(v) : '';
+        if(minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+        bump(span); updateSticky(); buildRecap();
+        return;
       }
+
+      // Ouverture modale (hors contrôles)
       const card=e.target.closest('.item-card');
       if(card && !e.target.closest('.ctrls')){
         const code=card.dataset.code;
         const name=card.dataset.name;
         const d=catalog[code]||{};
-        const img='images/' + (d.img || (code.toLowerCase()+'.jpg'));
+        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
         document.getElementById('mImg').src=img;
         document.getElementById('mImg').alt=name;
         document.getElementById('mTitle').textContent=name;
@@ -407,10 +437,11 @@ Commentaire : ${c}`;
         const modal=document.getElementById('itemModal');
         modal.style.display='flex';
         modal.setAttribute('aria-hidden','false');
+        return;
       }
     });
 
-    // Modale + contrôles
+    // === Modale +/− (bug fix : synchronise carte + sticky + recap) ===
     (function(){
       const modal=document.getElementById('itemModal');
       const closeBtn=document.getElementById('mClose');
@@ -426,7 +457,7 @@ Commentaire : ${c}`;
         if(minusBtn) minusBtn.style.visibility=newVal>0?'visible':'hidden';
         mQty.textContent=newVal;
         document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
-        updateSticky();
+        updateSticky(); buildRecap();
       }
       mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
       mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
@@ -435,6 +466,9 @@ Commentaire : ${c}`;
       modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     })();
+
+    // Rebuild récap quand on tape dans le tiroir
+    sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
 
     // Ouvre le tiroir si #panier
     if(location.hash==='#panier' || location.hash==='#cart') openSheet();
@@ -558,52 +592,10 @@ Commentaire : ${c}`;
     updateMiniRecap(); saveCart();
   }
 
-  document.addEventListener('click', e=>{
-    if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
-      const btn=e.target.closest('button');
-      const inc=btn.classList.contains('card-plus')?1:-1;
-      const item=btn.dataset.item;
-      const span=document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
-      const vBefore=parseInt(span.textContent)||0;
-      const v=Math.max(0, vBefore+inc);
-      span.textContent = v>0 ? String(v) : '';
-      if(minusBtn) minusBtn.style.visibility = v>0 ? 'visible':'hidden';
-      span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
-      return;
-    }
-    const card=e.target.closest('.item-card');
-    if(card && !e.target.closest('.ctrls')){
-      const code=card.dataset.code;
-      const name=card.dataset.name;
-      const d=catalog[code]||{};
-      const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-      document.getElementById('mImg').src=img;
-      document.getElementById('mImg').alt=name;
-      document.getElementById('mTitle').textContent=name;
-      document.getElementById('mPieces').textContent=d.pieces ?? '—';
-      document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
-      document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
-      document.getElementById('mDesc').textContent=d.desc || '—';
-
-      const itemKey=`${code}- ${name}`;
-      const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-      const current=parseInt(qtySpan?.textContent)||0;
-      const mQty=document.getElementById('mQty');
-      const mMinus=document.getElementById('mMinus');
-      mQty.textContent=current;
-      mMinus.style.visibility=current>0?'visible':'hidden';
-      mMinus.dataset.item=itemKey;
-      document.getElementById('mPlus').dataset.item=itemKey;
-
-      const modal=document.getElementById('itemModal');
-      modal.style.display='flex';
-      modal.setAttribute('aria-hidden','false');
-      return;
-    }
-  });
-
+  // scroll CTA
   document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+
+  // init
   updateSticky();
   </script>
 </body>
