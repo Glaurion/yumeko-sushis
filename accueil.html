@@ -49,10 +49,7 @@
       opacity:0; transform:translateY(2px);
       transition:all .18s ease;
     }
-    .main-nav a:hover::after,
-    .main-nav a.active::after{
-      opacity:1; transform:translateY(0);
-    }
+    .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
     @media (max-width:480px){
       .brand-text h1{ font-size:1.2rem; }
       .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
@@ -81,12 +78,11 @@
       background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
     }
 
-    /* HERO — même placement que index */
+    /* HERO — sobre, même placement que index */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center; position:relative;
     }
-    /* logo/phrase/boutons supprimés en haut -> on garde juste le titre */
     h1.brand{ font-size:2.5rem; margin:12px 0 8px; letter-spacing:2px; font-weight:800; }
 
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
@@ -101,16 +97,6 @@
     .muted{ color:#cfcfcf; }
 
     .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px; }
-    .badge{
-      display:inline-block; font-size:.78rem; letter-spacing:.3px; color:#111; background:var(--gold);
-      padding:6px 10px; border-radius:999px; font-weight:800; margin-bottom:10px;
-    }
-
-    .values{ display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width:720px){ .values{ grid-template-columns:repeat(3,1fr); } }
-    .value{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px; }
-    .value h3{ margin:0 0 6px; font-size:1.05rem; }
-    .value p{ margin:0; color:#ddd; font-size:.98rem; line-height:1.5; }
 
     .cta-band{
       background:linear-gradient(90deg, rgba(0,0,0,.35), rgba(139,0,0,.6));
@@ -124,7 +110,6 @@
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; font-size:.95rem; }
     a.btn, a.btn:visited{ color:inherit; text-decoration:none; }
 
-    /* Bouton principal (on garde que celui du bas) */
     .btn{
       border:none; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer;
       transition:transform .12s ease, filter .12s ease;
@@ -135,7 +120,7 @@
 </head>
 <body>
 
-  <!-- ===== Header - Style Japonais Premium ===== -->
+  <!-- ===== Header ===== -->
   <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand">
@@ -150,95 +135,49 @@
         <a href="accueil.html" class="active">Accueil</a>
         <span class="sep">・</span>
         <a href="index.html">Menu</a>
-        <span class="sep">・</span>
-        <a href="#panier" id="navPanier">Panier</a>
+        <!-- Lien “Panier” supprimé -->
       </nav>
     </div>
   </header>
   <!-- ===== /Header ===== -->
 
-  <!-- HERO (logo/phrase/boutons retirés) -->
+  <!-- HERO -->
   <section class="hero">
     <h1 class="brand">YUMEKO SUSHIS</h1>
   </section>
 
   <main class="container">
-    <!-- À PROPOS DU RESTAURANT -->
+
+    <!-- SECTION UNIQUE (ex- “À propos de Benjamin”) -->
     <section class="section">
       <h2>Bienvenue chez Yumeko Sushis</h2>
       <div class="sep"></div>
       <div class="grid-2">
         <div>
           <p class="lead">
-            Chez <strong>Yumeko Sushis</strong>, nous célébrons l’essentiel : des produits <strong>ultra-frais</strong>,
-            un savoir-faire <strong>soigné</strong> et une expérience <strong>personnalisable</strong>.
-            Composez vos <strong>box</strong>, créez vos <strong>sushis à la carte</strong> et laissez parler vos envies.
-          </p>
-          <p class="lead">
-            Notre cuisine est pensée comme un <strong>pont entre tradition et modernité</strong> : élégante, précise,
-            généreuse en goût — toujours au service du plaisir.
-          </p>
-        </div>
-        <div class="card">
-          <span class="badge">Signature Yumeko</span>
-          <p class="muted" style="margin:0">
-            Ici, chaque détail compte : coupe du poisson, assaisonnement du riz, équilibre des textures.
-            Nous croyons à une cuisine honnête, <strong>transparente</strong> et <strong>accessible</strong>.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- BIOGRAPHIE DU CHEF -->
-    <section class="section">
-      <h2>À propos de Benjamin</h2>
-      <div class="sep"></div>
-      <div class="grid-2">
-        <div>
-          <p class="lead">
-            Je m’appelle <strong>Benjamin</strong>. J’ai commencé en cuisinant des sushis pour mon entourage : les retours
-            ont été tellement positifs que j’ai voulu aller plus loin. J’aime la cuisine — et <strong>encore plus</strong> l’art des sushis.
+            Je m’appelle <strong>Benjamin</strong>. J’ai commencé en cuisinant des sushis pour mon entourage :
+            les retours ont été tellement positifs que j’ai voulu aller plus loin. J’aime la cuisine — et
+            <strong>encore plus</strong> l’art des sushis.
           </p>
           <p class="lead">
             Le nom <strong>Yumeko</strong> est un clin d’œil à mes deux chats : <em>Yume</em> et <em>Uniko</em>.
-            Une touche personnelle qui symbolise ce que je veux transmettre : <strong>de la passion, de la douceur et beaucoup de cœur</strong>.
+            Une touche personnelle qui symbolise ce que je veux transmettre : <strong>de la passion, de la douceur
+            et beaucoup de cœur</strong>.
           </p>
           <p class="lead" style="margin-bottom:0">
             Ma promesse : <strong>fraîcheur irréprochable</strong> et <strong>goût</strong> à chaque bouchée.
           </p>
         </div>
-        <div class="value">
-          <h3>Ma vision</h3>
-          <p>
-            Partager la passion, sublimer la fraîcheur et laisser les clients s’exprimer
-            grâce à la <strong>personnalisation</strong> de leurs sushis et de leurs box — le tout à un
-            <strong>prix imbattable</strong>.
+        <div class="card">
+          <p class="muted" style="margin:0">
+            Composez vos <strong>box</strong>, créez vos <strong>sushis à la carte</strong> et laissez parler vos envies —
+            une expérience <strong>personnalisable</strong> au <strong>prix le plus juste</strong>.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- NOS VALEURS -->
-    <section class="section">
-      <h2>Nos valeurs</h2>
-      <div class="sep"></div>
-      <div class="values">
-        <div class="value">
-          <h3>Fraîcheur absolue</h3>
-          <p>Une sélection exigeante des produits et une préparation du jour pour une texture et des saveurs nettes.</p>
-        </div>
-        <div class="value">
-          <h3>Personnalisation</h3>
-          <p>Créez vos sushis et vos box : végétarien, très saumon, croquant, fondant… c’est à vous de décider.</p>
-        </div>
-        <div class="value">
-          <h3>Prix imbattables</h3>
-          <p>Nous optimisons tout pour vous offrir la meilleure qualité possible au prix le plus juste.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- APPEL À L’ACTION (bas de page) -->
+    <!-- CTA BAS DE PAGE -->
     <section class="cta-band">
       <div>
         <h3 style="margin:0 0 6px">Prêt à composer votre box ?</h3>
@@ -246,14 +185,15 @@
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a class="btn btn-primary" href="index.html#panier">Commander maintenant</a>
-        <!-- Bouton “Voir le menu” supprimé -->
+        <!-- “Voir le menu” supprimé -->
       </div>
     </section>
+
   </main>
 
   <footer>© 2025 YUMEKO SUSHIS — Élégance & fraîcheur, au service du goût</footer>
 
-  <!-- JS nav actif + panier cross-page -->
+  <!-- JS : nav actif -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
@@ -261,16 +201,6 @@
         const href = a.getAttribute('href');
         if(href && !href.startsWith('#') && here === href) a.classList.add('active');
       });
-      const panier = document.getElementById('navPanier');
-      if(panier){
-        panier.addEventListener('click', (e)=>{
-          const here = location.pathname.split('/').pop() || 'index.html';
-          if(here !== 'index.html'){
-            e.preventDefault();
-            window.location.href = 'index.html#panier';
-          }
-        });
-      }
     })();
   </script>
 </body>
