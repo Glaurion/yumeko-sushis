@@ -3,27 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>YUMEKO SUSHIS</title>
+  <title>YUMEKO SUSHIS — Menu</title>
+
+  <!-- Favicons / Icônes (mêmes que accueil) -->
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/icon-192x192-round.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#8b0000" />
 
   <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#8b0000" />
-
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
       --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
-      --barShade:.35;
+      --barShade:.35; --bg-top:#0f0f0f; --bg-bottom:#8b0000;
     }
     *{ box-sizing:border-box; }
 
-    /* ===== Header ===== */
-    .site-header.jp{
+    /* ===== Base ===== */
+    body{
+      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,var(--bg-top) 0%, var(--bg-bottom) 100%);
+      color:var(--text); min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    body.modal-open{ overflow:hidden; }
+
+    /* ===== Header (raccord avec accueil) ===== */
+    .site-header{
       background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
       border-bottom: 1px solid rgba(255,255,255,.08);
     }
@@ -31,16 +43,17 @@
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
-    .site-header .logo{
-      width:160px; height:auto; border-radius:50%;
-      box-shadow:0 0 10px rgba(0,0,0,.3);
+    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    .logo{
+      width:160px; height:160px; border-radius:50%;
+      object-fit:cover; background:#000; box-shadow:0 0 10px rgba(0,0,0,.3);
       display:block;
     }
-    @media (min-width:768px){ .site-header .logo{ width:200px; } }
-    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    @media (min-width:768px){ .logo{ width:200px; height:200px; } }
     .brand-text h1{
       margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:var(--text); text-align:center;
     }
+
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#e9d9d9; opacity:.6; }
     .main-nav a{
@@ -51,28 +64,16 @@
     .main-nav a::after{
       content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
       background:linear-gradient(90deg, transparent, var(--brand), transparent);
-      opacity:0; transform:translateY(2px);
-      transition:all .18s ease;
+      opacity:0; transform:translateY(2px); transition:all .18s ease;
     }
     .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
+    @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    @media (max-width:480px){
-      .brand-text h1{ font-size:1.2rem; }
-    }
-
-    /* ===== Base ===== */
-    body{
-      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
-    }
-    body.modal-open{ overflow:hidden; }
-
-    /* (HERO supprimé pour enlever le bandeau rouge + l'image + le titre doublon) */
-
+    /* ===== Page ===== */
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px; }
 
-    /* GRID menu */
+    /* ===== Grid menu ===== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     @media (max-width:480px){
       .menu-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; }
@@ -89,26 +90,24 @@
 
     .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
     .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
+    .btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    /* Form (déplacé dans le tiroir) */
+    /* Form (dans le tiroir) */
     form input, form textarea{
       width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2);
       border-radius:10px; padding:10px; margin:6px auto; display:block; font-size:16px; text-align:left;
     }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
-    @media (max-width:480px){
-      form input, form textarea{ max-width:360px; width:100%; padding:10px 12px; font-size:16px; line-height:1.2; text-align:center; }
-      .section-title{ margin-bottom:8px; }
-    }
 
-    /* Sticky bar + tiroir */
+    /* ===== Sticky bar + tiroir ===== */
     #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,var(--barShade))); padding:6px; }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
     #gotoOrder{ background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; white-space:nowrap; }
+    #gotoOrder:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
 
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
@@ -144,7 +143,6 @@
     .meta{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; }
     .pieces{ font-size:.78rem; color:var(--muted); line-height:1.1; }
     .price{ font-size:.86rem; color:#fff; font-weight:700; line-height:1.1; }
-    @media (max-width:480px){ .pieces{ font-size:.74rem; } .price{ font-size:.82rem; } }
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
     .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
@@ -152,35 +150,33 @@
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
     .qty-badge:empty{ display:none; }
 
+    /* Catégories */
     .category{ border:2px solid #000; border-radius:14px; padding:18px; background:#130909; margin-bottom:40px; }
     .category h3{ font-size:1.6rem; margin:0 0 18px; text-align:center; color:#fff; text-transform:uppercase; letter-spacing:1px; }
     #menuSection.section{ border:0; background:transparent; box-shadow:none; padding:0; }
+
     .step{ display:none; } .step.active{ display:block; }
   </style>
 </head>
 <body>
 
   <!-- ===== Header ===== -->
-  <header class="site-header jp">
+  <header class="site-header">
     <div class="header-inner">
-      <a href="accueil.html" class="brand">
+      <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
-        <div class="brand-text">
-          <!-- caractère japonais retiré -->
-          <h1>YUMEKO SUSHIS</h1>
-        </div>
+        <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
 
       <nav class="main-nav" aria-label="Navigation principale">
         <a href="accueil.html">Accueil</a>
-        <span class="sep">・</span>
+        <span class="sep" aria-hidden="true">・</span>
         <a href="index.html" class="active">Menu</a>
-        <!-- Panier retiré du header -->
       </nav>
     </div>
   </header>
 
-  <!-- HERO supprimé (image + titre doublon + bandeau) -->
+  <!-- Pas de HERO: plus de second bandeau/logo/titre -->
 
   <main class="container">
     <!-- MENU -->
@@ -212,7 +208,7 @@
       </div>
     </div>
 
-    <!-- FORM COMMANDE (masqué, déplacé dans le tiroir) -->
+    <!-- FORM COMMANDE (dans le tiroir, masqué ici) -->
     <section class="section" id="orderSection" style="text-align:center; display:none !important;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm"
@@ -232,7 +228,7 @@
     </section>
   </main>
 
-  <!-- BANDEAU PANIER (en bas, conservé) -->
+  <!-- BANDEAU PANIER -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
       <span id="miniRecap"></span>
@@ -341,7 +337,7 @@
                 </div>
                 <div class="ctrls">
                   <span class="qty-badge qty" data-item="${code}- ${name}"></span>
-                  <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
+                  <button class="circle card-plus" data-item="${code}- ${name}" type="button" aria-label="Ajouter ${name}">+</button>
                 </div>
               </div>
             </div>`;
@@ -381,16 +377,13 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const sheet = document.getElementById('cartSheet');
-      const sheetClose = document.getElementById('sheetClose');
       const btnOpen = document.getElementById('gotoOrder');
       const btnGoDetails = document.getElementById('goDetails');
       const btnBack = document.getElementById('backToCart');
       const btnConfirm = document.getElementById('confirmSend');
-
       const recapList = document.getElementById('recapList');
       const recapCom = document.getElementById('recapComment');
       const form = document.getElementById('orderForm');
-
       const stepCart = document.getElementById('stepCart');
       const stepDetails = document.getElementById('stepDetails');
 
@@ -434,9 +427,9 @@
                 <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
               </div>
               <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
-                <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer" type="button">−</button>
+                <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
                 <span class="qty" aria-live="polite">${qty}</span>
-                <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter" type="button">+</button>
+                <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
               </div>`;
             recapList.appendChild(li);
           });
@@ -472,10 +465,10 @@
         window.removeEventListener('wheel', lockBgScroll);
       }
 
-      document.getElementById('gotoOrder')?.addEventListener('click', openSheet);
+      btnOpen?.addEventListener('click', openSheet);
       document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
-      document.getElementById('goDetails')?.addEventListener('click', ()=> setStep('details'));
-      document.getElementById('backToCart')?.addEventListener('click', ()=> setStep('cart'));
+      btnGoDetails?.addEventListener('click', ()=> setStep('details'));
+      btnBack?.addEventListener('click', ()=> setStep('cart'));
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
       function ensureHiddenField(name){
@@ -561,14 +554,12 @@ ${c}`;
 
         if(plusBtn){
           const itemKey = plusBtn.dataset.item;
-          openItemModalByKey(itemKey);
-          return;
+          openItemModalByKey(itemKey); return;
         }
         if(card && !e.target.closest('.ctrls')){
           const code=card.dataset.code;
           const name=card.dataset.name;
-          openItemModal(code, name);
-          return;
+          openItemModal(code, name); return;
         }
       });
 
@@ -678,13 +669,16 @@ ${c}`;
     });
   </script>
 
-  <!-- Nav active (plus de lien Panier en haut) -->
+  <!-- Nav active (identique à accueil) -->
   <script>
     (function(){
-      const here = location.pathname.split('/').pop() || 'index.html';
+      const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
       document.querySelectorAll('.main-nav a').forEach(a=>{
-        const href = a.getAttribute('href');
-        if(href && !href.startsWith('#') && here === href) a.classList.add('active');
+        const href = (a.getAttribute('href')||'').toLowerCase();
+        if(href && !href.startsWith('#')){
+          const target = href.split('?')[0].split('#')[0];
+          if(here === target) a.classList.add('active');
+        }
       });
     })();
   </script>
