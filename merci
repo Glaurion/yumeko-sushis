@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Merci pour votre commande — YUMEKO SUSHIS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#8b0000" />
+  <style>
+    :root { --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8; --card:#1b1b1b; --muted:#cfcfcf; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .wrap{
+      width:min(900px,96vw); background:#160c0c; border:1px solid rgba(255,255,255,.12);
+      border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,.35); overflow:hidden;
+    }
+    header{ text-align:center; padding:28px 18px 10px; }
+    header img{ width:120px; height:120px; object-fit:cover; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
+    h1{ margin:10px 0 4px; font-size:1.8rem; letter-spacing:1px; }
+    p.lead{ margin:6px 0 18px; color:#f0f0f0; opacity:.95; }
+    .card{
+      background:var(--card); margin:0 16px 16px; border:1px solid rgba(255,255,255,.08);
+      border-radius:14px; padding:16px;
+    }
+    .card h2{ margin:0 0 10px; font-size:1.1rem; letter-spacing:.3px; }
+    pre{
+      margin:0; padding:14px; border-radius:10px; background:#121212; color:#fff; overflow:auto; line-height:1.4;
+      border:1px dashed rgba(255,255,255,.1);
+      white-space:pre-wrap; word-break:break-word;
+    }
+    .actions{
+      display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; padding:0 16px 18px;
+    }
+    .btn{ border:none; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer; }
+    .btn-primary{ background:var(--brand); color:#fff; }
+    .btn-primary:hover{ background:var(--brand-2); }
+    .btn-ghost{ background:#2a2a2a; color:#fff; }
+    .btn-ghost:hover{ filter:brightness(1.08); }
+    footer{ text-align:center; color:#d7d7d7; font-size:.9rem; padding:8px 0 18px; }
+
+    @media print{
+      body{ background:#fff; }
+      .wrap{ box-shadow:none; border:none; }
+      .actions, footer{ display:none; }
+      header img{ box-shadow:none; }
+      .card{ border:1px solid #000; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" />
+      <h1>Merci pour votre commande !</h1>
+      <p class="lead">Votre récapitulatif est ci-dessous. Conservez-le ou imprimez-le.</p>
+    </header>
+
+    <section class="card">
+      <h2>Récapitulatif</h2>
+      <pre id="orderRecap">Chargement du récapitulatif…</pre>
+    </section>
+
+    <div class="actions">
+      <button class="btn btn-ghost" id="copyBtn" type="button">Copier</button>
+      <button class="btn btn-ghost" id="printBtn" type="button">Imprimer</button>
+      <a class="btn btn-primary" id="backBtn" href="index.html">← Retour au menu</a>
+    </div>
+
+    <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
+  </div>
+
+  <script>
+    (function(){
+      const pre = document.getElementById('orderRecap');
+      const text = localStorage.getItem('yumeko_last_order');
+
+      pre.textContent = (text && text.trim())
+        ? text.trim()
+        : `Aucun récapitulatif trouvé.
+
+Astuce : assurez-vous que la page de commande enregistre le texte via:
+localStorage.setItem('yumeko_last_order', text);
+dans la fonction prepareOrderText().`;
+
+      document.getElementById('copyBtn')?.addEventListener('click', async ()=>{
+        try{
+          await navigator.clipboard.writeText(pre.textContent);
+          const btn = document.getElementById('copyBtn');
+          const old = btn.textContent; btn.textContent = 'Copié ✔';
+          setTimeout(()=> btn.textContent = old, 1200);
+        }catch(e){}
+      });
+
+      document.getElementById('printBtn')?.addEventListener('click', ()=> window.print());
+
+      // Si ton fichier d’accueil n’est pas "index.html", change la ligne ci-dessous.
+      document.getElementById('backBtn').setAttribute('href', 'index.html');
+    })();
+  </script>
+</body>
+</html>
