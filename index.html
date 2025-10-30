@@ -16,6 +16,7 @@
       --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
       --barShade:.35;
     }
+    /* on garde la section masquée, le form est déplacé dans le tiroir */
     #orderSection{ display:none !important; }
     *{ box-sizing:border-box; }
     body{
@@ -35,14 +36,12 @@
 
     /* ====== GRID ====== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    /* Mobile: forcer 2 cartes par ligne, plus compact */
+    /* Mobile: 2 cartes par ligne, plus compact */
     @media (max-width: 480px){
       .menu-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; }
       .item-card{ border-radius:12px; }
       .item-name{ font-size:.88rem; padding:8px 10px 2px; }
       .card-footer{ padding:8px 10px 10px; }
-      .pieces{ font-size:.8rem; }
-      .price{ font-size:.9rem; }
       .circle{ width:34px; height:34px; }
     }
 
@@ -57,7 +56,7 @@
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    /* Form champs (desktop par défaut) */
+    /* Form champs (desktop par défaut) – utilisé DANS le tiroir étape 2 */
     form input, form textarea{
       width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2);
       border-radius:10px; padding:10px; margin:6px auto; display:block;
@@ -106,12 +105,22 @@
 
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
 
+    /* Carte : ancrer le bloc infos en bas à gauche + tailles réduites */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
-    .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
-    .pieces{ font-size:.9rem; color:var(--muted); }
+    .card-footer{
+      margin-top:auto;
+      display:flex; align-items:flex-end; justify-content:space-between;
+      padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08);
+    }
+    .meta{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; }
+    .pieces{ font-size:.78rem; color:var(--muted); line-height:1.1; }
+    .price{ font-size:.86rem; color:#fff; font-weight:700; line-height:1.1; }
+    @media (max-width: 480px){
+      .pieces{ font-size:.74rem; }
+      .price{ font-size:.82rem; }
+    }
 
-    .meta{ display:flex; flex-direction:column; line-height:1.15; }
-    .price{ font-size:.95rem; color:#fff; font-weight:700; }
+    .meta{ line-height:1.15; }
     .ctrls{ display:flex; align-items:center; gap:8px; }
     .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
     .circle:hover{ background:var(--accent-2); }
@@ -174,11 +183,9 @@
       </div>
     </div>
 
-    <!-- FORM COMMANDE (injecté dans le tiroir) -->
+    <!-- FORM COMMANDE (section masquée, form déplacé dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
-
-      <!-- Envoi à votre adresse + redirection vers merci.html -->
       <form id="orderForm"
             action="https://formsubmit.co/yumeko.sushis@gmail.com"
             method="POST"
@@ -189,17 +196,13 @@
         <input name="email" type="email" placeholder="Email" required inputmode="email" />
         <textarea name="comments" id="comments" placeholder="Allergies ou autres"></textarea>
 
-        <!-- Champs cachés FormSubmit -->
+        <!-- FormSubmit -->
         <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
         <input type="hidden" name="_template" value="table">
-        <!-- Redirection après succès -->
         <input type="hidden" name="_next" value="merci.html">
-        <!-- Laisse le captcha OFF si tu veux éviter l’étape robot -->
         <input type="hidden" name="_captcha" value="false">
-        <!-- Anti-spam -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
-        <!-- Récap (rempli en JS) -->
         <input type="hidden" name="order" id="hiddenOrder">
         <div id="orderResult" class="muted" style="margin-top:6px;"></div>
       </form>
@@ -287,7 +290,7 @@
       B2:{name:'BIERE ASAHI', img:'b2.jpg'},
       B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
     };
-    const prices={}; // optionnel : remplir pour total €
+    const prices={}; // optionnel
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
     function buildMenu(){
@@ -316,7 +319,7 @@
                   <span class="price">${priceStr}</span>
                 </div>
                 <div class="ctrls">
-                  <!-- le bouton “−” est retiré des cartes -->
+                  <!-- pas de “−” sur les cartes -->
                   <span class="qty-badge qty" data-item="${code}- ${name}"></span>
                   <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
                 </div>
@@ -370,6 +373,9 @@
 
     const stepCart = document.getElementById('stepCart');
     const stepDetails = document.getElementById('stepDetails');
+
+    /* — déplacer le form dans l'étape 2 du tiroir (visible) — */
+    if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
@@ -472,7 +478,7 @@ ${c}`;
       return text;
     }
 
-    // Envoi CLASSIQUE (navigation vers merci.html via _next)
+    // Envoi classique (FormSubmit redirige vers merci.html via _next)
     btnConfirm?.addEventListener('click', ()=>{
       if(!form) return;
       if(!form.reportValidity()){
@@ -481,7 +487,7 @@ ${c}`;
         return;
       }
       prepareOrderText();
-      form.submit(); // FormSubmit gère la redirection vers merci.html
+      form.submit();
     });
 
     // Récap live + ajustements quantité depuis le tiroir
@@ -577,32 +583,54 @@ ${c}`;
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     })();
 
-   // Sauvegarde / Restauration panier
-const CART_KEY='yumeko_cart_v1';
+    /* ===== Sauvegarde / Restauration panier ===== */
+    const CART_KEY='yumeko_cart_v1';
+    function saveCart(){
+      const cart=[];
+      document.querySelectorAll('.qty[data-item]').forEach(q=>{
+        const n=parseInt(q.textContent)||0;
+        if(n>0) cart.push({key:q.dataset.item, qty:n});
+      });
+      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+    }
+    function restoreCart(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        saved.forEach(({key,qty})=>{
+          const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
+          if(span){ span.textContent=qty; }
+        });
+        updateSticky();
+      }catch(e){
+        console.warn('restoreCart error', e);
+      }
+    }
 
-function saveCart(){
-  const cart=[];
-  document.querySelectorAll('.qty[data-item]').forEach(q=>{
-    const n=parseInt(q.textContent)||0;
-    if(n>0) cart.push({key:q.dataset.item, qty:n});
-  });
-  try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
-}
+    function updateMiniRecap(){}
+    function updateSticky(){
+      const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
+      qtyNodes.forEach(q=>{
+        const n=parseInt(q.textContent)||0; totalQty+=n;
+        if(n>0){
+          const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
+          const d=window.catalog?.[code] || {};
+          const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
+                    ? window.prices[code]
+                    : (typeof d.price==='number'?d.price:undefined);
+          if(typeof p==='number') totalPrice += p*n;
+        }
+      });
+      const btn=document.getElementById('gotoOrder'); if(!btn) return;
+      if(totalPrice>0){
+        const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
+        btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
+      }else{
+        btn.textContent = `Panier (${totalQty}) • Valider`;
+      }
+      updateMiniRecap(); saveCart();
+    }
 
-function restoreCart(){
-  try{
-    const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); // ✅ corrigé
-    saved.forEach(({key,qty})=>{
-      const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-      if(span){ span.textContent=qty; }
-    });
-    updateSticky();
-  }catch(e){
-    console.warn('restoreCart error', e);
-  }
-}
-
-    // hash panier
+    // hash panier => ouvrir auto
     if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
 
     // Init
