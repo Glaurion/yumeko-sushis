@@ -1,6 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <style>
+  :root{
+    --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
+    --muted:#cfcfcf;
+  }
+
+  .site-header.jp{
+    background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .site-header .header-inner{
+    width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+
+  /* Logo centré, même place/ratio que l’index */
+  .site-header .logo{
+    width:160px; height:auto; border-radius:50%;
+    box-shadow:0 0 10px rgba(0,0,0,.3);
+    display:block;
+  }
+  @media (min-width:768px){
+    .site-header .logo{ width:200px; }
+  }
+
+  .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+  .brand-text h1{
+    margin:0; letter-spacing:2px; font-weight:800;
+    font-size:1.4rem; color:var(--text);
+    text-align:center;
+  }
+  .brand-text .jp-top{
+    display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em;
+    text-align:center; opacity:.85;
+  }
+
+  .main-nav{
+    display:flex; align-items:center; gap:8px; margin-top:6px;
+    font-weight:600;
+  }
+  .main-nav .sep{ color:#e9d9d9; opacity:.6; }
+
+  .main-nav a{
+    position:relative; color:var(--text); text-decoration:none;
+    padding:4px 6px; border-radius:6px; opacity:.95;
+  }
+  .main-nav a:hover{ opacity:1; }
+  .main-nav a::after{
+    content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
+    background:linear-gradient(90deg, transparent, var(--brand), transparent);
+    opacity:0; transform:translateY(2px);
+    transition:all .18s ease;
+  }
+  .main-nav a:hover::after,
+  .main-nav a.active::after{
+    opacity:1; transform:translateY(0);
+  }
+
+  /* Compact sur mobile */
+  @media (max-width:480px){
+    .brand-text h1{ font-size:1.2rem; }
+    .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
+  }
+</style>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>YUMEKO SUSHIS — Accueil</title>
@@ -17,10 +82,31 @@
       --gold:#d8b26e;
     }
     *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
-    }
+    body
+    <!-- ===== Header - Style Japonais Premium ===== -->
+<header class="site-header jp">
+  <div class="header-inner">
+    <a href="accueil.html" class="brand">
+      <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
+      <div class="brand-text">
+        <span class="jp-top">夢猫鮨</span> <!-- “chat rêveur” + sushi, clin d’œil -->
+        <h1>YUMEKO SUSHIS</h1>
+      </div>
+    </a>
+
+    <nav class="main-nav" aria-label="Navigation principale">
+      <a href="accueil.html">Accueil</a>
+      <span class="sep">・</span>
+      <a href="index.html">Menu</a>
+      <span class="sep">・</span>
+      <a href="#panier" id="navPanier">Panier</a>
+    </nav>
+  </div>
+</header>
+<!-- ===== /Header ===== -->
+
+    {margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;}
 
     /* HERO — même placement que index */
     .hero{
@@ -189,5 +275,28 @@
   </main>
 
   <footer>© 2025 YUMEKO SUSHIS — Élégance & fraîcheur, au service du goût</footer>
+  <script>
+  (function(){
+    // Activer le lien courant
+    const here = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.main-nav a').forEach(a=>{
+      const href = a.getAttribute('href');
+      // "Panier" est un hash => on ignore pour l'état actif
+      if(href && !href.startsWith('#') && here === href) a.classList.add('active');
+    });
+
+    // Panier cross-page : si on n'est pas sur index, rediriger vers index.html#panier
+    const panier = document.getElementById('navPanier');
+    if(panier){
+      panier.addEventListener('click', (e)=>{
+        const here = location.pathname.split('/').pop() || 'index.html';
+        if(here !== 'index.html'){
+          e.preventDefault();
+          window.location.href = 'index.html#panier';
+        }
+      });
+    }
+  })();
+</script>
 </body>
 </html>
