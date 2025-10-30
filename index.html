@@ -168,7 +168,6 @@
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
-    <button class="cta" id="ctaOrder" type="button">Commander maintenant</button>
   </section>
 
   <main class="container">
@@ -478,7 +477,10 @@
       window.removeEventListener('wheel', lockBgScroll);
     }
 
-    document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+const ctaOrderEl = document.getElementById('ctaOrder');
+if (ctaOrderEl) {
+  ctaOrderEl.onclick = () => document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+}
     document.getElementById('gotoOrder').addEventListener('click', openSheet);
     document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
     document.getElementById('goDetails')?.addEventListener('click', ()=> setStep('details'));
