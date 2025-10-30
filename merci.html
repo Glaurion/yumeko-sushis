@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Merci pour votre commande — YUMEKO SUSHIS</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
@@ -16,54 +19,74 @@
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
-      display:flex; align-items:center; justify-content:center; padding:24px;
     }
+
+    /* ====== HERO (même placement que l'index) ====== */
+    .hero{
+      background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
+      padding:60px 20px; text-align:center;
+    }
+    .hero .logo{ width:160px; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
+    @media (min-width:768px){ .hero .logo{ width:200px; } }
+    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
+
+    /* ====== CONTENU ====== */
+    .container{ max-width:900px; margin:0 auto; padding:20px; }
     .wrap{
-      width:min(820px, 96vw); background:#160c0c; border:1px solid rgba(255,255,255,.08);
+      background:#160c0c; border:1px solid rgba(255,255,255,.08);
       border-radius:18px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
-    h1{ margin:0 0 8px; font-size:1.8rem; }
     .muted{ color:var(--muted); }
+
     .card{ background:#1b1b1b; border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:16px; }
+    .section-title{ margin:0 0 8px; font-size:1.25rem; }
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
     .grid div strong{ display:block; font-size:.9rem; color:#fff; }
     ul{ margin:10px 0 0; padding-left:18px; }
+
     .btn{
       display:inline-block; margin-top:16px; background:var(--brand); color:#fff; font-weight:800;
       border:none; border-radius:12px; padding:12px 16px; text-decoration:none;
     }
     .btn:hover{ background:var(--brand-2); }
     .empty{ padding:14px; border-radius:12px; background:#1b1b1b; border:1px dashed rgba(255,255,255,.15); }
+
     @media (max-width:640px){ .grid{ grid-template-columns:1fr; } }
+    footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
   </style>
+
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#8b0000" />
 </head>
 <body>
-  <main class="wrap">
-    <h1>Merci pour votre commande !</h1>
-    <p class="muted">Nous l’avons bien reçue. Vous trouverez ci-dessous votre récapitulatif.</p>
 
-    <div id="recap" class="card"></div>
+  <!-- HERO (identique à l’index, sans bouton) -->
+  <section class="hero">
+    <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async">
+    <h1 class="brand">YUMEKO SUSHIS</h1>
+  </section>
 
-    <a class="btn" href="index.html#menu">← Retour au menu</a>
+  <main class="container">
+    <div class="wrap">
+      <h2 class="section-title">Merci pour votre commande 🥢</h2>
+      <p class="muted">Nous l’avons bien reçue. Voici votre récapitulatif.</p>
+
+      <div id="recap" class="card" aria-live="polite"></div>
+
+      <a class="btn" href="index.html#menu">← Retour au menu</a>
+    </div>
   </main>
 
+  <footer>© 2025 YUMEKO SUSHIS — À bientôt !</footer>
+
   <script>
-    // On lit le texte sauvegardé dans localStorage par la page de commande
+    // Récupère le texte de commande sauvegardé par la page de commande
     const raw = localStorage.getItem('yumeko_last_order') || '';
     const recapEl = document.getElementById('recap');
 
     function parseOrder(text){
-      // Format attendu (construit côté index) :
-      // Commande YUMEKO
-      // Client : Prénom Nom
-      // Email : xxx
-      //
-      // Articles :
-      // - Nom xQte
-      //
-      // Allergies / autres :
-      // ...
-      const lines = text.split('\n').map(l=>l.trim());
+      const lines = text.split('\\n').map(l=>l.trim());
       const data = { client:'—', email:'—', notes:'—', items:[] };
       let mode = 'head';
       for(let i=0;i<lines.length;i++){
@@ -80,7 +103,6 @@
         }else if(mode==='items' && L.startsWith('- ')){
           data.items.push(L.replace('- ',''));
         }else if(mode==='notes-title'){
-          // la ligne suivante contient la note (ou '—')
           data.notes = (lines[i+1]||'—').trim() || '—';
           mode='done';
         }
@@ -89,10 +111,11 @@
     }
 
     function renderRecap(data){
-      // Un seul bloc récapitulatif (pas de rubrique "Articles" additionnelle)
       const itemsHtml = data.items.length
         ? `<ul>${data.items.map(it=>`<li>${it}</li>`).join('')}</ul>`
         : `<div class="muted">Aucun article</div>`;
+
+      // Un seul récapitulatif (pas de rubrique "Articles" séparée en doublon)
       recapEl.innerHTML = `
         <div class="grid">
           <div><strong>Client</strong><div>${data.client}</div></div>
