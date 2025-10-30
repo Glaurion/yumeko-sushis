@@ -33,7 +33,19 @@
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px; }
 
+    /* ====== GRID ====== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+    /* Mobile: forcer 2 cartes par ligne, plus compact */
+    @media (max-width: 480px){
+      .menu-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; }
+      .item-card{ border-radius:12px; }
+      .item-name{ font-size:.88rem; padding:8px 10px 2px; }
+      .card-footer{ padding:8px 10px 10px; }
+      .pieces{ font-size:.8rem; }
+      .price{ font-size:.9rem; }
+      .circle{ width:34px; height:34px; }
+    }
+
     .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .12s, box-shadow .12s; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
@@ -55,14 +67,14 @@
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    /* Mobile: on réduit visuellement sans déclencher le zoom iOS */
+    /* Mobile: visuel centré sans zoom */
     @media (max-width: 480px){
       form input, form textarea{
         max-width:360px; width:100%;
         padding:10px 12px;
-        font-size:16px;             /* garder 16px pour stopper le zoom */
+        font-size:16px;
         line-height:1.2;
-        text-align:center;          /* centré */
+        text-align:center;
       }
       .section-title{ margin-bottom:8px; }
     }
@@ -166,7 +178,7 @@
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
 
-      <!-- Envoi à votre adresse ; pas de redirection ; pas d'autoresponse -->
+      <!-- Envoi à votre adresse + redirection vers merci.html -->
       <form id="orderForm"
             action="https://formsubmit.co/yumeko.sushis@gmail.com"
             method="POST"
@@ -180,7 +192,10 @@
         <!-- Champs cachés FormSubmit -->
         <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false"><!-- désactive captcha -->
+        <!-- Redirection après succès -->
+        <input type="hidden" name="_next" value="merci.html">
+        <!-- Laisse le captcha OFF si tu veux éviter l’étape robot -->
+        <input type="hidden" name="_captcha" value="false">
         <!-- Anti-spam -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
@@ -199,7 +214,7 @@
     </div>
   </div>
 
-  <!-- TIROIR RÉCAP / 3 ÉTAPES -->
+  <!-- TIROIR RÉCAP / 2 ÉTAPES -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
@@ -214,12 +229,6 @@
       </div>
       <!-- ÉTAPE 2 : Infos client -->
       <div id="stepDetails" class="step"></div>
-      <!-- ÉTAPE 3 : Merci -->
-      <div id="stepThanks" class="step">
-        <h4 style="margin:6px 0 8px;">Merci pour votre commande ❤️</h4>
-        <p class="muted" style="margin:0 0 8px;">Un récapitulatif s’affiche ci-dessous. Nous vous contactons dès que possible.</p>
-        <pre id="thanksRecap" style="white-space:pre-wrap;background:#111;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);max-height:180px;overflow:auto;margin:0;"></pre>
-      </div>
     </div>
     <footer>
       <div id="footerCart" class="step active">
@@ -228,10 +237,6 @@
       <div id="footerDetails" class="step">
         <button class="btn-ghost" id="backToCart" type="button">← Retour</button>
         <button class="btn-primary" id="confirmSend" type="button">Confirmer et envoyer</button>
-      </div>
-      <div id="footerThanks" class="step">
-        <button class="btn-ghost" id="newOrder" type="button">Nouvelle commande</button>
-        <button class="btn-primary" id="closeThanks" type="button">Fermer</button>
       </div>
     </footer>
   </div>
@@ -242,9 +247,6 @@
        Script C : Données + Menu
   ========================== -->
   <script>
-    // Numéro WhatsApp pour recevoir le récap (optionnel) — EX: '+262612345678'
-    const OWNER_WHATSAPP = '+33627595143'; // ← mets ton numéro ici si tu veux le WhatsApp
-
     const categories={
       'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
       'LES CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
@@ -314,7 +316,7 @@
                   <span class="price">${priceStr}</span>
                 </div>
                 <div class="ctrls">
-                  <button class="circle card-minus" data-item="${code}- ${name}" type="button" style="visibility:hidden">−</button>
+                  <!-- le bouton “−” est retiré des cartes -->
                   <span class="qty-badge qty" data-item="${code}- ${name}"></span>
                   <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
                 </div>
@@ -365,22 +367,9 @@
     const recapList = document.getElementById('recapList');
     const recapCom = document.getElementById('recapComment');
     const form = document.getElementById('orderForm');
-    const orderResult = document.getElementById('orderResult');
 
     const stepCart = document.getElementById('stepCart');
     const stepDetails = document.getElementById('stepDetails');
-    const stepThanks = document.getElementById('stepThanks');
-
-    const footCart = document.getElementById('footerCart');
-    const footDetails = document.getElementById('footerDetails');
-    const footThanks = document.getElementById('footerThanks');
-
-    const thanksRecap = document.getElementById('thanksRecap');
-    const closeThanks = document.getElementById('closeThanks');
-    const newOrder = document.getElementById('newOrder');
-
-    // Injecte le formulaire dans l'étape 2
-    if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
@@ -434,16 +423,10 @@
     function setStep(which){
       const showCart = which==='cart';
       const showDetails = which==='details';
-      const showThanks = which==='thanks';
-
       stepCart.classList.toggle('active', showCart);
-      footCart.classList.toggle('active', showCart);
-
+      document.getElementById('footerCart').classList.toggle('active', showCart);
       stepDetails.classList.toggle('active', showDetails);
-      footDetails.classList.toggle('active', showDetails);
-
-      stepThanks.classList.toggle('active', showThanks);
-      footThanks.classList.toggle('active', showThanks);
+      document.getElementById('footerDetails').classList.toggle('active', showDetails);
     }
 
     function openSheet(){ setStep('cart'); buildRecap(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
@@ -489,56 +472,20 @@ ${c}`;
       return text;
     }
 
-    // Envoi SANS redirection : fetch + merci in-app (+ WhatsApp optionnel)
-    btnConfirm?.addEventListener('click', async ()=>{
+    // Envoi CLASSIQUE (navigation vers merci.html via _next)
+    btnConfirm?.addEventListener('click', ()=>{
       if(!form) return;
       if(!form.reportValidity()){
         setStep('details');
         form.querySelector(':invalid')?.focus();
         return;
       }
-      const text = prepareOrderText();
-      btnConfirm.disabled = true;
-      btnConfirm.textContent = 'Envoi…';
-
-      const fd = new FormData(form);
-      try{
-        const res = await fetch(form.action, { method:'POST', body:fd, headers:{ 'Accept':'application/json' } });
-        // Quoi qu’il arrive, on affiche la page Merci (même si l’API renvoie autre chose) :
-      }catch(e){
-        // En cas d’erreur réseau, on affiche quand même le merci local (tu recevras peut-être pas le mail)
-      }
-
-      // Reset UI + recap Merci
-      thanksRecap.textContent = text;
-
-      // Vide panier + commentaire + boutons "-"
-      document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-      document.querySelectorAll('.card-minus').forEach(b=> b.style.visibility='hidden');
-      const comEl = document.getElementById('comments'); if(comEl) comEl.value='';
-      updateSticky(); buildRecap();
-
-      // Ouvre l’étape Merci
-      setStep('thanks');
-
-      // WhatsApp au restaurateur (optionnel)
-      if(OWNER_WHATSAPP && OWNER_WHATSAPP.replace(/\D/g,'').length >= 8){
-        const to = OWNER_WHATSAPP.replace(/^\+/, '');
-        const url = `https://wa.me/${encodeURIComponent(to)}?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank','noopener');
-      }
-
-      btnConfirm.disabled = false;
-      btnConfirm.textContent = 'Confirmer et envoyer';
+      prepareOrderText();
+      form.submit(); // FormSubmit gère la redirection vers merci.html
     });
 
-    // Merci : actions
-    closeThanks?.addEventListener('click', closeSheet);
-    newOrder?.addEventListener('click', ()=>{ setStep('cart'); });
-
-    // Écoutes formulaire & récap
+    // Récap live + ajustements quantité depuis le tiroir
     document.getElementById('cartSheet').addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
-
     recapList.addEventListener('click', (e)=>{
       const plus = e.target.closest('.recap-plus');
       const minus = e.target.closest('.recap-minus');
@@ -546,13 +493,11 @@ ${c}`;
       if(!btn) return;
       const item = btn.dataset.item;
       const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
       if(!span) return;
       const cur = parseInt(span.textContent)||0;
       const inc = plus ? 1 : -1;
       const v = Math.max(0, cur + inc);
       span.textContent = v>0 ? String(v) : '';
-      if(minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
       bump(span);
       updateSticky();
       buildRecap();
@@ -568,7 +513,6 @@ ${c}`;
         openItemModalByKey(itemKey);
         return;
       }
-
       if(card && !e.target.closest('.ctrls')){
         const code=card.dataset.code;
         const name=card.dataset.name;
@@ -619,10 +563,8 @@ ${c}`;
 
       function setQty(itemKey,newVal){
         const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
         if(!span) return;
         span.textContent = newVal>0 ? String(newVal) : '';
-        if(minusBtn) minusBtn.style.visibility=newVal>0?'visible':'hidden';
         mQty.textContent=newVal;
         document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
         updateSticky(); buildRecap();
@@ -643,11 +585,10 @@ ${c}`;
     }
     function restoreCart(){
       try{
-        const saved=JSON.parse(localStorage.getItem(CART_KEY)||'[]');
+        const saved=JSON.parse(localStorage.getItem(CART_KEY)||'[]);
         saved.forEach(({key,qty})=>{
           const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-          const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(key)}"]`);
-          if(span){ span.textContent=qty; if(minusBtn) minusBtn.style.visibility='visible'; }
+          if(span){ span.textContent=qty; }
         });
         updateSticky();
       }catch(e){}
@@ -655,19 +596,18 @@ ${c}`;
 
     function updateMiniRecap(){}
     function updateSticky(){
-      if(typeof catalog==='undefined') return;
       const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
       qtyNodes.forEach(q=>{
         const n=parseInt(q.textContent)||0; totalQty+=n;
         if(n>0){
           const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-          const d=catalog[code]||{};
-          const p=(prices && Object.prototype.hasOwnProperty.call(prices, code)) ? prices[code] : (typeof d.price==='number'?d.price:undefined);
+          const d=window.catalog?.[code] || {};
+          const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code)) ? window.prices[code] : (typeof d.price==='number'?d.price:undefined);
           if(typeof p==='number') totalPrice += p*n;
         }
       });
       const btn=document.getElementById('gotoOrder'); if(!btn) return;
-      btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
+      btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
       updateMiniRecap(); saveCart();
     }
 
