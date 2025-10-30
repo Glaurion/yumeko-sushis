@@ -1,13 +1,36 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- ===== Styles du header ===== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>YUMEKO SUSHIS — Accueil</title>
+  <meta name="description" content="YUMEKO SUSHIS à emporter — fraîcheur, personnalisation et prix justes. Découvrez l’histoire de Benjamin et composez votre box.">
+
+  <!-- Police Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Favicon (existez en 32/48/64 si possible) -->
+  <link rel="icon" type="image/png" href="images/favicon-32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="images/favicon-48.png" sizes="48x48" />
+  <link rel="apple-touch-icon" href="images/favicon-180.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-      --muted:#cfcfcf;
+      --card:#1b1b1b; --muted:#cfcfcf; --gold:#d8b26e;
+    }
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
+    /* ===== Header ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
       border-bottom: 1px solid rgba(255,255,255,.08);
@@ -16,62 +39,36 @@
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
-    .site-header .logo{
-      width:160px; height:auto; border-radius:50%;
-      box-shadow:0 0 10px rgba(0,0,0,.3);
+    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    .logo{
+      width:160px; height:160px; border-radius:50%;
+      object-fit:cover; /* évite tout rognage disgracieux */
+      background:#000; box-shadow:0 0 10px rgba(0,0,0,.3);
       display:block;
     }
-    @media (min-width:768px){
-      .site-header .logo{ width:200px; }
-    }
-    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    @media (min-width:768px){ .logo{ width:200px; height:200px; } }
     .brand-text h1{
-      margin:0; letter-spacing:2px; font-weight:800;
-      font-size:1.4rem; color:var(--text); text-align:center;
+      margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:var(--text); text-align:center;
     }
 
     .main-nav{
-      display:flex; align-items:center; gap:8px; margin-top:6px;
-      font-weight:600;
+      display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600;
     }
     .main-nav .sep{ color:#e9d9d9; opacity:.6; }
     .main-nav a{
-      color:var(--text); text-decoration:none; /* pas de soulignement */
-      padding:4px 6px; border-radius:6px; opacity:.95;
+      color:var(--text); text-decoration:none; padding:4px 6px; border-radius:6px; opacity:.95;
     }
     .main-nav a:hover{ opacity:1; }
+    .main-nav a.active{ text-decoration:none; }
 
-    @media (max-width:480px){
-      .brand-text h1{ font-size:1.2rem; }
-    }
-  </style>
+    @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>YUMEKO SUSHIS — Accueil</title>
-
-  <!-- Police Poppins -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- ===== Styles de la page accueil ===== -->
-  <style>
-    :root{
-      --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-      --card:#1b1b1b; --muted:#cfcfcf;
-      --gold:#d8b26e;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
-    }
-
-    /* HERO supprimé (évitons le deuxième bandeau) */
-
+    /* ===== Page ===== */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
-    .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:22px; }
+    .section{
+      background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px;
+      padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:22px;
+    }
     .section h2{ margin:0 0 8px; font-size:1.65rem; letter-spacing:.5px; }
     .sep{ height:2px; width:64px; background:linear-gradient(90deg,var(--gold),transparent); border-radius:2px; margin:6px 0 16px; }
 
@@ -81,18 +78,7 @@
     .lead{ font-size:1.02rem; line-height:1.6; color:#eee; }
     .muted{ color:#cfcfcf; }
 
-    .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px; }
-
-    /* Boutons (pour le CTA) */
-    .btn{
-      display:inline-block;
-      border:none; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer;
-      transition:transform .12s ease, filter .12s ease;
-      text-decoration:none; color:inherit;
-    }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
-    .btn-primary{ background:var(--brand); color:#fff; }
-
+    /* Bandeau CTA */
     .cta-band{
       background:linear-gradient(90deg, rgba(0,0,0,.35), rgba(139,0,0,.6));
       border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px;
@@ -101,36 +87,47 @@
     @media (min-width:760px){
       .cta-band{ flex-direction:row; justify-content:space-between; text-align:left; }
     }
+    .btn{
+      display:inline-block; border:none; border-radius:12px; padding:12px 16px;
+      font-weight:800; cursor:pointer; text-decoration:none; color:#fff;
+      background:var(--brand); transition:transform .12s ease, filter .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    .btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
 
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; font-size:.95rem; }
   </style>
 </head>
 
 <body>
+  <!-- Lien d’évitement pour accessibilité clavier -->
+  <a href="#contenu" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+    Aller au contenu
+  </a>
 
   <!-- ===== Header ===== -->
   <header class="site-header jp">
     <div class="header-inner">
-      <a href="accueil.html" class="brand">
-        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
-        <div class="brand-text">
-          <h1>YUMEKO SUSHIS</h1>
-        </div>
+      <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
+        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
+        <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
 
       <nav class="main-nav" aria-label="Navigation principale">
         <a href="accueil.html" class="active">Accueil</a>
-        <span class="sep">・</span>
+        <span class="sep" aria-hidden="true">・</span>
         <a href="index.html">Menu</a>
       </nav>
     </div>
   </header>
 
-  <main class="container">
+  <main id="contenu" class="container">
     <!-- SECTION UNIQUE -->
-    <section class="section">
-      <h2>Bienvenue chez Yumeko Sushis</h2>
-      <div class="sep"></div>
+    <section class="section" aria-labelledby="titre-accueil">
+      <h2 id="titre-accueil">Bienvenue chez Yumeko Sushis</h2>
+      <div class="sep" aria-hidden="true"></div>
+
       <div class="grid-2">
         <div>
           <p class="lead">
@@ -148,25 +145,26 @@
           </p>
         </div>
 
-        <!-- Le rectangle “Composez vos box...” a été SUPPRIMÉ -->
+        <!-- Bloc latéral optionnel (vide pour alléger visuel)
+             Si tu veux y remettre un message plus tard, ajoute un <div class="card">...</div> ici -->
       </div>
     </section>
 
-    <!-- APPEL À L’ACTION (avec bouton Commander maintenant) -->
-    <section class="cta-band">
+    <!-- APPEL À L’ACTION -->
+    <section class="cta-band" aria-labelledby="cta-titre">
       <div>
-        <h3 style="margin:0 0 6px">Prêt à composer votre box ?</h3>
+        <h3 id="cta-titre" style="margin:0 0 6px">Prêt à composer votre box ?</h3>
         <p class="muted" style="margin:0">Passez commande en quelques clics — rapide, simple et 100% à votre goût.</p>
       </div>
       <div>
-        <a class="btn btn-primary" href="index.html#menu">Commander maintenant</a>
+        <a class="btn" href="index.html#menu" aria-label="Aller au menu pour commander">Commander maintenant</a>
       </div>
     </section>
   </main>
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- JS : nav actif -->
+  <!-- JS : nav actif (robuste, sans interactions panier) -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
@@ -176,6 +174,5 @@
       });
     })();
   </script>
-
 </body>
 </html>
