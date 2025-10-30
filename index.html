@@ -67,6 +67,7 @@
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
+    #cartSheet .body{ padding:8px 10px; }              /* ← réduit l'espace vertical */
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
@@ -75,7 +76,7 @@
     .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
     .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    footer{ text-align:center; color:#d7d7d7; margin:40px 0 40px; }
+    footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; } /* ← réduit */
 
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
@@ -163,13 +164,12 @@
 
         <!-- Champs cachés FormSubmit -->
         <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
-        <!-- envoie aussi une copie à une autre boîte si besoin (exemple) -->
-        <!-- <input type="hidden" name="_cc" value="[email protected]"> -->
+        <!-- En option, envoi d'une copie : dé-commente et remplace l'adresse -->
+        <!-- <input type="hidden" name="_cc" value="autre-boite@exemple.com"> -->
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Voici votre récapitulatif.">
         <input type="hidden" name="_next" value="merci.html">
-        <!-- Laisser le CAPTCHA actif pour que l’auto-réponse fonctionne -->
-        <!-- <input type="hidden" name="_captcha" value="false">  --> 
+        <!-- Important : laisser le CAPTCHA actif pour l'autoresponse -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
         <!-- Récap (rempli en JS) -->
@@ -214,6 +214,100 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
+  <!-- =========================
+       Script C : Données + Menu
+       (PLACÉ AVANT Script B pour éviter les erreurs de référence)
+  ========================== -->
+  <script>
+    // Catégories / Catalogue
+    const categories={
+      'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
+      'LES CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
+      'LES MAKI PRINTEMPS':['P1','P2','P3','P4'],
+      'LES ROLLS':['R1','R2'],
+      'LES SASHIMI':['S1'],
+      'LES NIGIRI':['N1','N2'],
+      'LES BOISSONS':['B1','B2','B3']
+    };
+    const catalog={
+      M1:{name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:''},
+      M2:{name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
+      M3:{name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:''},
+      M4:{name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:''},
+      M5:{name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
+      M6:{name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:''},
+      M7:{name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
+      M8:{name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
+      C1:{name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:''},
+      C2:{name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
+      C3:{name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:''},
+      C4:{name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:''},
+      C5:{name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
+      C6:{name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:''},
+      C7:{name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
+      C8:{name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
+      C9:{name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:''},
+      P1:{name:'MAKI PRINTEMPS SAUMON AVOCAT', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:''},
+      P2:{name:'MAKI PRINTEMPS SAUMON CHEESE', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:''},
+      P3:{name:'MAKI PRINTEMPS CONCOMBRE CHEESE', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:''},
+      P4:{name:'MAKI PRINTEMPS AVOCAT CHEESE', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:''},
+      R1:{name:'ROLLS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:''},
+      R2:{name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:''},
+      S1:{name:'SASHIMI SAUMON', img:'s1.jpg', pieces:2, comp:'Tranches de saumon', allergens:'Poisson', desc:''},
+      N1:{name:'NIGIRI SAUMON', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:''},
+      N2:{name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:''},
+      B1:{name:'BIERE TSINGTAO', img:'b1.jpg'},
+      B2:{name:'BIERE ASAHI', img:'b2.jpg'},
+      B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
+    };
+    const prices={}; // optionnel : remplir pour total €
+
+    // Format monétaire (FR)
+    const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+
+    // Construction du menu
+    function buildMenu(){
+      const menu=document.getElementById('menu'); menu.innerHTML='';
+      for(const [cat,codes] of Object.entries(categories)){
+        const wrap=document.createElement('div'); wrap.className='category';
+        wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
+        const grid=wrap.querySelector('.menu-grid');
+
+        codes.forEach(code=>{
+          const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
+          const name=d.name||code;
+          const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+          const pieces=d.pieces ?? '';
+          const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
+          const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
+
+          const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
+          card.innerHTML=`
+            <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
+            <div class="item-name">${name}</div>
+            <div class="card-body">
+              <div class="card-footer">
+                <div class="meta">
+                  <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
+                  <span class="price">${priceStr}</span>
+                </div>
+                <div class="ctrls">
+                  <button class="circle card-minus" data-item="${code}- ${name}" type="button" style="visibility:hidden">−</button>
+                  <span class="qty-badge qty" data-item="${code}- ${name}"></span>
+                  <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
+                </div>
+              </div>
+            </div>`;
+          grid.appendChild(card);
+        });
+
+        menu.appendChild(wrap);
+      }
+    }
+    // Construit le menu dès que possible
+    document.addEventListener('DOMContentLoaded', buildMenu);
+  </script>
+
   <!-- ===== Script A : utilitaires globaux & ombre bandeau ===== -->
   <script>
   (function(){
@@ -255,6 +349,7 @@
     const footCart = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
 
+    // Injecte le formulaire dans l'étape 2
     if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
@@ -302,7 +397,6 @@
           recapList.appendChild(li);
         });
       }
-      // afficher le commentaire si saisi
       const c=document.getElementById('comments')?.value?.trim()||'';
       recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
     }
@@ -364,8 +458,7 @@ ${c}`;
       prepareOrderText();
       btnConfirm.disabled = true;
       btnConfirm.textContent = 'Envoi…';
-      form.submit();               // Soumission "normale" (pour activer l’auto-réponse)
-      // Redirection gérée par FormSubmit via _next -> merci.html
+      form.submit();               // FormSubmit gère l'envoi + redirection _next → merci.html
     });
 
     sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
@@ -440,6 +533,7 @@ ${c}`;
       openItemModal(code, name);
     }
 
+    // Modale + contrôles
     (function(){
       const modal=document.getElementById('itemModal');
       const closeBtn=document.getElementById('mClose');
@@ -465,27 +559,7 @@ ${c}`;
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     })();
 
-    function updateMiniRecap(){}
-    function updateSticky(){
-      const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
-      qtyNodes.forEach(q=>{
-        const n=parseInt(q.textContent)||0; totalQty+=n;
-        if(n>0){
-          const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-          const d=catalog[code]||{};
-          const p=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
-          if(typeof p==='number') totalPrice += p*n;
-        }
-      });
-      const btn=document.getElementById('gotoOrder'); if(!btn) return;
-      btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
-      updateMiniRecap(); saveCart();
-    }
-
-    // Ouvre le tiroir si #panier
-    if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen.click(),0); }
-
-    // Sauvegarde panier
+    // Sauvegarde / Restauration panier
     const CART_KEY='yumeko_cart_v1';
     function saveCart(){
       const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
@@ -502,54 +576,36 @@ ${c}`;
         updateSticky();
       }catch(e){}
     }
-    restoreCart();
-  });
-  </script>
 
-  <!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
-  <script>
-  const categories={
-    'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
-    'LES CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
-    'LES MAKI PRINTEMPS':['P1','P2','P3','P4'],
-    'LES ROLLS':['R1','R2'],
-    'LES SASHIMI':['S1'],
-    'LES NIGIRI':['N1','N2'],
-    'LES BOISSONS':['B1','B2','B3']
-  };
-  const catalog={
-    M1:{name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:''},
-    M2:{name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
-    M3:{name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:''},
-    M4:{name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:''},
-    M5:{name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
-    M6:{name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:''},
-    M7:{name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
-    M8:{name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
-    C1:{name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:''},
-    C2:{name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
-    C3:{name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:''},
-    C4:{name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:''},
-    C5:{name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
-    C6:{name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:''},
-    C7:{name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
-    C8:{name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
-    C9:{name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:''},
-    P1:{name:'MAKI PRINTEMPS SAUMON AVOCAT', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:''},
-    P2:{name:'MAKI PRINTEMPS SAUMON CHEESE', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:''},
-    P3:{name:'MAKI PRINTEMPS CONCOMBRE CHEESE', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:''},
-    P4:{name:'MAKI PRINTEMPS AVOCAT CHEESE', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:''},
-    R1:{name:'ROLLS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:''},
-    R2:{name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:''},
-    S1:{name:'SASHIMI SAUMON', img:'s1.jpg', pieces:2, comp:'Tranches de saumon', allergens:'Poisson', desc:''},
-    N1:{name:'NIGIRI SAUMON', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:''},
-    N2:{name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:''},
-    B1:{name:'BIERE TSINGTAO', img:'b1.jpg'},
-    B2:{name:'BIERE ASAHI', img:'b2.jpg'},
-    B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
-  };
-  const prices={}; // Optionnel : renseigne les prix si besoin
-  const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+    function updateMiniRecap(){}
+    function updateSticky(){
+      // sécurité si jamais catalog/prices non définis
+      if(typeof catalog==='undefined') return;
+      const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
+      qtyNodes.forEach(q=>{
+        const n=parseInt(q.textContent)||0; totalQty+=n;
+        if(n>0){
+          const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
+          const d=catalog[code]||{};
+          const p=(prices && Object.prototype.hasOwnProperty.call(prices, code)) ? prices[code] : (typeof d.price==='number'?d.price:undefined);
+          if(typeof p==='number') totalPrice += p*n;
+        }
+      });
+      const btn=document.getElementById('gotoOrder'); if(!btn) return;
+      btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
+      updateMiniRecap(); saveCart();
+    }
+
+    // Ouvre le tiroir si #panier
+    if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
+
+    // CTA "Commander maintenant"
+    document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
+
+    // Init
+    restoreCart();
+    updateSticky();
+  });
   </script>
 </body>
 </html>
