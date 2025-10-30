@@ -1,74 +1,6 @@
-<!DOCTYPE html><meta charset="utf-8">
-<meta http-equiv="refresh" content="0;url=accueil.html">
-<title>Redirection…</title>
-<a href="accueil.html">Cliquez ici si vous n’êtes pas redirigé</a>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <style>
-  :root{
-    --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-    --muted:#cfcfcf;
-  }
-
-  .site-header.jp{
-    background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
-    border-bottom: 1px solid rgba(255,255,255,.08);
-  }
-  .site-header .header-inner{
-    width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-  }
-
-  /* Logo centré, même place/ratio que l’index */
-  .site-header .logo{
-    width:160px; height:auto; border-radius:50%;
-    box-shadow:0 0 10px rgba(0,0,0,.3);
-    display:block;
-  }
-  @media (min-width:768px){
-    .site-header .logo{ width:200px; }
-  }
-
-  .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
-  .brand-text h1{
-    margin:0; letter-spacing:2px; font-weight:800;
-    font-size:1.4rem; color:var(--text);
-    text-align:center;
-  }
-  .brand-text .jp-top{
-    display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em;
-    text-align:center; opacity:.85;
-  }
-
-  .main-nav{
-    display:flex; align-items:center; gap:8px; margin-top:6px;
-    font-weight:600;
-  }
-  .main-nav .sep{ color:#e9d9d9; opacity:.6; }
-
-  .main-nav a{
-    position:relative; color:var(--text); text-decoration:none;
-    padding:4px 6px; border-radius:6px; opacity:.95;
-  }
-  .main-nav a:hover{ opacity:1; }
-  .main-nav a::after{
-    content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
-    background:linear-gradient(90deg, transparent, var(--brand), transparent);
-    opacity:0; transform:translateY(2px);
-    transition:all .18s ease;
-  }
-  .main-nav a:hover::after,
-  .main-nav a.active::after{
-    opacity:1; transform:translateY(0);
-  }
-
-  /* Compact sur mobile */
-  @media (max-width:480px){
-    .brand-text h1{ font-size:1.2rem; }
-    .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
-  }
-</style>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>YUMEKO SUSHIS</title>
@@ -78,42 +10,89 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#8b0000" />
+
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
       --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
       --barShade:.35;
     }
-    /* la section originale reste masquée : le form est déplacé dans le tiroir */
-    #orderSection{ display:none !important; }
     *{ box-sizing:border-box; }
+
+    /* ===== Header - Style Japonais Premium ===== */
+    .site-header.jp{
+      background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .site-header .header-inner{
+      width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+    }
+    .site-header .logo{
+      width:160px; height:auto; border-radius:50%;
+      box-shadow:0 0 10px rgba(0,0,0,.3);
+      display:block;
+    }
+    @media (min-width:768px){ .site-header .logo{ width:200px; } }
+    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    .brand-text h1{
+      margin:0; letter-spacing:2px; font-weight:800;
+      font-size:1.4rem; color:var(--text); text-align:center;
+    }
+    .brand-text .jp-top{
+      display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em;
+      text-align:center; opacity:.85;
+    }
+    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
+    .main-nav .sep{ color:#e9d9d9; opacity:.6; }
+    .main-nav a{
+      position:relative; color:var(--text); text-decoration:none;
+      padding:4px 6px; border-radius:6px; opacity:.95;
+    }
+    .main-nav a:hover{ opacity:1; }
+    .main-nav a::after{
+      content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
+      background:linear-gradient(90deg, transparent, var(--brand), transparent);
+      opacity:0; transform:translateY(2px);
+      transition:all .18s ease;
+    }
+    .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
+    @media (max-width:480px){
+      .brand-text h1{ font-size:1.2rem; }
+      .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
+    }
+
+    /* ===== Base ===== */
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
     }
-    body.modal-open{ overflow:hidden; } /* bloque le scroll de fond quand le tiroir est ouvert */
+    body.modal-open{ overflow:hidden; }
 
+    /* Hero */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center;
     }
     h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
-    .cta{ background:var(--brand); border:none; color:#fff; padding:14px 18px; border-radius:10px; font-weight:800; cursor:pointer; }
-    .cta:hover{ background:var(--brand-2); }
+    .hero .logo{ width:160px; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
+    @media (min-width:768px){ .hero .logo{ width:200px; } }
 
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px; }
 
-    /* ====== GRID ====== */
+    /* GRID menu */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    @media (max-width: 480px){
+    @media (max-width:480px){
       .menu-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; }
       .item-card{ border-radius:12px; }
       .item-name{ font-size:.88rem; padding:8px 10px 2px; }
       .card-footer{ padding:8px 10px 10px; }
       .circle{ width:34px; height:34px; }
     }
-
     .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .12s, box-shadow .12s; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
@@ -125,62 +104,45 @@
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    /* Form (affiché dans l'étape 2 du tiroir) */
+    /* Form (déplacé dans le tiroir) */
     form input, form textarea{
       width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2);
-      border-radius:10px; padding:10px; margin:6px auto; display:block;
-      font-size:16px; /* >=16px évite le zoom iOS */
-      text-align:left;
+      border-radius:10px; padding:10px; margin:6px auto; display:block; font-size:16px; text-align:left;
     }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
-
-    @media (max-width: 480px){
-      form input, form textarea{
-        max-width:360px; width:100%;
-        padding:10px 12px;
-        font-size:16px;
-        line-height:1.2;
-        text-align:center;
-      }
+    @media (max-width:480px){
+      form input, form textarea{ max-width:360px; width:100%; padding:10px 12px; font-size:16px; line-height:1.2; text-align:center; }
       .section-title{ margin-bottom:8px; }
     }
 
+    /* Sticky bar + tiroir */
     #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,var(--barShade))); padding:6px; }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
     #gotoOrder{ background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; white-space:nowrap; }
 
-    /* ====== Tiroir panier ====== */
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
       width:min(96%,1100px); background:#1b1b1b; color:#fff;
       border:1px solid rgba(255,255,255,.12); border-radius:16px 16px 0 0;
       box-shadow:0 22px 60px rgba(0,0,0,.45); max-height:70vh;
       display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101;
-      overscroll-behavior: contain;  /* stoppe l'élan de scroll qui remonte à la page */
+      overscroll-behavior: contain;
     }
-    #cartSheet.open{ bottom:0; } /* collé en bas pour maximiser l'espace */
-
+    #cartSheet.open{ bottom:0; }
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
 
-    /* Le corps du tiroir scrolle, pas la page */
     #cartSheet .body{
-      padding:8px 10px;
-      overflow:auto;                 /* défilement interne */
-      -webkit-overflow-scrolling:touch;
-      max-height:calc(70vh - 100px); /* réserve pour header+footer */
-      overscroll-behavior: contain;  /* évite l'effet rebond sur la page */
+      padding:8px 10px; overflow:auto; -webkit-overflow-scrolling:touch;
+      max-height:calc(70vh - 100px); overscroll-behavior: contain;
     }
 
     .recap-list{
-      list-style:none; margin:0; padding:0;
-      display:flex; flex-direction:column; gap:8px;
-      max-height:48vh;               /* si beaucoup d’articles, ça scroll ici */
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
+      list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;
+      max-height:48vh; overflow:auto; -webkit-overflow-scrolling:touch;
     }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
@@ -189,86 +151,67 @@
     .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
     .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
-
-    /* Carte : bloc infos en bas à gauche + tailles réduites */
+    /* Cartes */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
-    .card-footer{
-      margin-top:auto;
-      display:flex; align-items:flex-end; justify-content:space-between;
-      padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08);
-    }
+    .card-footer{ margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
     .meta{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; }
     .pieces{ font-size:.78rem; color:var(--muted); line-height:1.1; }
     .price{ font-size:.86rem; color:#fff; font-weight:700; line-height:1.1; }
-    @media (max-width: 480px){
-      .pieces{ font-size:.74rem; }
-      .price{ font-size:.82rem; }
-    }
+    @media (max-width:480px){ .pieces{ font-size:.74rem; } .price{ font-size:.82rem; } }
 
-    .meta{ line-height:1.15; }
     .ctrls{ display:flex; align-items:center; gap:8px; }
     .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
     .circle:hover{ background:var(--accent-2); }
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
     .qty-badge:empty{ display:none; }
 
-    .hero .logo{ width:160px; }
-    @media (min-width:768px){ .hero .logo{ width:200px; } }
-
-    /* Familles de produits */
+    /* Catégories */
     .category{ border:2px solid #000; border-radius:14px; padding:18px; background:#130909; margin-bottom:40px; }
     .category h3{ font-size:1.6rem; margin:0 0 18px; text-align:center; color:#fff; text-transform:uppercase; letter-spacing:1px; }
     #menuSection.section{ border:0; background:transparent; box-shadow:none; padding:0; }
-
-    /* Étapes tiroir */
-    .step{ display:none; }
-    .step.active{ display:block; }
+    .step{ display:none; } .step.active{ display:block; }
   </style>
-
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#8b0000" />
 </head>
 <body>
-  <!-- ===== Header - Style Japonais Premium ===== -->
-<header class="site-header jp">
-  <div class="header-inner">
-    <a href="accueil.html" class="brand">
-      <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
-      <div class="brand-text">
-        <span class="jp-top">夢猫鮨</span> <!-- “chat rêveur” + sushi, clin d’œil -->
-        <h1>YUMEKO SUSHIS</h1>
-      </div>
-    </a>
 
-    <nav class="main-nav" aria-label="Navigation principale">
-      <a href="accueil.html">Accueil</a>
-      <span class="sep">・</span>
-      <a href="index.html">Menu</a>
-      <span class="sep">・</span>
-      <a href="#panier" id="navPanier">Panier</a>
-    </nav>
-  </div>
-</header>
-<!-- ===== /Header ===== -->
+  <!-- ===== Header ===== -->
+  <header class="site-header jp">
+    <div class="header-inner">
+      <a href="accueil.html" class="brand">
+        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
+        <div class="brand-text">
+          <span class="jp-top">夢猫鮨</span> <!-- clin d’œil -->
+          <h1>YUMEKO SUSHIS</h1>
+        </div>
+      </a>
 
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a href="accueil.html">Accueil</a>
+        <span class="sep">・</span>
+        <a href="index.html" class="active">Menu</a>
+        <span class="sep">・</span>
+        <a href="#panier" id="navPanier">Panier</a>
+      </nav>
+    </div>
+  </header>
 
-  <!-- HERO -->
+  <!-- ===== HERO ===== -->
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
   </section>
-<div class="cta-row" style="margin-top:8px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-  <a class="btn btn-ghost" href="accueil.html">Accueil</a>
-  <button class="btn btn-primary" id="gotoOrderTop" type="button">Commander</button>
-  <a class="btn btn-ghost" href="#menu">Voir le menu</a>
-</div>
-<script>
-  document.getElementById('gotoOrderTop')?.addEventListener('click', ()=>{
-    document.getElementById('gotoOrder')?.click();
-  });
-</script>
+
+  <div class="cta-row" style="margin-top:8px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+    <a class="btn btn-ghost" href="accueil.html">Accueil</a>
+    <button class="btn btn-primary" id="gotoOrderTop" type="button">Commander</button>
+    <!-- correction: ancre vers #menuSection -->
+    <a class="btn btn-ghost" href="#menuSection">Voir le menu</a>
+  </div>
+  <script>
+    document.getElementById('gotoOrderTop')?.addEventListener('click', ()=>{
+      document.getElementById('gotoOrder')?.click();
+    });
+  </script>
 
   <main class="container">
     <!-- MENU -->
@@ -300,26 +243,20 @@
       </div>
     </div>
 
-    <!-- FORM COMMANDE (section masquée, form déplacé dans le tiroir) -->
-    <section class="section" id="orderSection" style="text-align:center;">
+    <!-- FORM COMMANDE (masqué, déplacé dans le tiroir) -->
+    <section class="section" id="orderSection" style="text-align:center; display:none !important;">
       <h2 class="section-title">Validez votre commande</h2>
       <form id="orderForm"
             action="https://formsubmit.co/yumeko.sushis@gmail.com"
-            method="POST"
-            accept-charset="UTF-8"
-            autocomplete="on">
+            method="POST" accept-charset="UTF-8" autocomplete="on">
         <input name="first_name" placeholder="Prénom" required inputmode="text" />
         <input name="last_name" placeholder="Nom" required inputmode="text" />
         <input name="email" type="email" placeholder="Email" required inputmode="email" />
         <textarea name="comments" id="comments" placeholder="Allergies ou autres"></textarea>
-
-        <!-- FormSubmit -->
         <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
         <input type="hidden" name="_template" value="table">
-        <!-- _next n'est plus nécessaire car on redirige nous-mêmes en JS -->
         <input type="hidden" name="_captcha" value="false">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-
         <input type="hidden" name="order" id="hiddenOrder">
         <div id="orderResult" class="muted" style="margin-top:6px;"></div>
       </form>
@@ -341,13 +278,11 @@
       <button id="sheetClose" aria-label="Fermer" type="button">×</button>
     </header>
     <div class="body">
-      <!-- ÉTAPE 1 : Récap & édition -->
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <!-- ÉTAPE 2 : Infos client -->
       <div id="stepDetails" class="step"></div>
     </div>
     <footer>
@@ -407,7 +342,7 @@
       B2:{name:'BIERE ASAHI', img:'b2.jpg'},
       B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
     };
-    const prices={}; // optionnel
+    const prices={};
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
     function buildMenu(){
@@ -436,7 +371,6 @@
                   <span class="price">${priceStr}</span>
                 </div>
                 <div class="ctrls">
-                  <!-- pas de “−” sur les cartes -->
                   <span class="qty-badge qty" data-item="${code}- ${name}"></span>
                   <button class="circle card-plus" data-item="${code}- ${name}" type="button">+</button>
                 </div>
@@ -451,157 +385,144 @@
     document.addEventListener('DOMContentLoaded', buildMenu);
   </script>
 
-  <!-- ===== Script A : utilitaires globaux & ombre bandeau ===== -->
+  <!-- ===== Utilitaires & bandeau ===== -->
   <script>
-  (function(){
-    if(typeof window.CSS==='undefined') window.CSS={};
-    if(typeof window.CSS.escape!=='function'){
-      window.CSS.escape=function(sel){ return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g,'\\$&'); };
-    }
-  })();
-  (function(){
-    const root=document.documentElement;
-    function updateBarShade(){
-      const doc=document.documentElement;
-      const max=(doc.scrollHeight - window.innerHeight) || 1;
-      const p=Math.min(1, Math.max(0, window.scrollY/max));
-      const shade=0.35 + (0.85-0.35)*p;
-      root.style.setProperty('--barShade', shade.toFixed(2));
-    }
-    updateBarShade();
-    window.addEventListener('scroll', updateBarShade, {passive:true});
-    window.addEventListener('resize', updateBarShade);
-  })();
+    (function(){
+      if(typeof window.CSS==='undefined') window.CSS={};
+      if(typeof window.CSS.escape!=='function'){
+        window.CSS.escape=function(sel){ return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g,'\\$&'); };
+      }
+    })();
+    (function(){
+      const root=document.documentElement;
+      function updateBarShade(){
+        const doc=document.documentElement;
+        const max=(doc.scrollHeight - window.innerHeight) || 1;
+        const p=Math.min(1, Math.max(0, window.scrollY/max));
+        const shade=0.35 + (0.85-0.35)*p;
+        root.style.setProperty('--barShade', shade.toFixed(2));
+      }
+      updateBarShade();
+      window.addEventListener('scroll', updateBarShade, {passive:true});
+      window.addEventListener('resize', updateBarShade);
+    })();
   </script>
 
-  <!-- ===== Script B : Panier / tiroir / formulaire ===== -->
+  <!-- ===== Panier / tiroir / formulaire ===== -->
   <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const sheet = document.getElementById('cartSheet');
-    const sheetClose = document.getElementById('sheetClose');
-    const btnOpen = document.getElementById('gotoOrder');
-    const btnGoDetails = document.getElementById('goDetails');
-    const btnBack = document.getElementById('backToCart');
-    const btnConfirm = document.getElementById('confirmSend');
+    document.addEventListener('DOMContentLoaded', function () {
+      const sheet = document.getElementById('cartSheet');
+      const sheetClose = document.getElementById('sheetClose');
+      const btnOpen = document.getElementById('gotoOrder');
+      const btnGoDetails = document.getElementById('goDetails');
+      const btnBack = document.getElementById('backToCart');
+      const btnConfirm = document.getElementById('confirmSend');
 
-    const recapList = document.getElementById('recapList');
-    const recapCom = document.getElementById('recapComment');
-    const form = document.getElementById('orderForm');
+      const recapList = document.getElementById('recapList');
+      const recapCom = document.getElementById('recapComment');
+      const form = document.getElementById('orderForm');
 
-    const stepCart = document.getElementById('stepCart');
-    const stepDetails = document.getElementById('stepDetails');
+      const stepCart = document.getElementById('stepCart');
+      const stepDetails = document.getElementById('stepDetails');
 
-    /* déplacer le form dans l'étape 2 (visible) */
-    if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
+      if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
-    /* ===== util ===== */
-    function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
-    function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
+      function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
+      function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
-    /* ===== panier ===== */
-    function parseItem(full){
-      const parts=String(full).split('-');
-      const code=(parts[0]||'').trim();
-      const name=parts.slice(1).join('-').trim()||full.trim();
-      return {code,name};
-    }
-    function getCartItems(){
-      const items=[];
-      document.querySelectorAll('.qty[data-item]').forEach(span=>{
-        const qty=safeInt(span);
-        if(qty>0){
-          const full=span.dataset.item;
-          const {code,name}=parseItem(full);
-          items.push({code,name,qty});
-        }
-      });
-      return items;
-    }
-
-    function buildRecap(){
-      const items=getCartItems();
-      recapList.innerHTML='';
-      if(items.length===0){
-        recapList.innerHTML='<li class="muted">Aucun article pour le moment.</li>';
-      }else{
-        items.forEach(({code,name,qty})=>{
-          const li=document.createElement('li');
-          li.className='recap-item';
-          const codeLower=(code||'').toLowerCase();
-          li.innerHTML=`
-            <div class="it-left" style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-              <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
-              <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
-            </div>
-            <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
-              <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer" type="button">−</button>
-              <span class="qty" aria-live="polite">${qty}</span>
-              <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter" type="button">+</button>
-            </div>`;
-          recapList.appendChild(li);
+      function parseItem(full){
+        const parts=String(full).split('-');
+        const code=(parts[0]||'').trim();
+        const name=parts.slice(1).join('-').trim()||full.trim();
+        return {code,name};
+      }
+      function getCartItems(){
+        const items=[];
+        document.querySelectorAll('.qty[data-item]').forEach(span=>{
+          const qty=safeInt(span);
+          if(qty>0){
+            const full=span.dataset.item;
+            const {code,name}=parseItem(full);
+            items.push({code,name,qty});
+          }
         });
+        return items;
       }
-      const c=document.getElementById('comments')?.value?.trim()||'';
-      recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
-    }
 
-    function setStep(which){
-      const showCart = which==='cart';
-      const showDetails = which==='details';
-      stepCart.classList.toggle('active', showCart);
-      document.getElementById('footerCart').classList.toggle('active', showCart);
-      stepDetails.classList.toggle('active', showDetails);
-      document.getElementById('footerDetails').classList.toggle('active', showDetails);
-    }
-
-    /* ===== ouverture/fermeture tiroir + lock scroll fond ===== */
-    const lockBgScroll = (e)=>{
-      if(!document.body.classList.contains('modal-open')) return;
-      // Si l'événement ne vient PAS de l'intérieur du tiroir, on bloque.
-      if(!sheet.contains(e.target)){
-        e.preventDefault();
+      function buildRecap(){
+        const items=getCartItems();
+        recapList.innerHTML='';
+        if(items.length===0){
+          recapList.innerHTML='<li class="muted">Aucun article pour le moment.</li>';
+        }else{
+          items.forEach(({code,name,qty})=>{
+            const li=document.createElement('li');
+            li.className='recap-item';
+            const codeLower=(code||'').toLowerCase();
+            li.innerHTML=`
+              <div class="it-left" style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+                <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
+                <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
+              </div>
+              <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
+                <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer" type="button">−</button>
+                <span class="qty" aria-live="polite">${qty}</span>
+                <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter" type="button">+</button>
+              </div>`;
+            recapList.appendChild(li);
+          });
+        }
+        const c=document.getElementById('comments')?.value?.trim()||'';
+        recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
       }
-    };
-    function openSheet(){
-      setStep('cart'); buildRecap();
-      sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
-      document.body.classList.add('modal-open');
-      // Bloque wheel/touch sur le fond (mais pas dans le tiroir)
-      window.addEventListener('touchmove', lockBgScroll, {passive:false});
-      window.addEventListener('wheel', lockBgScroll, {passive:false});
-    }
-    function closeSheet(){
-      sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
-      document.body.classList.remove('modal-open');
-      window.removeEventListener('touchmove', lockBgScroll);
-      window.removeEventListener('wheel', lockBgScroll);
-    }
 
-const ctaOrderEl = document.getElementById('ctaOrder');
-if (ctaOrderEl) {
-  ctaOrderEl.onclick = () => document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
-}
-    document.getElementById('gotoOrder').addEventListener('click', openSheet);
-    document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
-    document.getElementById('goDetails')?.addEventListener('click', ()=> setStep('details'));
-    document.getElementById('backToCart')?.addEventListener('click', ()=> setStep('cart'));
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+      function setStep(which){
+        const showCart = which==='cart';
+        const showDetails = which==='details';
+        stepCart.classList.toggle('active', showCart);
+        document.getElementById('footerCart').classList.toggle('active', showCart);
+        stepDetails.classList.toggle('active', showDetails);
+        document.getElementById('footerDetails').classList.toggle('active', showDetails);
+      }
 
-    /* ===== build order text ===== */
-    function ensureHiddenField(name){
-      if(!form) return null;
-      let input=form.querySelector(`input[name="${name}"]`);
-      if(!input){ input=document.createElement('input'); input.type='hidden'; input.name=name; form.appendChild(input); }
-      return input;
-    }
-    function buildOrderText(){
-      const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
-      const c=document.getElementById('comments')?.value?.trim() || '—';
-      const first=form?.querySelector('[name="first_name"]')?.value || '—';
-      const last =form?.querySelector('[name="last_name"]')?.value || '—';
-      const email=form?.querySelector('[name="email"]')?.value || '—';
+      const lockBgScroll = (e)=>{
+        if(!document.body.classList.contains('modal-open')) return;
+        if(!sheet.contains(e.target)){ e.preventDefault(); }
+      };
+      function openSheet(){
+        setStep('cart'); buildRecap();
+        sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+        document.body.classList.add('modal-open');
+        window.addEventListener('touchmove', lockBgScroll, {passive:false});
+        window.addEventListener('wheel', lockBgScroll, {passive:false});
+      }
+      function closeSheet(){
+        sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
+        document.body.classList.remove('modal-open');
+        window.removeEventListener('touchmove', lockBgScroll);
+        window.removeEventListener('wheel', lockBgScroll);
+      }
 
-      return `Commande YUMEKO
+      document.getElementById('gotoOrder')?.addEventListener('click', openSheet);
+      document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
+      document.getElementById('goDetails')?.addEventListener('click', ()=> setStep('details'));
+      document.getElementById('backToCart')?.addEventListener('click', ()=> setStep('cart'));
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+
+      function ensureHiddenField(name){
+        if(!form) return null;
+        let input=form.querySelector(`input[name="${name}"]`);
+        if(!input){ input=document.createElement('input'); input.type='hidden'; input.name=name; form.appendChild(input); }
+        return input;
+      }
+      function buildOrderText(){
+        const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
+        const c=document.getElementById('comments')?.value?.trim() || '—';
+        const first=form?.querySelector('[name="first_name"]')?.value || '—';
+        const last =form?.querySelector('[name="last_name"]')?.value || '—';
+        const email=form?.querySelector('[name="email"]')?.value || '—';
+
+        return `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
 
@@ -610,227 +531,204 @@ ${itemsText || '(aucun)'}
 
 Allergies / autres :
 ${c}`;
-    }
-    function prepareOrderText(){
-      const text = buildOrderText();
-      const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
-      const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
-      try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
-      return text;
-    }
-
-    /* ===== Envoi AJAX + redirection LOCALE vers merci.html =====
-       -> on poste à FormSubmit en fetch
-       -> quoi qu'il arrive, on redirige vers merci.html pour rester sur ton site
-    */
-    document.getElementById('confirmSend')?.addEventListener('click', async ()=>{
-      if(!form) return;
-      if(!form.reportValidity()){
-        setStep('details');
-        form.querySelector(':invalid')?.focus();
-        return;
       }
-      const text = prepareOrderText();
-
-      const fd = new FormData(form);
-      // optionnel: on peut retirer _next, car on gère la redirection en JS
-      fd.delete('_next');
-
-      // petit état UI
-      const btn = document.getElementById('confirmSend');
-      btn.disabled = true; const old = btn.textContent; btn.textContent = 'Envoi…';
-
-      try{
-        await fetch(form.action, {
-          method:'POST',
-          body: fd,
-          headers:{ 'Accept':'application/json' }
-        });
-      }catch(e){
-        // même en cas d’erreur réseau on redirige vers merci.html pour UX cohérente
-        console.warn('FormSubmit error:', e);
-      }finally{
-        // on peut vider le panier ici si tu veux
-        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-        updateSticky();
-        // redirection locale vers ta page
-        window.location.href = 'merci.html';
+      function prepareOrderText(){
+        const text = buildOrderText();
+        const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
+        const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
+        try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
+        return text;
       }
 
-      btn.disabled = false; btn.textContent = old;
-    });
+      document.getElementById('confirmSend')?.addEventListener('click', async ()=>{
+        if(!form) return;
+        if(!form.reportValidity()){
+          setStep('details'); form.querySelector(':invalid')?.focus(); return;
+        }
+        prepareOrderText();
 
-    /* ===== Récap live + ajustements quantité ===== */
-    document.getElementById('cartSheet').addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
-    recapList.addEventListener('click', (e)=>{
-      const plus = e.target.closest('.recap-plus');
-      const minus = e.target.closest('.recap-minus');
-      const btn = plus || minus;
-      if(!btn) return;
-      const item = btn.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      if(!span) return;
-      const cur = parseInt(span.textContent)||0;
-      const inc = plus ? 1 : -1;
-      const v = Math.max(0, cur + inc);
-      span.textContent = v>0 ? String(v) : '';
-      bump(span);
-      updateSticky();
-      buildRecap();
-    });
+        const fd = new FormData(form);
+        fd.delete('_next');
 
-    /* ===== Cartes : “+” ouvre la modale ===== */
-    document.addEventListener('click', (e)=>{
-      const plusBtn = e.target.closest('.card-plus');
-      const card = e.target.closest('.item-card');
+        const btn = document.getElementById('confirmSend');
+        btn.disabled = true; const old = btn.textContent; btn.textContent = 'Envoi…';
 
-      if(plusBtn){
-        const itemKey = plusBtn.dataset.item;
-        openItemModalByKey(itemKey);
-        return;
-      }
-      if(card && !e.target.closest('.ctrls')){
-        const code=card.dataset.code;
-        const name=card.dataset.name;
-        openItemModal(code, name);
-        return;
-      }
-    });
+        try{
+          await fetch(form.action, { method:'POST', body: fd, headers:{ 'Accept':'application/json' } });
+        }catch(e){
+          console.warn('FormSubmit error:', e);
+        }finally{
+          document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+          updateSticky();
+          window.location.href = 'merci.html';
+        }
 
-    function openItemModal(code, name){
-      const d=catalog[code]||{};
-      const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-      document.getElementById('mImg').src=img;
-      document.getElementById('mImg').alt=name;
-      document.getElementById('mTitle').textContent=name;
-      document.getElementById('mPieces').textContent=d.pieces ?? '—';
-      document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
-      document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
-      document.getElementById('mDesc').textContent=d.desc || '—';
-
-      const itemKey=`${code}- ${name}`;
-      const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-      const current=parseInt(qtySpan?.textContent)||0;
-      const mQty=document.getElementById('mQty');
-      const mMinus=document.getElementById('mMinus');
-      mQty.textContent=current;
-      mMinus.style.visibility=current>0?'visible':'hidden';
-      mMinus.dataset.item=itemKey;
-      document.getElementById('mPlus').dataset.item=itemKey;
-
-      const modal=document.getElementById('itemModal');
-      modal.style.display='flex';
-      modal.setAttribute('aria-hidden','false');
-    }
-    function openItemModalByKey(itemKey){
-      const code = (String(itemKey).split('-')[0]||'').trim();
-      const name = String(itemKey).split('-').slice(1).join('-').trim();
-      if(!code || !name) return;
-      openItemModal(code, name);
-    }
-
-    /* ===== Modale + contrôles ===== */
-    (function(){
-      const modal=document.getElementById('itemModal');
-      const closeBtn=document.getElementById('mClose');
-      const mMinus=document.getElementById('mMinus');
-      const mPlus=document.getElementById('mPlus');
-      const mQty=document.getElementById('mQty');
-
-      function setQty(itemKey,newVal){
-        const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        if(!span) return;
-        span.textContent = newVal>0 ? String(newVal) : '';
-        mQty.textContent=newVal;
-        document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
-        updateSticky(); buildRecap();
-      }
-      mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
-      mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
-
-      closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
-      modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-    })();
-
-    /* ===== Sauvegarde / Restauration panier ===== */
-    const CART_KEY='yumeko_cart_v1';
-    function saveCart(){
-      const cart=[];
-      document.querySelectorAll('.qty[data-item]').forEach(q=>{
-        const n=parseInt(q.textContent)||0;
-        if(n>0) cart.push({key:q.dataset.item, qty:n});
+        btn.disabled = false; btn.textContent = old;
       });
-      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
-    }
-    function restoreCart(){
-      try{
-        const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-        saved.forEach(({key,qty})=>{
-          const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-          if(span){ span.textContent=qty; }
-        });
-        updateSticky();
-      }catch(e){
-        console.warn('restoreCart error', e);
-      }
-    }
 
-    function updateMiniRecap(){}
-    function updateSticky(){
-      const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
-      qtyNodes.forEach(q=>{
-        const n=parseInt(q.textContent)||0; totalQty+=n;
-        if(n>0){
-          const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-          const d=window.catalog?.[code] || {};
-          const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
-                    ? window.prices[code]
-                    : (typeof d.price==='number'?d.price:undefined);
-          if(typeof p==='number') totalPrice += p*n;
+      document.getElementById('cartSheet').addEventListener('input', (e)=>{
+        if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }
+      });
+      recapList.addEventListener('click', (e)=>{
+        const plus = e.target.closest('.recap-plus');
+        const minus = e.target.closest('.recap-minus');
+        const btn = plus || minus;
+        if(!btn) return;
+        const item = btn.dataset.item;
+        const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+        if(!span) return;
+        const cur = parseInt(span.textContent)||0;
+        const inc = plus ? 1 : -1;
+        const v = Math.max(0, cur + inc);
+        span.textContent = v>0 ? String(v) : '';
+        bump(span);
+        updateSticky();
+        buildRecap();
+      });
+
+      document.addEventListener('click', (e)=>{
+        const plusBtn = e.target.closest('.card-plus');
+        const card = e.target.closest('.item-card');
+
+        if(plusBtn){
+          const itemKey = plusBtn.dataset.item;
+          openItemModalByKey(itemKey);
+          return;
+        }
+        if(card && !e.target.closest('.ctrls')){
+          const code=card.dataset.code;
+          const name=card.dataset.name;
+          openItemModal(code, name);
+          return;
         }
       });
-      const btn=document.getElementById('gotoOrder'); if(!btn) return;
-      if(totalPrice>0){
-        const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
-        btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
-      }else{
-        btn.textContent = `Panier (${totalQty}) • Valider`;
+
+      function openItemModal(code, name){
+        const d=catalog[code]||{};
+        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+        document.getElementById('mImg').src=img;
+        document.getElementById('mImg').alt=name;
+        document.getElementById('mTitle').textContent=name;
+        document.getElementById('mPieces').textContent=d.pieces ?? '—';
+        document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
+        document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
+        document.getElementById('mDesc').textContent=d.desc || '—';
+
+        const itemKey=`${code}- ${name}`;
+        const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+        const current=parseInt(qtySpan?.textContent)||0;
+        const mQty=document.getElementById('mQty');
+        const mMinus=document.getElementById('mMinus');
+        mQty.textContent=current;
+        mMinus.style.visibility=current>0?'visible':'hidden';
+        mMinus.dataset.item=itemKey;
+        document.getElementById('mPlus').dataset.item=itemKey;
+
+        const modal=document.getElementById('itemModal');
+        modal.style.display='flex';
+        modal.setAttribute('aria-hidden','false');
       }
-      updateMiniRecap(); saveCart();
-    }
+      function openItemModalByKey(itemKey){
+        const code = (String(itemKey).split('-')[0]||'').trim();
+        const name = String(itemKey).split('-').slice(1).join('-').trim();
+        if(!code || !name) return;
+        openItemModal(code, name);
+      }
 
-    // hash panier => ouvrir auto
-    if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
+      (function(){
+        const modal=document.getElementById('itemModal');
+        const closeBtn=document.getElementById('mClose');
+        const mMinus=document.getElementById('mMinus');
+        const mPlus=document.getElementById('mPlus');
+        const mQty=document.getElementById('mQty');
 
-    // Init
-    restoreCart();
-    updateSticky();
-  });
+        function setQty(itemKey,newVal){
+          const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+          if(!span) return;
+          span.textContent = newVal>0 ? String(newVal) : '';
+          mQty.textContent=newVal;
+          document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
+          updateSticky(); buildRecap();
+        }
+        mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
+        mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
+
+        closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
+        modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+      })();
+
+      const CART_KEY='yumeko_cart_v1';
+      function saveCart(){
+        const cart=[];
+        document.querySelectorAll('.qty[data-item]').forEach(q=>{
+          const n=parseInt(q.textContent)||0;
+          if(n>0) cart.push({key:q.dataset.item, qty:n});
+        });
+        try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+      }
+      function restoreCart(){
+        try{
+          const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+          saved.forEach(({key,qty})=>{
+            const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
+            if(span){ span.textContent=qty; }
+          });
+          updateSticky();
+        }catch(e){ console.warn('restoreCart error', e); }
+      }
+
+      function updateMiniRecap(){}
+      function updateSticky(){
+        const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
+        qtyNodes.forEach(q=>{
+          const n=parseInt(q.textContent)||0; totalQty+=n;
+          if(n>0){
+            const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
+            const d=window.catalog?.[code] || {};
+            const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
+                      ? window.prices[code]
+                      : (typeof d.price==='number'?d.price:undefined);
+            if(typeof p==='number') totalPrice += p*n;
+          }
+        });
+        const btn=document.getElementById('gotoOrder'); if(!btn) return;
+        if(totalPrice>0){
+          const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
+          btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
+        }else{
+          btn.textContent = `Panier (${totalQty}) • Valider`;
+        }
+        updateMiniRecap(); saveCart();
+      }
+
+      if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
+
+      restoreCart();
+      updateSticky();
+    });
+  </script>
+
+  <!-- Nav active + lien Panier inter-page -->
+  <script>
+    (function(){
+      const here = location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('.main-nav a').forEach(a=>{
+        const href = a.getAttribute('href');
+        if(href && !href.startsWith('#') && here === href) a.classList.add('active');
+      });
+
+      const panier = document.getElementById('navPanier');
+      if(panier){
+        panier.addEventListener('click', (e)=>{
+          const here = location.pathname.split('/').pop() || 'index.html';
+          if(here !== 'index.html'){
+            e.preventDefault();
+            window.location.href = 'index.html#panier';
+          }
+        });
+      }
+    })();
   </script>
 </body>
-  <script>
-  (function(){
-    // Activer le lien courant
-    const here = location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('.main-nav a').forEach(a=>{
-      const href = a.getAttribute('href');
-      // "Panier" est un hash => on ignore pour l'état actif
-      if(href && !href.startsWith('#') && here === href) a.classList.add('active');
-    });
-
-    // Panier cross-page : si on n'est pas sur index, rediriger vers index.html#panier
-    const panier = document.getElementById('navPanier');
-    if(panier){
-      panier.addEventListener('click', (e)=>{
-        const here = location.pathname.split('/').pop() || 'index.html';
-        if(here !== 'index.html'){
-          e.preventDefault();
-          window.location.href = 'index.html#panier';
-        }
-      });
-    }
-  })();
-</script>
-
 </html>
