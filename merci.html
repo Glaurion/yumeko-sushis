@@ -1,71 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <style>
-  :root{
-    --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-    --muted:#cfcfcf;
-  }
-
-  .site-header.jp{
-    background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
-    border-bottom: 1px solid rgba(255,255,255,.08);
-  }
-  .site-header .header-inner{
-    width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-  }
-
-  /* Logo centré, même place/ratio que l’index */
-  .site-header .logo{
-    width:160px; height:auto; border-radius:50%;
-    box-shadow:0 0 10px rgba(0,0,0,.3);
-    display:block;
-  }
-  @media (min-width:768px){
-    .site-header .logo{ width:200px; }
-  }
-
-  .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
-  .brand-text h1{
-    margin:0; letter-spacing:2px; font-weight:800;
-    font-size:1.4rem; color:var(--text);
-    text-align:center;
-  }
-  .brand-text .jp-top{
-    display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em;
-    text-align:center; opacity:.85;
-  }
-
-  .main-nav{
-    display:flex; align-items:center; gap:8px; margin-top:6px;
-    font-weight:600;
-  }
-  .main-nav .sep{ color:#e9d9d9; opacity:.6; }
-
-  .main-nav a{
-    position:relative; color:var(--text); text-decoration:none;
-    padding:4px 6px; border-radius:6px; opacity:.95;
-  }
-  .main-nav a:hover{ opacity:1; }
-  .main-nav a::after{
-    content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
-    background:linear-gradient(90deg, transparent, var(--brand), transparent);
-    opacity:0; transform:translateY(2px);
-    transition:all .18s ease;
-  }
-  .main-nav a:hover::after,
-  .main-nav a.active::after{
-    opacity:1; transform:translateY(0);
-  }
-
-  /* Compact sur mobile */
-  @media (max-width:480px){
-    .brand-text h1{ font-size:1.2rem; }
-    .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
-  }
-</style>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Merci — YUMEKO SUSHIS</title>
@@ -74,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#8b0000" />
 
   <style>
     :root{
@@ -91,16 +30,51 @@
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* HERO (identique à l’index, sans CTA) */
+    /* ===== Header style (comme sur accueil) ===== */
+    .site-header.jp{
+      background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .site-header .header-inner{
+      width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+    }
+    .site-header .logo{
+      width:160px; height:auto; border-radius:50%;
+      box-shadow:0 0 10px rgba(0,0,0,.3); display:block;
+    }
+    @media (min-width:768px){ .site-header .logo{ width:200px; } }
+    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:var(--text); text-align:center; }
+    .brand-text .jp-top{ display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em; text-align:center; opacity:.85; }
+    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
+    .main-nav .sep{ color:#e9d9d9; opacity:.6; }
+    .main-nav a{
+      position:relative; color:var(--text); text-decoration:none;
+      padding:4px 6px; border-radius:6px; opacity:.95;
+    }
+    .main-nav a:hover{ opacity:1; }
+    .main-nav a::after{
+      content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
+      background:linear-gradient(90deg, transparent, var(--brand), transparent);
+      opacity:0; transform:translateY(2px); transition:all .18s ease;
+    }
+    .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
+    @media (max-width:480px){
+      .brand-text h1{ font-size:1.2rem; }
+      .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
+    }
+
+    /* ===== HERO (même placement que index) ===== */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center;
     }
-    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
     .hero .logo{ width:160px; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
     @media (min-width:768px){ .hero .logo{ width:200px; } }
+    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
 
-    /* Layout */
+    /* ===== Layout ===== */
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
     .section{
       background:#160c0c; border:1px solid rgba(255,255,255,.08);
@@ -109,7 +83,7 @@
     }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    /* MERCI */
+    /* ===== MERCI ===== */
     .thanks-wrap{ display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; }
     .thanks-title{ margin:0 0 6px; font-size:1.6rem; }
     .recap-block{
@@ -129,36 +103,32 @@
 
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
   </style>
-
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#8b0000" />
 </head>
 <body>
-  <!-- ===== Header - Style Japonais Premium ===== -->
-<header class="site-header jp">
-  <div class="header-inner">
-    <a href="accueil.html" class="brand">
-      <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
-      <div class="brand-text">
-        <span class="jp-top">夢猫鮨</span> <!-- “chat rêveur” + sushi, clin d’œil -->
-        <h1>YUMEKO SUSHIS</h1>
-      </div>
-    </a>
 
-    <nav class="main-nav" aria-label="Navigation principale">
-      <a href="accueil.html">Accueil</a>
-      <span class="sep">・</span>
-      <a href="index.html">Menu</a>
-      <span class="sep">・</span>
-      <a href="#panier" id="navPanier">Panier</a>
-    </nav>
-  </div>
-</header>
-<!-- ===== /Header ===== -->
+  <!-- ===== Header ===== -->
+  <header class="site-header jp">
+    <div class="header-inner">
+      <a href="accueil.html" class="brand">
+        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
+        <div class="brand-text">
+          <span class="jp-top">夢猫鮨</span>
+          <h1>YUMEKO SUSHIS</h1>
+        </div>
+      </a>
 
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a href="accueil.html">Accueil</a>
+        <span class="sep">・</span>
+        <a href="index.html">Menu</a>
+        <span class="sep">・</span>
+        <a href="#panier" id="navPanier">Panier</a>
+      </nav>
+    </div>
+  </header>
+  <!-- /Header -->
 
-  <!-- HERO (même place que sur index) -->
+  <!-- ===== HERO (identique à index, sans bouton) ===== -->
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async">
     <h1 class="brand">YUMEKO SUSHIS</h1>
@@ -170,8 +140,7 @@
         <h2 class="thanks-title">Merci pour votre commande</h2>
         <p class="muted">Nous avons bien reçu votre commande. Voici votre récapitulatif :</p>
 
-        <!-- On n’affiche PAS de rubrique “Articles” séparée.
-             On nettoie aussi la ligne “Articles :” dans le texte. -->
+        <!-- Pas de rubrique “Articles” séparée : on nettoie juste l’intitulé dans le texte -->
         <pre id="orderRecap" class="recap-block">(Chargement du récapitulatif…)</pre>
 
         <div class="actions">
@@ -185,45 +154,40 @@
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
   <script>
-    // Récupère le récap de l’index et supprime la ligne "Articles :" (mais garde la liste).
+    // Récupère le récap et supprime l’intitulé "Articles :" (on garde la liste)
     document.addEventListener('DOMContentLoaded', () => {
       const recapEl = document.getElementById('orderRecap');
       let text = '';
       try { text = localStorage.getItem('yumeko_last_order') || ''; } catch(e){}
 
       if(!text.trim()){
-        recapEl.textContent = "Aucun récapitulatif trouvé.\n\nAstuce : passez une commande depuis l’accueil pour voir le détail ici.";
+        recapEl.textContent = "Aucun récapitulatif trouvé.\n\nAstuce : passez une commande depuis le menu pour voir le détail ici.";
         return;
       }
 
-      // Supprime uniquement l’intitulé “Articles :” (la ligne), conserve le reste.
       const cleaned = text.replace(/\n?Articles\s*:\s*\n?/i, '');
       recapEl.textContent = cleaned.trim();
     });
-  </script>
-  <script>
-  (function(){
-    // Activer le lien courant
-    const here = location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('.main-nav a').forEach(a=>{
-      const href = a.getAttribute('href');
-      // "Panier" est un hash => on ignore pour l'état actif
-      if(href && !href.startsWith('#') && here === href) a.classList.add('active');
-    });
 
-    // Panier cross-page : si on n'est pas sur index, rediriger vers index.html#panier
-    const panier = document.getElementById('navPanier');
-    if(panier){
-      panier.addEventListener('click', (e)=>{
-        const here = location.pathname.split('/').pop() || 'index.html';
-        if(here !== 'index.html'){
-          e.preventDefault();
-          window.location.href = 'index.html#panier';
-        }
+    // Active l’onglet courant et gère le lien Panier (redirige vers index.html#panier)
+    (function(){
+      const here = location.pathname.split('/').pop() || 'merci.html';
+      document.querySelectorAll('.main-nav a').forEach(a=>{
+        const href = a.getAttribute('href');
+        if(href && !href.startsWith('#') && here === href) a.classList.add('active');
       });
-    }
-  })();
-</script>
 
+      const panier = document.getElementById('navPanier');
+      if(panier){
+        panier.addEventListener('click', (e)=>{
+          const here = location.pathname.split('/').pop() || 'merci.html';
+          if(here !== 'index.html'){
+            e.preventDefault();
+            window.location.href = 'index.html#panier';
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
