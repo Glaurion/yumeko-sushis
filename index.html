@@ -154,7 +154,7 @@
         <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Retrouvez votre récapitulatif ci-dessous.">
         <input type="hidden" name="_subject" value="Votre commande YUMEKO SUSHIS — Confirmation">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="/merci.html">
+        <input type="hidden" name="_next" value="merci.html">
         <!-- Désactive la vérification robot FormSubmit -->
         <input type="hidden" name="_captcha" value="false">
         <!-- Anti-spam -->
@@ -359,7 +359,7 @@ Commentaire : ${c}`;
       }
       prepareOrderText();
       form.submit();              // POST vers FormSubmit dans l'iframe caché
-      window.location.href='/merci.html'; // on emmène l’utilisateur direct au merci
+      window.location.href='merci.html'; // on emmène l’utilisateur direct au merci
     });
 
     // MAJ récap / quantités
