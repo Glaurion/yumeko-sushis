@@ -12,31 +12,16 @@
 
   <style>
     :root{
-      /* Couleurs du thème */
-      --brand:#8b0000;          /* rouge foncé */
-      --brand-2:#a31212;        /* rouge hover */
-      --text:#f8f8f8;
-      --card:#1b1b1b;
-      --muted:#cfcfcf;
-      --accent:#ffb6b6;
-      --accent-2:#ff8c8c;
-
-      /* Opacité du dégradé du bandeau (mise à jour au scroll via JS) */
-      --barShade: .35;
+      --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
+      --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
+      --barShade:.35;
     }
-
-    /* On retire totalement la section de la page (on gère tout dans le tiroir) */
-    #orderSection { display: none !important; }
-
-    *{ box-sizing: border-box; }
-
+    #orderSection{ display:none !important; }
+    *{ box-sizing:border-box; }
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: linear-gradient(180deg, #0f0f0f 0%, #8b0000 100%);
-      color:var(--text); min-height:100vh;
+      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
     }
-
-    /* HERO */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center;
@@ -45,44 +30,29 @@
     .cta{ background:var(--brand); border:none; color:#fff; padding:14px 18px; border-radius:10px; font-weight:800; cursor:pointer; }
     .cta:hover{ background:var(--brand-2); }
 
-    /* LAYOUT & SECTIONS */
     .container{ max-width:1100px; margin:0 auto; padding:20px; }
-    .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;}
+    .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px; }
 
-    /* MENU */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:0; display:flex; flex-direction:column; overflow:hidden; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+    .item-card{ background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .12s, box-shadow .12s; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
-    .left{ display:none; }
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#0d0d0d; }
     .thumb.sm{ width:40px; height:40px; border-radius:8px; }
     .item-name{ font-weight:700; font-size:.98rem; padding:10px 12px 4px; }
-    .controls{ display:flex; align-items:center; gap:8px; } /* legacy */
     .btn{ background:var(--accent); border:none; color:#111; width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; transition:transform .15s; }
     .btn:hover{ background:var(--accent-2); transform:scale(1.1); }
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    /* FORM */
     form input, form textarea{ width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:10px; margin:6px auto; display:block; }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    /* STICKY BAR */
-    #stickyBar{
-      position:fixed; bottom:0; left:0; right:0; z-index:100;
-      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,var(--barShade)));
-      padding:10px;
-    }
+    #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,var(--barShade))); padding:10px; }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
+    #miniRecap{ display:none !important; }
+    #gotoOrder{ background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; white-space:nowrap; }
 
-    /* 🔕 Mini récap totalement masqué */
-    #miniRecap{ display:none !important; font-size:13px; color:#eee; opacity:.95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #miniRecap::-webkit-scrollbar{ display:none; }
-
-    #gotoOrder{ width:auto; background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:14px 18px; cursor:pointer; white-space:nowrap; }
-
-    /* TIROIR RÉCAP */
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
       width:min(96%,1100px); background:#1b1b1b; color:#fff;
@@ -94,76 +64,36 @@
     #cartSheet header, #cartSheet footer{ padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
-    #cartSheet header h3{ margin:0; font-size:18px; }
-    #cartSheet header button{ background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; }
-    #cartSheet .body{ padding:10px; overflow:auto; }
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
-    .recap-item .it-left{ display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
-    .recap-item .it-label{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .recap-item .it-ctrl{ display:flex; align-items:center; gap:8px; }
 
-    /* Boutons du tiroir */
     .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer; }
-    .btn-ghost{ background:#2a2a2a; color:#fff; }
-    .btn-ghost:hover{ filter:brightness(1.1); }
-    .btn-primary{ background:var(--brand); color:#fff; }
-    .btn-primary:hover{ background:var(--brand-2); }
+    .btn-ghost{ background:#2a2a2a; color:#fff; } .btn-ghost:hover{ filter:brightness(1.1); }
+    .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
 
     footer{ text-align:center; color:#d7d7d7; margin:60px 0 120px; }
-    .shake{ animation:shake .35s; }
-    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-2px);} }
 
-    /* Stepper du tiroir */
-    .step{ display:none; }
-    .step.active{ display:block; }
-    .hr{ border-top:1px solid rgba(255,255,255,.08); margin:10px 0; }
-
-    /* ⛔ Masquer l'ancien récap options dans le panier (supprimé) */
-    #recapOptions, #recapPickup{ display:none !important; }
-
-    /* ===== Nouveau style cartes ===== */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 12px 12px; border-top:1px dashed rgba(255,255,255,.08); }
     .pieces{ font-size:.9rem; color:var(--muted); }
 
-    /* >>> AJOUTS (prix + pastille vide à 0) */
     .meta{ display:flex; flex-direction:column; line-height:1.15; }
     .price{ font-size:.95rem; color:#fff; font-weight:700; }
     .ctrls{ display:flex; align-items:center; gap:8px; }
     .circle{ background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; }
     .circle:hover{ background:var(--accent-2); }
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; }
-    .qty-badge:empty{ display:none; } /* cache tant que quantité = 0 */
+    .qty-badge:empty{ display:none; }
 
     .hero .logo{ width:160px; }
-    @media (min-width: 768px){ .hero .logo{ width:200px; } }
+    @media (min-width:768px){ .hero .logo{ width:200px; } }
 
-    /* =========================
-       >>> Séparateurs de catégories (Option A)
-       ========================= */
-    .category{
-      border: 2px solid #000;
-      border-radius: 14px;
-      padding: 18px;
-      background: #130909;
-      margin-bottom: 40px;
-    }
-    .category h3{
-      font-size: 1.6rem;
-      margin: 0 0 18px 0;
-      text-align: center;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    #menuSection.section{
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-      padding: 0;
-    }
+    /* Séparateurs de catégories */
+    .category{ border:2px solid #000; border-radius:14px; padding:18px; background:#130909; margin-bottom:40px; }
+    .category h3{ font-size:1.6rem; margin:0 0 18px; text-align:center; color:#fff; text-transform:uppercase; letter-spacing:1px; }
+    #menuSection.section{ border:0; background:transparent; box-shadow:none; padding:0; }
   </style>
+
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
   <meta name="theme-color" content="#8b0000" />
@@ -207,31 +137,36 @@
       </div>
     </div>
 
-    <!-- FORM COMMANDE (sera déplacé dans le tiroir) -->
+    <!-- FORM COMMANDE (injecté dans le tiroir) -->
     <section class="section" id="orderSection" style="text-align:center;">
       <h2 class="section-title">Validez votre commande</h2>
 
       <!-- ⚠️ Remplace TON_EMAIL@domaine.com par ton adresse -->
-      <form id="orderForm" action="https://formsubmit.co/yumeko.sushis@gmail.com" method="POST">
+      <!-- IMPORTANT: target=fs_target (iframe caché) pour empêcher tout changement de page -->
+      <form id="orderForm" action="https://formsubmit.co/TON_EMAIL@domaine.com" method="POST" target="fs_target" accept-charset="UTF-8" autocomplete="on" novalidate>
         <input name="first_name" placeholder="Prénom" required>
         <input name="last_name" placeholder="Nom" required>
-        <!-- Email du client (obligatoire pour l'autoreply FormSubmit) -->
-        <input name="email" type="email" placeholder="Email" required>
-        <!-- ====== Champs cachés FormSubmit ====== -->
+        <input name="email" type="email" placeholder="Email (pour la confirmation)" required>
+        <input name="phone" type="tel" pattern="^(\+?\d{1,3})?0?[1-9]\d{8}$" placeholder="Téléphone" required>
+        <textarea name="comments" id="comments" placeholder="Commentaire (allergies ou autres)"></textarea>
+
+        <!-- Champs cachés FormSubmit -->
         <input type="hidden" name="_autoresponse" value="Merci pour votre commande chez YUMEKO SUSHIS ! Retrouvez votre récapitulatif ci-dessous.">
         <input type="hidden" name="_subject" value="Votre commande YUMEKO SUSHIS — Confirmation">
         <input type="hidden" name="_template" value="table">
-        <!-- Redirection vers la page merci -->
         <input type="hidden" name="_next" value="/merci.html">
-        <!-- Anti-spam (honeypot) -->
+        <!-- Désactive la vérification robot FormSubmit -->
+        <input type="hidden" name="_captcha" value="false">
+        <!-- Anti-spam -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
-        <!-- Champ caché construit côté JS avec le récap détaillé -->
+        <!-- Récap (rempli en JS) -->
         <input type="hidden" name="order" id="hiddenOrder">
-
-        <!-- BOUTON D'ENVOI SUPPRIMÉ (on utilise celui du tiroir) -->
         <div id="orderResult" style="margin-top:8px;font-size:14px;"></div>
       </form>
+
+      <!-- IFRAME CACHÉ : reçoit la réponse FormSubmit sans changer de page -->
+      <iframe name="fs_target" style="display:none;width:0;height:0;border:0;" aria-hidden="true"></iframe>
     </section>
   </main>
 
@@ -273,25 +208,22 @@
   <!-- ===== Script A : utilitaires globaux & ombre bandeau ===== -->
   <script>
   (function(){
-    if (typeof window.CSS === 'undefined') window.CSS = {};
-    if (typeof window.CSS.escape !== 'function') {
-      window.CSS.escape = function(sel){
-        return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g, '\\$&');
-      };
+    if(typeof window.CSS==='undefined') window.CSS={};
+    if(typeof window.CSS.escape!=='function'){
+      window.CSS.escape=function(sel){ return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g,'\\$&'); };
     }
   })();
-
   (function(){
-    const root = document.documentElement;
+    const root=document.documentElement;
     function updateBarShade(){
-      const doc = document.documentElement;
-      const max = (doc.scrollHeight - window.innerHeight) || 1;
-      const p = Math.min(1, Math.max(0, window.scrollY / max));
-      const shade = 0.35 + (0.85 - 0.35) * p;
+      const doc=document.documentElement;
+      const max=(doc.scrollHeight - window.innerHeight) || 1;
+      const p=Math.min(1, Math.max(0, window.scrollY/max));
+      const shade=0.35 + (0.85-0.35)*p;
       root.style.setProperty('--barShade', shade.toFixed(2));
     }
     updateBarShade();
-    window.addEventListener('scroll', updateBarShade, { passive:true });
+    window.addEventListener('scroll', updateBarShade, {passive:true});
     window.addEventListener('resize', updateBarShade);
   })();
   </script>
@@ -299,64 +231,59 @@
   <!-- ===== Script B : Panier / tiroir / formulaire ===== -->
   <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const sheet       = document.getElementById('cartSheet');
-    const sheetBody   = sheet?.querySelector('.body');
-    const sheetClose  = document.getElementById('sheetClose');
-    const btnOpen     = document.getElementById('gotoOrder');
-    const btnGoDetails= document.getElementById('goDetails');
-    const btnBack     = document.getElementById('backToCart');
-    const btnConfirm  = document.getElementById('confirmSend');
-    const recapList   = document.getElementById('recapList');
-    const recapCom    = document.getElementById('recapComment');
-    const form        = document.getElementById('orderForm');
+    const sheet = document.getElementById('cartSheet');
+    const sheetBody = sheet?.querySelector('.body');
+    const sheetClose = document.getElementById('sheetClose');
+    const btnOpen = document.getElementById('gotoOrder');
+    const btnGoDetails = document.getElementById('goDetails');
+    const btnBack = document.getElementById('backToCart');
+    const btnConfirm = document.getElementById('confirmSend');
+    const recapList = document.getElementById('recapList');
+    const recapCom = document.getElementById('recapComment');
+    const form = document.getElementById('orderForm');
     const orderResult = document.getElementById('orderResult');
-    const stepCart    = document.getElementById('stepCart');
+    const stepCart = document.getElementById('stepCart');
     const stepDetails = document.getElementById('stepDetails');
-    const footCart    = document.getElementById('footerCart');
+    const footCart = document.getElementById('footerCart');
     const footDetails = document.getElementById('footerDetails');
-    if (!sheet || !sheetBody || !btnOpen || !recapList) {
-      console.warn('[cart] éléments requis manquants');
-      return;
-    }
 
-    // Déplacer le formulaire dans l'étape 2 du tiroir
-    if (form && !stepDetails.contains(form)) stepDetails.appendChild(form);
+    if(!sheet || !sheetBody || !btnOpen || !recapList){ console.warn('[cart] éléments requis manquants'); return; }
 
-    // ---- Utilitaires ----
+    if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
+
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
     function parseItem(full){
-      const parts = String(full).split('-');
-      const code = (parts[0] || '').trim();
-      const name = parts.slice(1).join('-').trim() || full.trim();
-      return {code, name};
+      const parts=String(full).split('-');
+      const code=(parts[0]||'').trim();
+      const name=parts.slice(1).join('-').trim()||full.trim();
+      return {code,name};
     }
-
     function getCartItems(){
-      const items = [];
+      const items=[];
       document.querySelectorAll('.qty[data-item]').forEach(span=>{
-        const qty = safeInt(span);
-        if (qty > 0) {
-          const full = span.dataset.item;
-          const {code, name} = parseItem(full);
-          items.push({ code, name, qty });
+        const qty=safeInt(span);
+        if(qty>0){
+          const full=span.dataset.item;
+          const {code,name}=parseItem(full);
+          items.push({code,name,qty});
         }
       });
       return items;
     }
 
     function buildRecap(){
-      const items = getCartItems();
-      recapList.innerHTML = '';
-      if (items.length === 0) {
-        recapList.innerHTML = '<li class="muted">Aucun article pour le moment.</li>';
-      } else {
-        items.forEach(({code, name, qty})=>{
-          const li = document.createElement('li');
-          li.className = 'recap-item';
-          const codeLower = (code||'').toLowerCase();
-          li.innerHTML = `
+      const items=getCartItems();
+      recapList.innerHTML='';
+      if(items.length===0){
+        recapList.innerHTML='<li class="muted">Aucun article pour le moment.</li>';
+      }else{
+        items.forEach(({code,name,qty})=>{
+          const li=document.createElement('li');
+          li.className='recap-item';
+          const codeLower=(code||'').toLowerCase();
+          li.innerHTML=`
             <div class="it-left">
               <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
               <span class="it-label">${name}</span>
@@ -369,233 +296,228 @@
           recapList.appendChild(li);
         });
       }
-
-      // Commentaire
-      const c = document.getElementById('comments')?.value?.trim() || '';
+      const c=document.getElementById('comments')?.value?.trim()||'';
       recapCom.textContent = c ? `Commentaire : ${c}` : '';
     }
 
     function setStep(which){
-      const cartActive = which === 'cart';
+      const cartActive = which==='cart';
       stepCart.classList.toggle('active', cartActive);
       footCart.classList.toggle('active', cartActive);
       stepDetails.classList.toggle('active', !cartActive);
       footDetails.classList.toggle('active', !cartActive);
     }
 
-    function openSheet(){
-      setStep('cart');
-      buildRecap();
-      sheet.classList.add('open');
-      sheet.setAttribute('aria-hidden','false');
-    }
-    function closeSheet(){
-      sheet.classList.remove('open');
-      sheet.setAttribute('aria-hidden','true');
-    }
+    function openSheet(){ setStep('cart'); buildRecap(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
+    function closeSheet(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
 
     btnOpen.addEventListener('click', openSheet);
     sheetClose?.addEventListener('click', closeSheet);
     btnGoDetails?.addEventListener('click', ()=> setStep('details'));
     btnBack?.addEventListener('click', ()=> setStep('cart'));
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
-    });
-
-    // Champ caché "order" pour FormSubmit
+    // Ajoute/assure un input hidden par nom
     function ensureHiddenField(name){
-      if (!form) return null;
-      let input = form.querySelector(`input[name="${name}"]`);
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        form.appendChild(input);
-      }
+      if(!form) return null;
+      let input=form.querySelector(`input[name="${name}"]`);
+      if(!input){ input=document.createElement('input'); input.type='hidden'; input.name=name; form.appendChild(input); }
       return input;
     }
 
     function prepareOrderText(){
-      const itemsText = getCartItems().map(({name, qty})=>`- ${name} x${qty}`).join('\n');
-      const c = document.getElementById('comments')?.value?.trim() || '—';
-      const first = form?.querySelector('[name="first_name"]')?.value || '—';
-      const last  = form?.querySelector('[name="last_name"]')?.value || '—';
-      const phone = form?.querySelector('[name="phone"]')?.value || '—';
-      const email = form?.querySelector('[name="email"]')?.value || '—';
+      const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
+      const c=document.getElementById('comments')?.value?.trim() || '—';
+      const first=form?.querySelector('[name="first_name"]')?.value || '—';
+      const last =form?.querySelector('[name="last_name"]')?.value || '—';
+      const phone=form?.querySelector('[name="phone"]')?.value || '—';
+      const email=form?.querySelector('[name="email"]')?.value || '—';
 
-      const text =
-`Commande YUMEKO
+      const text=`Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
+Téléphone : ${phone}
 
 Articles :
 ${itemsText || '(aucun)'}
 
 Commentaire : ${c}`;
 
-      const hidden = ensureHiddenField('order');
-      if (hidden) hidden.value = text;
+      const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
+      const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
 
-      const hiddenOrder = document.getElementById('hiddenOrder');
-      if (hiddenOrder) hiddenOrder.value = text;
-
-      /* >>> ENREGISTREMENT POUR LA PAGE merci.html <<< */
-      try { localStorage.setItem('yumeko_last_order', text); } catch(e){}
+      try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
     }
 
-    // Soumission classique (sans fetch) pour déclencher l'autoreply FormSubmit
+    // Soumission en arrière-plan + navigation immédiate vers merci.html
     btnConfirm?.addEventListener('click', ()=>{
-      if (!form) return;
-      if (!form.reportValidity()) {
+      if(!form) return;
+      if(!form.reportValidity()){
         setStep('details');
         form.querySelector(':invalid')?.focus();
         return;
       }
       prepareOrderText();
-      form.submit();
+      form.submit();              // POST vers FormSubmit dans l'iframe caché
+      window.location.href='/merci.html'; // on emmène l’utilisateur direct au merci
     });
 
-    // MAJ récap sur saisie
-    sheet.addEventListener('input', (e)=>{
-      if (e.target.matches('textarea,input')) { buildRecap(); updateSticky(); }
-    });
-
-    // +/- dans la liste récap
+    // MAJ récap / quantités
+    sheet.addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
     recapList.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.recap-plus, .recap-minus');
-      if (!btn) return;
-      const item = btn.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      if (!span) return;
-      const inc = btn.classList.contains('recap-plus') ? 1 : -1;
-      const cur = parseInt(span.textContent) || 0;
-      const v = Math.max(0, cur + inc);
-      span.textContent = v > 0 ? String(v) : '';
+      const btn=e.target.closest('.recap-plus, .recap-minus'); if(!btn) return;
+      const item=btn.dataset.item;
+      const span=document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      if(!span) return;
+      const inc=btn.classList.contains('recap-plus')?1:-1;
+      const cur=parseInt(span.textContent)||0;
+      const v=Math.max(0, cur+inc);
+      span.textContent = v>0 ? String(v) : '';
       bump(span); updateSticky(); buildRecap();
     });
 
-    // Rebuild récap à chaque clic +/- sur les cartes
     document.addEventListener('click', (e)=>{
-      if (e.target.classList.contains('plus') || e.target.classList.contains('minus')) {
-        setTimeout(()=>{ buildRecap(); updateSticky(); }, 0);
+      if(e.target.classList.contains('plus') || e.target.classList.contains('minus')){
+        setTimeout(()=>{ buildRecap(); updateSticky(); },0);
+      }
+      const card=e.target.closest('.item-card');
+      if(card && !e.target.closest('.ctrls')){
+        const code=card.dataset.code;
+        const name=card.dataset.name;
+        const d=catalog[code]||{};
+        const img='images/' + (d.img || (code.toLowerCase()+'.jpg'));
+        document.getElementById('mImg').src=img;
+        document.getElementById('mImg').alt=name;
+        document.getElementById('mTitle').textContent=name;
+        document.getElementById('mPieces').textContent=d.pieces ?? '—';
+        document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
+        document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
+        document.getElementById('mDesc').textContent=d.desc || '—';
+
+        const itemKey=`${code}- ${name}`;
+        const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+        const current=parseInt(qtySpan?.textContent)||0;
+        const mQty=document.getElementById('mQty');
+        const mMinus=document.getElementById('mMinus');
+        mQty.textContent=current;
+        mMinus.style.visibility=current>0?'visible':'hidden';
+        mMinus.dataset.item=itemKey;
+        document.getElementById('mPlus').dataset.item=itemKey;
+
+        const modal=document.getElementById('itemModal');
+        modal.style.display='flex';
+        modal.setAttribute('aria-hidden','false');
       }
     });
 
-    // Observer les quantités
-    const observer = new MutationObserver(()=>{ if (sheet.classList.contains('open')) { buildRecap(); updateSticky(); }});
-    document.querySelectorAll('.qty[data-item]').forEach(el=> observer.observe(el, {childList:true, characterData:true, subtree:true}));
+    // Modale + contrôles
+    (function(){
+      const modal=document.getElementById('itemModal');
+      const closeBtn=document.getElementById('mClose');
+      const mMinus=document.getElementById('mMinus');
+      const mPlus=document.getElementById('mPlus');
+      const mQty=document.getElementById('mQty');
 
-    // Ouvre le tiroir si ancre
-    if (location.hash === '#panier' || location.hash === '#cart') openSheet();
+      function setQty(itemKey,newVal){
+        const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+        const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
+        if(!span) return;
+        span.textContent = newVal>0 ? String(newVal) : '';
+        if(minusBtn) minusBtn.style.visibility=newVal>0?'visible':'hidden';
+        mQty.textContent=newVal;
+        document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
+        updateSticky();
+      }
+      mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
+      mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
+
+      closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+      modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+    })();
+
+    // Ouvre le tiroir si #panier
+    if(location.hash==='#panier' || location.hash==='#cart') openSheet();
   });
   </script>
 
   <!-- ===== Script C : Données + Construction du menu + mini-récap ===== -->
   <script>
-  /* ===================== Données ===================== */
-  const categories = {
-    'LES MAKI': ['M1','M2','M3','M4','M5','M6','M7','M8'],
-    'LES CALIFORNIA': ['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
-    'LES MAKI PRINTEMPS': ['P1','P2','P3','P4'],
-    'LES ROLLS': ['R1','R2'],
-    'LES SASHIMI': ['S1'],
-    'LES NIGIRI': ['N1','N2'],
-    'LES BOISSONS': ['B1','B2','B3']
+  const categories={
+    'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
+    'LES CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
+    'LES MAKI PRINTEMPS':['P1','P2','P3','P4'],
+    'LES ROLLS':['R1','R2'],
+    'LES SASHIMI':['S1'],
+    'LES NIGIRI':['N1','N2'],
+    'LES BOISSONS':['B1','B2','B3']
+  };
+  const catalog={
+    M1:{name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:''},
+    M2:{name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
+    M3:{name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:''},
+    M4:{name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:''},
+    M5:{name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
+    M6:{name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:''},
+    M7:{name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
+    M8:{name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
+    C1:{name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:''},
+    C2:{name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
+    C3:{name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:''},
+    C4:{name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:''},
+    C5:{name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
+    C6:{name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:''},
+    C7:{name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
+    C8:{name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
+    C9:{name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:''},
+    P1:{name:'MAKI PRINTEMPS SAUMON AVOCAT', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:''},
+    P2:{name:'MAKI PRINTEMPS SAUMON CHEESE', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:''},
+    P3:{name:'MAKI PRINTEMPS CONCOMBRE CHEESE', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:''},
+    P4:{name:'MAKI PRINTEMPS AVOCAT CHEESE', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:''},
+    R1:{name:'ROLLS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:''},
+    R2:{name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:''},
+    S1:{name:'SASHIMI SAUMON', img:'s1.jpg', pieces:2, comp:'Tranches de saumon', allergens:'Poisson', desc:''},
+    N1:{name:'NIGIRI SAUMON', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:''},
+    N2:{name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:''},
+    B1:{name:'BIERE TSINGTAO', img:'b1.jpg'},
+    B2:{name:'BIERE ASAHI', img:'b2.jpg'},
+    B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
   };
 
-  const catalog = {
-    M1:{ name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:'' },
-    M2:{ name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
-    M3:{ name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:'' },
-    M4:{ name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:6, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
-    M5:{ name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:6, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'' },
-    M6:{ name:'MAKI AVOCAT', img:'m6.jpg', pieces:6, comp:'Riz, nori, avocat', allergens:'—', desc:'' },
-    M7:{ name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:6, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'' },
-    M8:{ name:'MAKI CHEESE', img:'m8.jpg', pieces:6, comp:'Riz, nori, fromage', allergens:'Lait', desc:'' },
+  const prices={ /* 'M1': 4.50, etc. */ };
+  const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+  const CART_KEY='yumeko_cart_v1';
 
-    C1:{ name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:8, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:'' },
-    C2:{ name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:8, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:'' },
-    C3:{ name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:8, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
-    C4:{ name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:8, comp:'Riz, nori, concombre', allergens:'—', desc:'' },
-    C5:{ name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:8, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:'' },
-    C6:{ name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:8, comp:'Riz, nori, avocat', allergens:'—', desc:'' },
-    C7:{ name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:8, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:'' },
-    C8:{ name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:8, comp:'Riz, nori, fromage', allergens:'Lait', desc:'' },
-    C9:{ name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:8, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:'' },
-
-    P1:{ name:'MAKI PRINTEMPS SAUMON AVOCAT', img:'p1.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, avocat', allergens:'Poisson', desc:'' },
-    P2:{ name:'MAKI PRINTEMPS SAUMON CHEESE', img:'p2.jpg', pieces:6, comp:'Riz, feuille de riz, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
-    P3:{ name:'MAKI PRINTEMPS CONCOMBRE CHEESE', img:'p3.jpg', pieces:6, comp:'Riz, feuille de riz, concombre, fromage', allergens:'Lait', desc:'' },
-    P4:{ name:'MAKI PRINTEMPS AVOCAT CHEESE', img:'p4.jpg', pieces:6, comp:'Riz, feuille de riz, avocat, fromage', allergens:'Lait', desc:'' },
-
-    R1:{ name:'ROLLS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:8, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:'' },
-    R2:{ name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:8, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:'' },
-
-    S1:{ name:'SASHIMI SAUMON', img:'s1.jpg', pieces:2, comp:'Tranches de saumon', allergens:'Poisson', desc:'' },
-
-    N1:{ name:'NIGIRI SAUMON', img:'n1.jpg', pieces:2, comp:'Riz, saumon', allergens:'Poisson', desc:'' },
-    N2:{ name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:2, comp:'Riz, avocat', allergens:'—', desc:'' },
-
-    B1:{ name:'BIERE TSINGTAO', img:'b1.jpg' },
-    B2:{ name:'BIERE ASAHI', img:'b2.jpg' },
-    B3:{ name:'COCA COLA ZERO', img:'b3.jpg' }
-  };
-
-  /* 💶 Prix : remplis ce tableau au fur et à mesure.
-     Tout code absent n'affiche pas de prix (—) par défaut. */
-  const prices = { /* Exemple: 'M1': 4.50 */ };
-
-  /* ====== Formatage monétaire (FR) ====== */
-  const fmt = new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR' });
-
-  /* ====== Persistance panier ====== */
-  const CART_KEY = 'yumeko_cart_v1';
   function saveCart(){
-    const cart = [];
-    document.querySelectorAll('.qty[data-item]').forEach(q=>{
-      const n = parseInt(q.textContent)||0;
-      if(n>0) cart.push({ key:q.dataset.item, qty:n });
-    });
+    const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
     try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
   }
   function restoreCart(){
     try{
-      const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-      saved.forEach(({key, qty})=>{
-        const span = document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-        const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(key)}"]`);
-        if(span){ span.textContent = qty; if(minusBtn) minusBtn.style.visibility = 'visible'; }
+      const saved=JSON.parse(localStorage.getItem(CART_KEY)||'[]');
+      saved.forEach(({key,qty})=>{
+        const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
+        const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(key)}"]`);
+        if(span){ span.textContent=qty; if(minusBtn) minusBtn.style.visibility='visible'; }
       });
-      if (typeof updateSticky === 'function') updateSticky();
+      if(typeof updateSticky==='function') updateSticky();
     }catch(e){}
   }
 
-  /* ===================== Construction du menu ===================== */
   function buildMenu(){
-    const menu=document.getElementById('menu');
-    menu.innerHTML='';
+    const menu=document.getElementById('menu'); menu.innerHTML='';
     for(const [cat,codes] of Object.entries(categories)){
-      const wrap=document.createElement('div');
-      wrap.className='category';
-      wrap.innerHTML=`
-        <h3>${cat}</h3>
-        <div class="menu-grid"></div>
-      `;
+      const wrap=document.createElement('div'); wrap.className='category';
+      wrap.innerHTML=`<h3>${cat}</h3><div class="menu-grid"></div>`;
       const grid=wrap.querySelector('.menu-grid');
-
       codes.forEach(code=>{
-        const d = catalog[code] || {name:code, img: code.toLowerCase()+'.jpg'};
-        const name = d.name || code;
-        const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
-        const pieces = d.pieces ?? '';
-        const basePrice = (prices.hasOwnProperty(code) ? prices[code] : (typeof d.price === 'number' ? d.price : undefined));
-        const priceStr = (typeof basePrice === 'number') ? fmt.format(basePrice) : '—';
-
-        const card=document.createElement('div');
-        card.className='item-card';
-        card.dataset.code=code;
-        card.dataset.name=name;
+        const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
+        const name=d.name||code;
+        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+        const pieces=d.pieces ?? '';
+        const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
+        const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
+        const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
         card.innerHTML=`
           <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
           <div class="item-name">${name}</div>
@@ -614,124 +536,75 @@ Commentaire : ${c}`;
           </div>`;
         grid.appendChild(card);
       });
-
       menu.appendChild(wrap);
     }
   }
-  buildMenu();
-  restoreCart();
+  buildMenu(); restoreCart();
 
-  // mini récap désactivé
-  function updateMiniRecap(){ /* noop */ }
-
+  function updateMiniRecap(){} // noop
   function updateSticky(){
-    const qtyNodes = document.querySelectorAll('.qty[data-item]');
-    let totalQty = 0; let totalPrice = 0;
+    const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
     qtyNodes.forEach(q=>{
-      const n = parseInt(q.textContent)||0; totalQty += n;
+      const n=parseInt(q.textContent)||0; totalQty+=n;
       if(n>0){
-        const full = q.dataset.item; const code = (String(full).split('-')[0]||'').trim();
-        const d = catalog[code] || {};
-        const p = (prices.hasOwnProperty(code) ? prices[code] : (typeof d.price === 'number' ? d.price : undefined));
-        if(typeof p === 'number') totalPrice += p * n;
+        const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
+        const d=catalog[code]||{};
+        const p=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
+        if(typeof p==='number') totalPrice += p*n;
       }
     });
-    const btn = document.getElementById('gotoOrder');
-    if(!btn) return;
-    if (totalPrice>0){ btn.textContent = `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider`; }
-    else { btn.textContent = `Panier (${totalQty}) • Valider`; }
-    updateMiniRecap();
-    saveCart();
+    const btn=document.getElementById('gotoOrder'); if(!btn) return;
+    btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${fmt.format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
+    updateMiniRecap(); saveCart();
   }
 
-  // Gestion plus/moins menu (articles)
   document.addEventListener('click', e=>{
     if(e.target.closest('.card-plus') || e.target.closest('.card-minus')){
-      const btn = e.target.closest('button');
-      const inc = btn.classList.contains('card-plus') ? 1 : -1;
-      const item = btn.dataset.item;
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
-      const vBefore = parseInt(span.textContent) || 0;
-      const v = Math.max(0, vBefore + inc);
-      span.textContent = v > 0 ? String(v) : '';
-      if (minusBtn) minusBtn.style.visibility = v>0 ? 'visible' : 'hidden';
+      const btn=e.target.closest('button');
+      const inc=btn.classList.contains('card-plus')?1:-1;
+      const item=btn.dataset.item;
+      const span=document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
+      const minusBtn=document.querySelector(`.card-minus[data-item="${CSS.escape(item)}"]`);
+      const vBefore=parseInt(span.textContent)||0;
+      const v=Math.max(0, vBefore+inc);
+      span.textContent = v>0 ? String(v) : '';
+      if(minusBtn) minusBtn.style.visibility = v>0 ? 'visible':'hidden';
       span.classList.add('bump'); setTimeout(()=>span.classList.remove('bump'),200); updateSticky();
       return;
     }
-
-    // Ouverture modale
-    const card = e.target.closest('.item-card');
+    const card=e.target.closest('.item-card');
     if(card && !e.target.closest('.ctrls')){
-      const code = card.dataset.code;
-      const name = card.dataset.name;
-      const d = catalog[code] || {};
-      const img = 'images/' + (d.img || (code.toLowerCase()+'.jpg'));
-      document.getElementById('mImg').src = img;
-      document.getElementById('mImg').alt = name;
-      document.getElementById('mTitle').textContent = name;
-      document.getElementById('mPieces').textContent = d.pieces ?? '—';
-      document.getElementById('mAllergens').textContent = d.allergens || 'Non renseigné';
-      document.getElementById('mComp').textContent = d.comp || 'Non renseigné';
-      document.getElementById('mDesc').textContent = d.desc || '—';
+      const code=card.dataset.code;
+      const name=card.dataset.name;
+      const d=catalog[code]||{};
+      const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+      document.getElementById('mImg').src=img;
+      document.getElementById('mImg').alt=name;
+      document.getElementById('mTitle').textContent=name;
+      document.getElementById('mPieces').textContent=d.pieces ?? '—';
+      document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
+      document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
+      document.getElementById('mDesc').textContent=d.desc || '—';
 
-      const itemKey = `${code}- ${name}`;
-      const qtySpan = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-      const current = parseInt(qtySpan?.textContent)||0;
-      const mQty = document.getElementById('mQty');
-      const mMinus = document.getElementById('mMinus');
-      mQty.textContent = current;
-      mMinus.style.visibility = current>0 ? 'visible' : 'hidden';
-      mMinus.dataset.item = itemKey;
-      document.getElementById('mPlus').dataset.item = itemKey;
+      const itemKey=`${code}- ${name}`;
+      const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const current=parseInt(qtySpan?.textContent)||0;
+      const mQty=document.getElementById('mQty');
+      const mMinus=document.getElementById('mMinus');
+      mQty.textContent=current;
+      mMinus.style.visibility=current>0?'visible':'hidden';
+      mMinus.dataset.item=itemKey;
+      document.getElementById('mPlus').dataset.item=itemKey;
 
-      const modal = document.getElementById('itemModal');
+      const modal=document.getElementById('itemModal');
       modal.style.display='flex';
       modal.setAttribute('aria-hidden','false');
       return;
     }
   });
 
-  // Fermer la modale & contrôles modale
-  (function(){
-    const modal = document.getElementById('itemModal');
-    const closeBtn = document.getElementById('mClose');
-    const mMinus = document.getElementById('mMinus');
-    const mPlus = document.getElementById('mPlus');
-    const mQty = document.getElementById('mQty');
-
-    function setQty(itemKey, newVal){
-      const span = document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-      const minusBtn = document.querySelector(`.card-minus[data-item="${CSS.escape(itemKey)}"]`);
-      if(!span) return;
-      span.textContent = newVal > 0 ? String(newVal) : '';
-      if (minusBtn) minusBtn.style.visibility = newVal>0 ? 'visible' : 'hidden';
-      mQty.textContent = newVal;
-      document.getElementById('mMinus').style.visibility = newVal>0 ? 'visible' : 'hidden';
-      updateSticky();
-    }
-
-    mMinus.addEventListener('click', ()=>{
-      const key = mMinus.dataset.item; if(!key) return;
-      const cur = parseInt(mQty.textContent)||0; const v=Math.max(0,cur-1); setQty(key,v);
-    });
-    mPlus.addEventListener('click', ()=>{
-      const key = mPlus.dataset.item; if(!key) return;
-      const cur = parseInt(mQty.textContent)||0; const v=cur+1; setQty(key,v);
-    });
-
-    closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
-    modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-  })();
-
-  // CTA "Commander maintenant"
-  document.getElementById('ctaOrder').onclick = ()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
-
-  // Init bandeau
+  document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
   updateSticky();
-  updateMiniRecap();
   </script>
-
 </body>
 </html>
