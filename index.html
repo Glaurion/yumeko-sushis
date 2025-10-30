@@ -172,6 +172,16 @@
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async" style="border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,.3)">
     <h1 class="brand">YUMEKO SUSHIS</h1>
   </section>
+<div class="cta-row" style="margin-top:8px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+  <a class="btn btn-ghost" href="accueil.html">Accueil</a>
+  <button class="btn btn-primary" id="gotoOrderTop" type="button">Commander</button>
+  <a class="btn btn-ghost" href="#menu">Voir le menu</a>
+</div>
+<script>
+  document.getElementById('gotoOrderTop')?.addEventListener('click', ()=>{
+    document.getElementById('gotoOrder')?.click();
+  });
+</script>
 
   <main class="container">
     <!-- MENU -->
