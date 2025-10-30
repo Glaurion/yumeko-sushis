@@ -16,13 +16,15 @@
       --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
       --barShade:.35;
     }
-    /* on garde la section masquée, le form est déplacé dans le tiroir */
+    /* la section originale reste masquée : le form est déplacé dans le tiroir */
     #orderSection{ display:none !important; }
     *{ box-sizing:border-box; }
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
     }
+    body.modal-open{ overflow:hidden; } /* bloque le scroll de fond quand le tiroir est ouvert */
+
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center;
@@ -36,7 +38,6 @@
 
     /* ====== GRID ====== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    /* Mobile: 2 cartes par ligne, plus compact */
     @media (max-width: 480px){
       .menu-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; }
       .item-card{ border-radius:12px; }
@@ -56,17 +57,16 @@
     .qty{ min-width:22px; text-align:center; font-weight:800; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
 
-    /* Form champs (desktop par défaut) – utilisé DANS le tiroir étape 2 */
+    /* Form (affiché dans l'étape 2 du tiroir) */
     form input, form textarea{
       width:90%; max-width:520px; background:#161616; color:#fff; border:1px solid rgba(255,255,255,.2);
       border-radius:10px; padding:10px; margin:6px auto; display:block;
-      font-size:16px; /* >=16px pour empêcher le zoom iOS */
+      font-size:16px; /* >=16px évite le zoom iOS */
       text-align:left;
     }
     textarea{ resize:vertical; min-height:90px; }
     .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
 
-    /* Mobile: visuel centré sans zoom */
     @media (max-width: 480px){
       form input, form textarea{
         max-width:360px; width:100%;
@@ -83,19 +83,37 @@
     #miniRecap{ display:none !important; }
     #gotoOrder{ background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; white-space:nowrap; }
 
+    /* ====== Tiroir panier ====== */
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
       width:min(96%,1100px); background:#1b1b1b; color:#fff;
       border:1px solid rgba(255,255,255,.12); border-radius:16px 16px 0 0;
       box-shadow:0 22px 60px rgba(0,0,0,.45); max-height:70vh;
       display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101;
+      overscroll-behavior: contain;  /* stoppe l'élan de scroll qui remonte à la page */
     }
-    #cartSheet.open{ bottom:50px; }
+    #cartSheet.open{ bottom:0; } /* collé en bas pour maximiser l'espace */
+
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid rgba(255,255,255,.1); }
     #cartSheet footer{ border-top:1px solid rgba(255,255,255,.1); gap:10px; justify-content:flex-end; }
-    #cartSheet .body{ padding:8px 10px; }
-    .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+
+    /* Le corps du tiroir scrolle, pas la page */
+    #cartSheet .body{
+      padding:8px 10px;
+      overflow:auto;                 /* défilement interne */
+      -webkit-overflow-scrolling:touch;
+      max-height:calc(70vh - 100px); /* réserve pour header+footer */
+      overscroll-behavior: contain;  /* évite l'effet rebond sur la page */
+    }
+
+    .recap-list{
+      list-style:none; margin:0; padding:0;
+      display:flex; flex-direction:column; gap:8px;
+      max-height:48vh;               /* si beaucoup d’articles, ça scroll ici */
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+    }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(255,255,255,.1); }
 
     .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:10px 14px; font-weight:900; cursor:pointer; }
@@ -105,7 +123,7 @@
 
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
 
-    /* Carte : ancrer le bloc infos en bas à gauche + tailles réduites */
+    /* Carte : bloc infos en bas à gauche + tailles réduites */
     .card-body{ padding:0 12px 10px; display:flex; flex-direction:column; gap:8px; }
     .card-footer{
       margin-top:auto;
@@ -199,7 +217,7 @@
         <!-- FormSubmit -->
         <input type="hidden" name="_subject" value="Nouvelle commande — YUMEKO SUSHIS">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="merci.html">
+        <!-- _next n'est plus nécessaire car on redirige nous-mêmes en JS -->
         <input type="hidden" name="_captcha" value="false">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
@@ -374,12 +392,14 @@
     const stepCart = document.getElementById('stepCart');
     const stepDetails = document.getElementById('stepDetails');
 
-    /* — déplacer le form dans l'étape 2 du tiroir (visible) — */
+    /* déplacer le form dans l'étape 2 (visible) */
     if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
 
+    /* ===== util ===== */
     function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
     function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
+    /* ===== panier ===== */
     function parseItem(full){
       const parts=String(full).split('-');
       const code=(parts[0]||'').trim();
@@ -435,23 +455,43 @@
       document.getElementById('footerDetails').classList.toggle('active', showDetails);
     }
 
-    function openSheet(){ setStep('cart'); buildRecap(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
-    function closeSheet(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
+    /* ===== ouverture/fermeture tiroir + lock scroll fond ===== */
+    const lockBgScroll = (e)=>{
+      if(!document.body.classList.contains('modal-open')) return;
+      // Si l'événement ne vient PAS de l'intérieur du tiroir, on bloque.
+      if(!sheet.contains(e.target)){
+        e.preventDefault();
+      }
+    };
+    function openSheet(){
+      setStep('cart'); buildRecap();
+      sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+      document.body.classList.add('modal-open');
+      // Bloque wheel/touch sur le fond (mais pas dans le tiroir)
+      window.addEventListener('touchmove', lockBgScroll, {passive:false});
+      window.addEventListener('wheel', lockBgScroll, {passive:false});
+    }
+    function closeSheet(){
+      sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
+      document.body.classList.remove('modal-open');
+      window.removeEventListener('touchmove', lockBgScroll);
+      window.removeEventListener('wheel', lockBgScroll);
+    }
 
     document.getElementById('ctaOrder').onclick=()=> document.getElementById('menuSection').scrollIntoView({behavior:'smooth'});
-    btnOpen.addEventListener('click', openSheet);
-    sheetClose?.addEventListener('click', closeSheet);
-    btnGoDetails?.addEventListener('click', ()=> setStep('details'));
-    btnBack?.addEventListener('click', ()=> setStep('cart'));
+    document.getElementById('gotoOrder').addEventListener('click', openSheet);
+    document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
+    document.getElementById('goDetails')?.addEventListener('click', ()=> setStep('details'));
+    document.getElementById('backToCart')?.addEventListener('click', ()=> setStep('cart'));
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
+    /* ===== build order text ===== */
     function ensureHiddenField(name){
       if(!form) return null;
       let input=form.querySelector(`input[name="${name}"]`);
       if(!input){ input=document.createElement('input'); input.type='hidden'; input.name=name; form.appendChild(input); }
       return input;
     }
-
     function buildOrderText(){
       const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
       const c=document.getElementById('comments')?.value?.trim() || '—';
@@ -469,7 +509,6 @@ ${itemsText || '(aucun)'}
 Allergies / autres :
 ${c}`;
     }
-
     function prepareOrderText(){
       const text = buildOrderText();
       const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
@@ -478,19 +517,48 @@ ${c}`;
       return text;
     }
 
-    // Envoi classique (FormSubmit redirige vers merci.html via _next)
-    btnConfirm?.addEventListener('click', ()=>{
+    /* ===== Envoi AJAX + redirection LOCALE vers merci.html =====
+       -> on poste à FormSubmit en fetch
+       -> quoi qu'il arrive, on redirige vers merci.html pour rester sur ton site
+    */
+    document.getElementById('confirmSend')?.addEventListener('click', async ()=>{
       if(!form) return;
       if(!form.reportValidity()){
         setStep('details');
         form.querySelector(':invalid')?.focus();
         return;
       }
-      prepareOrderText();
-      form.submit();
+      const text = prepareOrderText();
+
+      const fd = new FormData(form);
+      // optionnel: on peut retirer _next, car on gère la redirection en JS
+      fd.delete('_next');
+
+      // petit état UI
+      const btn = document.getElementById('confirmSend');
+      btn.disabled = true; const old = btn.textContent; btn.textContent = 'Envoi…';
+
+      try{
+        await fetch(form.action, {
+          method:'POST',
+          body: fd,
+          headers:{ 'Accept':'application/json' }
+        });
+      }catch(e){
+        // même en cas d’erreur réseau on redirige vers merci.html pour UX cohérente
+        console.warn('FormSubmit error:', e);
+      }finally{
+        // on peut vider le panier ici si tu veux
+        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+        updateSticky();
+        // redirection locale vers ta page
+        window.location.href = 'merci.html';
+      }
+
+      btn.disabled = false; btn.textContent = old;
     });
 
-    // Récap live + ajustements quantité depuis le tiroir
+    /* ===== Récap live + ajustements quantité ===== */
     document.getElementById('cartSheet').addEventListener('input', (e)=>{ if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }});
     recapList.addEventListener('click', (e)=>{
       const plus = e.target.closest('.recap-plus');
@@ -509,7 +577,7 @@ ${c}`;
       buildRecap();
     });
 
-    // Clics cartes : le “+” ouvre la modale (ne modifie pas la quantité)
+    /* ===== Cartes : “+” ouvre la modale ===== */
     document.addEventListener('click', (e)=>{
       const plusBtn = e.target.closest('.card-plus');
       const card = e.target.closest('.item-card');
@@ -559,7 +627,7 @@ ${c}`;
       openItemModal(code, name);
     }
 
-    // Modale + contrôles
+    /* ===== Modale + contrôles ===== */
     (function(){
       const modal=document.getElementById('itemModal');
       const closeBtn=document.getElementById('mClose');
