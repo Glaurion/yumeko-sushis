@@ -577,39 +577,30 @@ ${c}`;
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     })();
 
-    // Sauvegarde / Restauration panier
-    const CART_KEY='yumeko_cart_v1';
-    function saveCart(){
-      const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
-      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
-    }
-    function restoreCart(){
-      try{
-        const saved=JSON.parse(localStorage.getItem(CART_KEY)||'[]);
-        saved.forEach(({key,qty})=>{
-          const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-          if(span){ span.textContent=qty; }
-        });
-        updateSticky();
-      }catch(e){}
-    }
+   // Sauvegarde / Restauration panier
+const CART_KEY='yumeko_cart_v1';
 
-    function updateMiniRecap(){}
-    function updateSticky(){
-      const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
-      qtyNodes.forEach(q=>{
-        const n=parseInt(q.textContent)||0; totalQty+=n;
-        if(n>0){
-          const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-          const d=window.catalog?.[code] || {};
-          const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code)) ? window.prices[code] : (typeof d.price==='number'?d.price:undefined);
-          if(typeof p==='number') totalPrice += p*n;
-        }
-      });
-      const btn=document.getElementById('gotoOrder'); if(!btn) return;
-      btn.textContent = totalPrice>0 ? `Panier (${totalQty}) • Total ${new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice)} • Valider` : `Panier (${totalQty}) • Valider`;
-      updateMiniRecap(); saveCart();
-    }
+function saveCart(){
+  const cart=[];
+  document.querySelectorAll('.qty[data-item]').forEach(q=>{
+    const n=parseInt(q.textContent)||0;
+    if(n>0) cart.push({key:q.dataset.item, qty:n});
+  });
+  try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+}
+
+function restoreCart(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); // ✅ corrigé
+    saved.forEach(({key,qty})=>{
+      const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
+      if(span){ span.textContent=qty; }
+    });
+    updateSticky();
+  }catch(e){
+    console.warn('restoreCart error', e);
+  }
+}
 
     // hash panier
     if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
