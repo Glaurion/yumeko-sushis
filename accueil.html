@@ -29,10 +29,7 @@
       margin:0; letter-spacing:2px; font-weight:800;
       font-size:1.4rem; color:var(--text); text-align:center;
     }
-    .brand-text .jp-top{
-      display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em;
-      text-align:center; opacity:.85;
-    }
+
     .main-nav{
       display:flex; align-items:center; gap:8px; margin-top:6px;
       font-weight:600;
@@ -52,7 +49,6 @@
     .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
     @media (max-width:480px){
       .brand-text h1{ font-size:1.2rem; }
-      .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
     }
   </style>
 
@@ -69,7 +65,7 @@
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-      --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
+      --card:#1b1b1b; --muted:#cfcfcf;
       --gold:#d8b26e;
     }
     *{ box-sizing:border-box; }
@@ -78,12 +74,10 @@
       background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
     }
 
-    /* HERO — sobre, même placement que index */
     .hero{
       background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
       padding:60px 20px; text-align:center; position:relative;
     }
-    h1.brand{ font-size:2.5rem; margin:12px 0 8px; letter-spacing:2px; font-weight:800; }
 
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:22px; }
@@ -108,7 +102,6 @@
     }
 
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; font-size:.95rem; }
-    a.btn, a.btn:visited{ color:inherit; text-decoration:none; }
 
     .btn{
       border:none; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer;
@@ -118,6 +111,7 @@
     .btn-primary{ background:var(--brand); color:#fff; }
   </style>
 </head>
+
 <body>
 
   <!-- ===== Header ===== -->
@@ -126,7 +120,7 @@
       <a href="accueil.html" class="brand">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
         <div class="brand-text">
-          <span class="jp-top">夢猫鮨</span>
+          <!-- Texte japonais retiré -->
           <h1>YUMEKO SUSHIS</h1>
         </div>
       </a>
@@ -135,20 +129,16 @@
         <a href="accueil.html" class="active">Accueil</a>
         <span class="sep">・</span>
         <a href="index.html">Menu</a>
-        <!-- Lien “Panier” supprimé -->
       </nav>
     </div>
   </header>
-  <!-- ===== /Header ===== -->
 
-  <!-- HERO -->
-  <section class="hero">
-    <h1 class="brand">YUMEKO SUSHIS</h1>
-  </section>
+  <!-- HERO sans titre doublon -->
+  <section class="hero"></section>
 
   <main class="container">
 
-    <!-- SECTION UNIQUE (ex- “À propos de Benjamin”) -->
+    <!-- SECTION UNIQUE -->
     <section class="section">
       <h2>Bienvenue chez Yumeko Sushis</h2>
       <div class="sep"></div>
@@ -161,8 +151,8 @@
           </p>
           <p class="lead">
             Le nom <strong>Yumeko</strong> est un clin d’œil à mes deux chats : <em>Yume</em> et <em>Uniko</em>.
-            Une touche personnelle qui symbolise ce que je veux transmettre : <strong>de la passion, de la douceur
-            et beaucoup de cœur</strong>.
+            Une touche personnelle qui symbolise ce que je veux transmettre :
+            <strong>de la passion, de la douceur et beaucoup de cœur</strong>.
           </p>
           <p class="lead" style="margin-bottom:0">
             Ma promesse : <strong>fraîcheur irréprochable</strong> et <strong>goût</strong> à chaque bouchée.
@@ -177,7 +167,7 @@
       </div>
     </section>
 
-    <!-- CTA BAS DE PAGE -->
+    <!-- CTA -->
     <section class="cta-band">
       <div>
         <h3 style="margin:0 0 6px">Prêt à composer votre box ?</h3>
@@ -185,13 +175,12 @@
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a class="btn btn-primary" href="index.html#panier">Commander maintenant</a>
-        <!-- “Voir le menu” supprimé -->
       </div>
     </section>
 
   </main>
 
-  <footer>© 2025 YUMEKO SUSHIS — Élégance & fraîcheur, au service du goût</footer>
+  <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
   <!-- JS : nav actif -->
   <script>
@@ -203,5 +192,6 @@
       });
     })();
   </script>
+
 </body>
 </html>
