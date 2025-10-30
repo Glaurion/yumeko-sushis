@@ -4,101 +4,212 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Merci pour votre commande — YUMEKO SUSHIS</title>
+
+  <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <meta name="theme-color" content="#8b0000" />
+
   <style>
-    :root { --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8; --card:#1b1b1b; --muted:#cfcfcf; }
-    *{box-sizing:border-box}
+    :root{
+      --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
+      --card:#1b1b1b; --muted:#cfcfcf; --ok:#00d78f;
+    }
+    *{ box-sizing:border-box; }
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
-      display:flex; align-items:center; justify-content:center; padding:24px;
+      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text);
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
     }
     .wrap{
-      width:min(900px,96vw); background:#160c0c; border:1px solid rgba(255,255,255,.12);
-      border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,.35); overflow:hidden;
+      width:min(900px,96vw);
+      background:#160c0c; border:1px solid rgba(255,255,255,.08);
+      border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.25);
+      padding:24px;
     }
-    header{ text-align:center; padding:28px 18px 10px; }
-    header img{ width:120px; height:120px; object-fit:cover; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
-    h1{ margin:10px 0 4px; font-size:1.8rem; letter-spacing:1px; }
-    p.lead{ margin:6px 0 18px; color:#f0f0f0; opacity:.95; }
+    .head{
+      display:flex; align-items:center; gap:14px; margin-bottom:8px;
+    }
+    .ok{
+      width:42px; height:42px; border-radius:50%; background:rgba(0,215,143,.12);
+      display:grid; place-items:center; font-size:24px; color:var(--ok);
+      border:1px solid rgba(0,215,143,.35);
+    }
+    h1{ font-size:1.8rem; margin:0; letter-spacing:.5px; }
+    p.muted{ color:var(--muted); margin:6px 0 18px; }
+
     .card{
-      background:var(--card); margin:0 16px 16px; border:1px solid rgba(255,255,255,.08);
-      border-radius:14px; padding:16px;
+      background:#1b1b1b; border:1px solid rgba(255,255,255,.08);
+      border-radius:14px; padding:16px; margin-top:12px;
     }
-    .card h2{ margin:0 0 10px; font-size:1.1rem; letter-spacing:.3px; }
+    .grid{
+      display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:12px;
+    }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; }
+    .label{ width:180px; color:#cfcfcf; }
+    .val{ font-weight:700; color:#fff; }
+
+    .table{
+      width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:12px; margin-top:6px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .table th, .table td{ padding:10px 12px; text-align:left; }
+    .table thead th{ background:#1f1f1f; color:#fff; font-weight:700; }
+    .table tbody tr:nth-child(odd){ background:#191919; }
+    .table tbody tr:nth-child(even){ background:#161616; }
+    .table td.qty{ width:80px; }
+
     pre{
-      margin:0; padding:14px; border-radius:10px; background:#121212; color:#fff; overflow:auto; line-height:1.4;
-      border:1px dashed rgba(255,255,255,.1);
-      white-space:pre-wrap; word-break:break-word;
+      white-space:pre-wrap; word-wrap:break-word; background:#141414; border:1px solid rgba(255,255,255,.08);
+      padding:14px; border-radius:12px; margin:0;
     }
+
     .actions{
-      display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; padding:0 16px 18px;
+      margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;
     }
-    .btn{ border:none; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer; }
+    .btn{
+      border:none; border-radius:12px; padding:12px 16px; font-weight:900; cursor:pointer;
+    }
     .btn-primary{ background:var(--brand); color:#fff; }
     .btn-primary:hover{ background:var(--brand-2); }
     .btn-ghost{ background:#2a2a2a; color:#fff; }
-    .btn-ghost:hover{ filter:brightness(1.08); }
-    footer{ text-align:center; color:#d7d7d7; font-size:.9rem; padding:8px 0 18px; }
+    .btn-ghost:hover{ filter:brightness(1.1); }
+
+    footer{
+      text-align:center; color:#d7d7d7; margin-top:20px; font-size:.9rem;
+      opacity:.9;
+    }
 
     @media print{
       body{ background:#fff; }
-      .wrap{ box-shadow:none; border:none; }
+      .wrap{ box-shadow:none; border-color:#ccc; }
       .actions, footer{ display:none; }
-      header img{ box-shadow:none; }
-      .card{ border:1px solid #000; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" />
-      <h1>Merci pour votre commande !</h1>
-      <p class="lead">Votre récapitulatif est ci-dessous.</p>
-    </header>
-
-    <section class="card">
-      <h2>Récapitulatif</h2>
-      <pre id="orderRecap">Chargement du récapitulatif…</pre>
-    </section>
-
-    <div class="actions">
-      <a class="btn btn-primary" id="backBtn" href="index.html">← Retour au menu</a>
+    <div class="head">
+      <div class="ok">✓</div>
+      <div>
+        <h1>Merci pour votre commande !</h1>
+        <p class="muted">Nous vous avons envoyé un e-mail de confirmation avec le récapitulatif.</p>
+      </div>
     </div>
 
-    <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
+    <!-- Bloc résumé client + commentaire -->
+    <div id="summary" class="card" style="display:none">
+      <div class="grid">
+        <div class="row"><div class="label">Client</div><div class="val" id="c_client">—</div></div>
+        <div class="row"><div class="label">Email</div><div class="val" id="c_email">—</div></div>
+        <div class="row" id="row_comment" style="display:none"><div class="label">Allergies / autres</div><div class="val" id="c_comment">—</div></div>
+      </div>
+    </div>
+
+    <!-- Tableau des articles -->
+    <div id="itemsCard" class="card" style="display:none">
+      <h2 style="margin:0 0 10px;font-size:1.2rem">Articles</h2>
+      <table class="table" id="itemsTable">
+        <thead>
+          <tr><th>Article</th><th class="qty">Quantité</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Rendu brut (fallback) -->
+    <div id="rawCard" class="card" style="display:none">
+      <h2 style="margin:0 0 10px;font-size:1.2rem">Récapitulatif</h2>
+      <pre id="rawText"></pre>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="window.print()">Imprimer</button>
+      <a class="btn btn-ghost" href="./">Retour à l’accueil</a>
+    </div>
+
+    <footer>© 2025 YUMEKO SUSHIS — À très vite 🍣</footer>
   </div>
 
   <script>
     (function(){
-      const pre = document.getElementById('orderRecap');
-      const text = localStorage.getItem('yumeko_last_order');
+      // Récupère le texte stocké par la page principale
+      const raw = localStorage.getItem('yumeko_last_order') || '';
 
-      pre.textContent = (text && text.trim())
-        ? text.trim()
-        : `Aucun récapitulatif trouvé.
+      // Elements
+      const summary = document.getElementById('summary');
+      const itemsCard = document.getElementById('itemsCard');
+      const rawCard = document.getElementById('rawCard');
+      const rawText = document.getElementById('rawText');
+      const cClient = document.getElementById('c_client');
+      const cEmail = document.getElementById('c_email');
+      const cComment = document.getElementById('c_comment');
+      const rowComment = document.getElementById('row_comment');
+      const tbody = document.querySelector('#itemsTable tbody');
 
-Astuce : assurez-vous que la page de commande enregistre le texte via:
-localStorage.setItem('yumeko_last_order', text);
-dans la fonction prepareOrderText().`;
+      if(!raw.trim()){
+        // Pas de données -> fallback simple
+        rawCard.style.display = 'block';
+        rawText.textContent = "Aucune commande trouvée.\n\nAstuce : passez la commande depuis la page principale pour voir ici le récapitulatif.";
+        return;
+      }
 
-      document.getElementById('copyBtn')?.addEventListener('click', async ()=>{
-        try{
-          await navigator.clipboard.writeText(pre.textContent);
-          const btn = document.getElementById('copyBtn');
-          const old = btn.textContent; btn.textContent = 'Copié ✔';
-          setTimeout(()=> btn.textContent = old, 1200);
-        }catch(e){}
-      });
+      // Affiche toujours le bloc brut en backup (plié derrière si parse ok)
+      rawCard.style.display = 'block';
+      rawText.textContent = raw;
 
-      document.getElementById('printBtn')?.addEventListener('click', ()=> window.print());
+      // === Parsing simple & robuste de la structure connue ===
+      // Cherche les lignes "Client :", "Email :", "Allergies / autres :" et les bullets "- ..."
+      const lines = raw.split(/\r?\n/);
+      let client = '—', email = '—', comment = '';
+      const items = [];
 
-      // Si ton fichier d’accueil n’est pas "index.html", change la ligne ci-dessous.
-      document.getElementById('backBtn').setAttribute('href', 'index.html');
+      let inArticles = false;
+      for(const line of lines){
+        const l = line.trim();
+
+        if(/^Client\s*:/i.test(l)){
+          client = l.replace(/^Client\s*:\s*/i,'').trim() || '—';
+        } else if(/^Email\s*:/i.test(l)){
+          email = l.replace(/^Email\s*:\s*/i,'').trim() || '—';
+        } else if(/^Allergies?\s*\/\s*autres\s*:/i.test(l)){
+          comment = l.replace(/^Allergies?\s*\/\s*autres\s*:\s*/i,'').trim();
+        } else if(/^Articles\s*:/i.test(l)){
+          inArticles = true;
+        } else if(inArticles && /^- /.test(l)){
+          // ligne d'article "- NOM xQTY"
+          const itemTxt = l.replace(/^- /,'').trim();
+          const m = itemTxt.match(/^(.*)\s+x(\d+)$/i);
+          if(m){
+            items.push({ name:m[1].trim(), qty:parseInt(m[2],10) });
+          }else{
+            // Si pas de "xQTY", qty=1 par défaut
+            items.push({ name:itemTxt, qty:1 });
+          }
+        } else if(inArticles && l===''){
+          // Ligne vide après la liste -> on arrête
+          inArticles = false;
+        }
+      }
+
+      // Remplissage de la carte résumé
+      cClient.textContent = client || '—';
+      cEmail.textContent = email || '—';
+      if(comment){
+        rowComment.style.display = '';
+        cComment.textContent = comment;
+      }
+      summary.style.display = 'block';
+
+      // Remplissage du tableau articles si on a des items
+      if(items.length){
+        items.forEach(({name, qty})=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${name}</td><td class="qty">${qty}</td>`;
+          tbody.appendChild(tr);
+        });
+        itemsCard.style.display = 'block';
+      }
     })();
   </script>
 </body>
