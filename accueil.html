@@ -36,17 +36,11 @@
     }
     .main-nav .sep{ color:#e9d9d9; opacity:.6; }
     .main-nav a{
-      position:relative; color:var(--text); text-decoration:none;
+      color:var(--text); text-decoration:none; /* pas de soulignement */
       padding:4px 6px; border-radius:6px; opacity:.95;
     }
-    .main-nav a:hover{ opacity:1; }
-    .main-nav a::after{
-      content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
-      background:linear-gradient(90deg, transparent, var(--brand), transparent);
-      opacity:0; transform:translateY(2px);
-      transition:all .18s ease;
-    }
-    .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
+    .main-nav a:hover{ opacity:1; } /* underline décoratif supprimé */
+
     @media (max-width:480px){
       .brand-text h1{ font-size:1.2rem; }
     }
@@ -74,10 +68,7 @@
       background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%); color:var(--text); min-height:100vh;
     }
 
-    .hero{
-      background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
-      padding:60px 20px; text-align:center; position:relative;
-    }
+    /* HERO supprimé (évitons le deuxième bandeau) */
 
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{ background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:22px; }
@@ -102,13 +93,6 @@
     }
 
     footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; font-size:.95rem; }
-
-    .btn{
-      border:none; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer;
-      transition:transform .12s ease, filter .12s ease;
-    }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
-    .btn-primary{ background:var(--brand); color:#fff; }
   </style>
 </head>
 
@@ -120,7 +104,6 @@
       <a href="accueil.html" class="brand">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
         <div class="brand-text">
-          <!-- Texte japonais retiré -->
           <h1>YUMEKO SUSHIS</h1>
         </div>
       </a>
@@ -133,11 +116,9 @@
     </div>
   </header>
 
-  <!-- HERO sans titre doublon -->
-  <section class="hero"></section>
+  <!-- HERO retiré -->
 
   <main class="container">
-
     <!-- SECTION UNIQUE -->
     <section class="section">
       <h2>Bienvenue chez Yumeko Sushis</h2>
@@ -167,22 +148,20 @@
       </div>
     </section>
 
-    <!-- CTA -->
+    <!-- APPEL À L’ACTION (sans bouton) -->
     <section class="cta-band">
       <div>
         <h3 style="margin:0 0 6px">Prêt à composer votre box ?</h3>
         <p class="muted" style="margin:0">Passez commande en quelques clics — rapide, simple et 100% à votre goût.</p>
       </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn btn-primary" href="index.html#panier">Commander maintenant</a>
-      </div>
+      <!-- Boutons supprimés -->
+      <div style="display:none"></div>
     </section>
-
   </main>
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- JS : nav actif -->
+  <!-- JS : nav actif (aucune interaction panier) -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
