@@ -576,7 +576,6 @@ ${c}`;
         return true;
       }
 
-      <script>
   async function sendEmails(){
     if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
 
@@ -617,7 +616,6 @@ ${c}`;
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
   }
-</script>
 
 
       // Bouton principal (Valider panier → / Commander →)
