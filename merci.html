@@ -23,15 +23,18 @@
       --text:#1a1a1a;
       --muted:#5c6870;
 
-      --bg-1:#fffaf3; /* riz */
-      --bg-2:#ffe5ec; /* sakura */
-
+      --bg-base:#fffaf3; /* riz uniforme */
       --card:#ffffff;
       --card-border:rgba(0,0,0,.06);
 
       --accent:#ffd166; /* yuzu */
       --accent-2:#ffc300;
       --matcha:#17a36b;
+
+      /* Sakura dynamique (couche fixe) */
+      --sakura-rgb:255,225,235; /* #ffe1eb */
+      --sakuraMid: 0;  /* alpha vers ~85% */
+      --sakuraEnd: 0;  /* alpha bas de page */
     }
 
     *{ box-sizing:border-box; }
@@ -40,17 +43,32 @@
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
+      /* Halo doux en haut + fond riz uniforme. La bande sakura arrive via .sakura-layer */
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+        var(--bg-base);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ===== Header ===== */
+    /* ===== Couche sakura fixe (iOS-safe) ===== */
+    .sakura-layer{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background: linear-gradient(180deg,
+        rgba(var(--sakura-rgb), 0) 0%,
+        rgba(var(--sakura-rgb), 0) 60%,
+        rgba(var(--sakura-rgb), var(--sakuraMid)) 85%,
+        rgba(var(--sakura-rgb), var(--sakuraEnd)) 100%
+      );
+      -webkit-transform: translateZ(0);
+      will-change: transform, opacity;
+    }
+
+    /* ===== Header (NON-sticky) ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
       border-bottom: 1px solid var(--card-border);
-      position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(125%) blur(6px);
+      position: static; /* ne descend plus au scroll */
+      top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
@@ -118,6 +136,9 @@
   </style>
 </head>
 <body>
+
+  <!-- Couche sakura fixe -->
+  <div class="sakura-layer" aria-hidden="true"></div>
 
   <!-- ===== Header ===== -->
   <header class="site-header jp">
@@ -189,6 +210,26 @@
   </script>
 
   <script>
+    // Sakura dynamique (fait monter la teinte en bas selon le scroll) — compatible iOS
+    (function(){
+      const root = document.documentElement;
+      function updateSakura(){
+        const doc = document.documentElement;
+        const max = (doc.scrollHeight - window.innerHeight) || 1;
+        const p = Math.min(1, Math.max(0, window.scrollY / max));
+        const eased = 1 - Math.pow(1 - p, 1.6);
+        const mid = (eased * 0.5);  // vers ~85%
+        const end = (eased * 0.9);  // bas de page
+        root.style.setProperty('--sakuraMid', mid.toFixed(3));
+        root.style.setProperty('--sakuraEnd', end.toFixed(3));
+      }
+      updateSakura();
+      window.addEventListener('scroll', updateSakura, {passive:true});
+      window.addEventListener('resize', updateSakura);
+    })();
+  </script>
+
+  <script>
     // === Confettis Sakura B1 — Hanami Party ===
     (function(){
       const DURATION = 3200; // ms d'émission
@@ -243,7 +284,7 @@
         const now = performance.now();
         if(now - start < DURATION){
           if(Math.random() < 0.9 && layer.childElementCount < 120) layer.appendChild(makePetal());
-        if(Math.random() < 0.8 && layer.childElementCount < 120) layer.appendChild(makeDot());
+          if(Math.random() < 0.8 && layer.childElementCount < 120) layer.appendChild(makeDot());
           requestAnimationFrame(emit);
         }else{
           running = false;
@@ -256,7 +297,7 @@
 
       // Pré-seed pour un effet immédiat
       for(let i=0;i<PETALS;i++) layer.appendChild(makePetal());
-      for(let i=0;i/DOTS;i++) layer.appendChild(makeDot());
+      for(let i=0;i<DOTS;i++) layer.appendChild(makeDot());
       requestAnimationFrame(emit);
     })();
   </script>
