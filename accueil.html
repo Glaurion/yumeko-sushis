@@ -5,23 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>YUMEKO SUSHIS — Accueil</title>
 
-  <!-- Favicons / Icônes -->
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-  <link rel="icon" type="image/png" sizes="192x192" href="images/icon-192x192-round.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png">
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#8b0000">
-
   <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Icônes -->
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#8b0000" />
+
   <style>
     :root{
       --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
       --card:#1b1b1b; --muted:#cfcfcf; --gold:#d8b26e;
-      --bg-top:#0f0f0f; --bg-bottom:#8b0000;
+      /* Fond identique à index */
+      --bg-top:#0f0f0f;
+      --bg-bottom:#8b0000;
     }
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
@@ -31,15 +31,17 @@
       background:linear-gradient(180deg,var(--bg-top) 0%, var(--bg-bottom) 100%);
       color:var(--text);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
     }
 
-    /* ===== Header (commun avec index) ===== */
+    /* ===== Header commun (identique à index) ===== */
     .site-header{
       background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
       border-bottom: 1px solid rgba(255,255,255,.08);
     }
     .site-header .header-inner{
-      width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
+      width:min(96%,1100px);
+      margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
     .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
@@ -68,10 +70,9 @@
       opacity:0; transform:translateY(2px); transition:all .18s ease;
     }
     .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
-
     @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    /* ===== Page ===== */
+    /* ===== Mise en page ===== */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{
       background:#160c0c; border:1px solid rgba(255,255,255,.08); border-radius:18px;
@@ -118,7 +119,7 @@
   <header class="site-header">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
-        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
+        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
         <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
 
@@ -143,14 +144,13 @@
             les retours ont été tellement positifs que j’ai voulu aller plus loin. J’aime la cuisine et
             <strong>encore plus</strong> l’art des sushis.
           </p>
-          <p class="lead">
+          <p class="lead" style="margin-bottom:0">
             Le nom <strong>Yumeko</strong> est un clin d’œil à mes deux chats : <em>Yume</em> et <em>Uniko</em>.
-            Une touche personnelle qui symbolise ce que je veux transmettre :
-            <strong>de la passion, de la douceur et beaucoup de cœur</strong>.
+            Une touche personnelle qui symbolise ce que je veux transmettre : <strong>passion, douceur et cœur</strong>.
           </p>
         </div>
 
-        <!-- Bloc latéral (vide pour alléger visuel, prêt à être utilisé plus tard) -->
+        <!-- Bloc latéral (laissé vide pour un visuel épuré) -->
       </div>
     </section>
 
@@ -168,10 +168,10 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- JS : onglet actif (mêmes règles que sur index) -->
+  <!-- Script onglet actif (identique à index) -->
   <script>
     (function(){
-      const here = (location.pathname.split('/').pop() || 'accueil.html').toLowerCase();
+      const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
       document.querySelectorAll('.main-nav a').forEach(a=>{
         const href = (a.getAttribute('href')||'').toLowerCase();
         if(href && !href.startsWith('#')){
