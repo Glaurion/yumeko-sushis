@@ -6,51 +6,46 @@
   <title>Merci — YUMEKO SUSHIS</title>
 
   <!-- Police Poppins -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Favicon / thème -->
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura & Matcha" ===== */
+    /* ===== Palette "Sakura" (option B: rose moyen) ===== */
     :root{
-      --brand:#ff4d6d; /* sakura */
-      --brand-2:#e63956;
+      --brand:#ff4d6d; --brand-2:#e63956;
+      --text:#1a1a1a; --muted:#5c6870;
 
-      --text:#1a1a1a;
-      --muted:#5c6870;
+      --bg-base:#fffaf3;             /* riz, fond principal uniforme */
+      --card:#ffffff; --card-border:rgba(0,0,0,.06);
+      --accent:#ffd166; --accent-2:#ffc300;
 
-      --bg-base:#fffaf3; /* riz uniforme */
-      --card:#ffffff;
-      --card-border:rgba(0,0,0,.06);
-
-      --accent:#ffd166; /* yuzu */
-      --accent-2:#ffc300;
-      --matcha:#17a36b;
-
-      /* Sakura dynamique (couche fixe) */
-      --sakura-rgb:255,225,235; /* #ffe1eb */
-      --sakuraMid: 0;  /* alpha vers ~85% */
-      --sakuraEnd: 0;  /* alpha bas de page */
+      /* Sakura dynamique (option B ≈ #ffe1eb) */
+      --sakura-rgb:255,225,235;
+      --sakuraMid: 0;   /* alpha vers 75–85% de page */
+      --sakuraEnd: 0;   /* alpha bas de page */
     }
 
     *{ box-sizing:border-box; }
-    html, body{ height:100%; }
+    html, body{ height:100%; scroll-behavior:smooth; }
+
+    /* Corps : halo en haut + riz; la bande sakura est une couche dédiée (iOS-safe) */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      /* Halo doux en haut + fond riz uniforme. La bande sakura arrive via .sakura-layer */
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
         var(--bg-base);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ===== Couche sakura fixe (iOS-safe) ===== */
+    /* Couche sakura dédiée (fixe) -> compatible iOS */
     .sakura-layer{
       position:fixed; inset:0; z-index:-1; pointer-events:none;
       background: linear-gradient(180deg,
@@ -63,25 +58,27 @@
       will-change: transform, opacity;
     }
 
-    /* ===== Header (NON-sticky, comme accueil) ===== */
+    /* ===== Header (NON-sticky) ===== */
     .site-header.jp{
-      background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
       border-bottom: 1px solid var(--card-border);
-      position: static; /* ne descend plus au scroll */
+      position: static; /* ne suit pas le scroll, comme accueil */
       top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
-    .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+    a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .logo{
-      width:160px; height:160px; border-radius:50%; object-fit:cover; background:#fff;
+      width:160px; height:160px; border-radius:50%;
+      object-fit:cover; background:#fff;
       box-shadow:0 8px 24px rgba(255,77,109,.15);
       border:3px solid rgba(255,77,109,.15);
+      display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
-    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.35rem; color:#1e1e1e; text-align:center; }
+    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
 
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
@@ -91,38 +88,45 @@
     }
     .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(0,0,0,.04); }
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
+    @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    /* ===== Layout ===== */
-    .container{ max-width:900px; margin:0 auto; padding:20px; }
-    .section{ background:var(--card); border:1px solid var(--card-border); border-radius:18px; padding:24px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:25px; }
-    .muted{ color:var(--muted); font-size:.95rem; }
+    /* ===== Page ===== */
+    .container{ max-width:1100px; margin:0 auto; padding:22px; }
+    .section{
+      background:var(--card); border:1px solid var(--card-border); border-radius:18px;
+      padding:22px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:22px;
+    }
+    .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
+    .sep{ height:2px; width:84px; background:linear-gradient(90deg,#ff4d6d,#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
-    /* ===== MERCI ===== */
-    .thanks-wrap{ display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; }
-    .thanks-title{ margin:0 0 6px; font-size:1.7rem; color:#c2173b; }
-    .recap-block{ width:min(800px,100%); text-align:left; background:#fff8fc; border:1px solid var(--card-border); border-radius:14px; padding:14px; white-space:pre-wrap; overflow:auto; max-height:50vh; color:#333; }
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px; }
-    .button{ background:var(--accent); color:#111; border:none; border-radius:12px; font-weight:800; padding:11px 16px; cursor:pointer; text-decoration:none; transition:transform .12s ease, filter .12s ease; }
-    .button:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    .lead{ font-size:1.06rem; line-height:1.7; color:#2a2a2a; }
+    .muted{ color:var(--muted); }
 
-    footer{ text-align:center; color:#6b6b6b; margin:28px 0 36px; font-size:.9rem; }
+    .btn{
+      display:inline-block; border:none; border-radius:14px; padding:12px 16px;
+      font-weight:800; cursor:pointer; text-decoration:none; color:#111;
+      background:var(--accent); transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      white-space:nowrap; box-shadow:0 6px 0 rgba(0,0,0,.06);
+    }
+    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+
+    footer{ text-align:center; color:#5b5b5b; margin:28px 0 36px; font-size:.95rem; }
 
     /* Accessibilité */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 </head>
-<body>
 
-  <!-- Couche sakura fixe -->
+<body>
+  <!-- Couche sakura iOS-safe -->
   <div class="sakura-layer" aria-hidden="true"></div>
 
   <!-- ===== Header ===== -->
   <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
-        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" />
-        <!-- Pas de lettres japonaises, pas de HERO en doublon -->
+        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
         <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
 
@@ -134,60 +138,27 @@
     </div>
   </header>
 
-  <!-- Pas de HERO (pour éviter le doublon logo/titre) -->
-
   <main class="container">
-    <section class="section">
-      <div class="thanks-wrap">
-        <h2 class="thanks-title">Merci pour votre commande !</h2>
-        <p class="muted">Nous avons bien reçu votre commande. Voici votre récapitulatif :</p>
+    <!-- SECTION MERCI -->
+    <section class="section" aria-labelledby="titre-merci">
+      <h2 id="titre-merci">Merci pour votre commande !</h2>
+      <div class="sep" aria-hidden="true"></div>
 
-        <pre id="orderRecap" class="recap-block">(Chargement du récapitulatif…)</pre>
+      <p class="muted">Nous avons bien reçu votre commande. Voici votre récapitulatif :</p>
+      <pre id="orderRecap" class="lead" style="background:#fff8fc;border:1px solid var(--card-border);border-radius:14px;padding:14px;white-space:pre-wrap;overflow:auto;max-height:50vh;color:#333;">(Chargement du récapitulatif…)</pre>
 
-        <div class="actions">
-          <a class="button" href="accueil.html">Retour à l’accueil</a>
-          <a class="button" href="index.html#menu">Nouvelle commande</a>
-        </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+        <a class="btn" href="accueil.html">Retour à l’accueil</a>
+        <a class="btn" href="index.html#menu">Nouvelle commande</a>
       </div>
     </section>
   </main>
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
+  <!-- JS : nav active + mise à jour sakura + récap formaté -->
   <script>
-    // Récupère le récap, enlève "Articles :" et réécrit chaque ligne en "article : Nom"
-    document.addEventListener('DOMContentLoaded', () => {
-      const recapEl = document.getElementById('orderRecap');
-      let text = '';
-      try { text = localStorage.getItem('yumeko_last_order') || ''; } catch(e){}
-
-      if(!text.trim()){
-        recapEl.textContent = "Aucun récapitulatif trouvé.\n\nAstuce : passez une commande depuis le menu pour voir le détail ici.";
-        return;
-      }
-
-      // Supprime l'en-tête "Articles :" s'il existe
-      const withoutHeader = text.replace(/\n?Articles\s*:\s*\n?/i, '');
-
-      // Transforme les lignes "- Nom xN" -> "article : Nom"
-      const transformed = withoutHeader
-        .split('\n')
-        .map(l => {
-          if(/^\s*-\s*/.test(l)){
-            const nameOnly = l
-              .replace(/^\s*-\s*/, '')     // enlève le tiret
-              .replace(/\s+x\d+\s*$/i,''); // enlève " xN"
-            return 'article : ' + nameOnly;
-          }
-          return l;
-        })
-        .join('\n')
-        .trim();
-
-      recapEl.textContent = transformed;
-    });
-
-    // Active l’onglet courant
+    // Nav active (comme sur accueil)
     (function(){
       const here = location.pathname.split('/').pop() || 'merci.html';
       document.querySelectorAll('.main-nav a').forEach(a=>{
@@ -196,22 +167,44 @@
       });
     })();
 
-    // Sakura dynamique (fait monter la teinte en bas selon le scroll) — compatible iOS
+    // Monte la teinte sakura pour la couche fixe (iOS-friendly)
     (function(){
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
         const max = (doc.scrollHeight - window.innerHeight) || 1;
         const p = Math.min(1, Math.max(0, window.scrollY / max));
-        const eased = 1 - Math.pow(1 - p, 1.6);
-        const mid = (eased * 0.5);  // vers ~85%
-        const end = (eased * 0.9);  // bas de page
+        const eased = 1 - Math.pow(1 - p, 1.6);   // montée douce
+        const mid = (eased * 0.5);                // vers 85% de page
+        const end = (eased * 0.9);                // bas de page
         root.style.setProperty('--sakuraMid', mid.toFixed(3));
         root.style.setProperty('--sakuraEnd', end.toFixed(3));
       }
       updateSakura();
       window.addEventListener('scroll', updateSakura, {passive:true});
       window.addEventListener('resize', updateSakura);
+    })();
+
+    // Récupère le récap, nettoie "Articles :" et reformate en "article : Nom"
+    (function(){
+      const recapEl = document.getElementById('orderRecap');
+      let text = '';
+      try { text = localStorage.getItem('yumeko_last_order') || ''; } catch(e){}
+      if(!text.trim()){
+        recapEl.textContent = "Aucun récapitulatif trouvé.\n\nAstuce : passez une commande depuis le menu pour voir le détail ici.";
+        return;
+      }
+      // Supprime le header "Articles :" s'il est présent
+      const withoutHeader = text.replace(/\n?Articles\s*:\s*\n?/i, '');
+      // Reformate chaque ligne "- Nom xN" -> "article : Nom xN" (on garde la quantité)
+      const transformed = withoutHeader.split('\n').map(line=>{
+        if(/^\s*-\s*/.test(line)){
+          const body = line.replace(/^\s*-\s*/, '').trim();
+          return 'article : ' + body;
+        }
+        return line;
+      }).join('\n').trim();
+      recapEl.textContent = transformed;
     })();
   </script>
 </body>
