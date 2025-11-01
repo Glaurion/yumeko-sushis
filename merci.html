@@ -12,96 +12,113 @@
 
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#8b0000" />
+  <meta name="theme-color" content="#ff4d6d" />
 
   <style>
+    /* ===== Palette lumineuse "Sakura & Matcha" ===== */
     :root{
-      --brand:#8b0000; --brand-2:#a31212; --text:#f8f8f8;
-      --card:#1b1b1b; --muted:#cfcfcf; --accent:#ffb6b6; --accent-2:#ff8c8c;
-      --barShade:.35;
+      --brand:#ff4d6d; /* sakura */
+      --brand-2:#e63956;
+
+      --text:#1a1a1a;
+      --muted:#5c6870;
+
+      --bg-1:#fffaf3; /* riz */
+      --bg-2:#ffe5ec; /* sakura */
+
+      --card:#ffffff;
+      --card-border:rgba(0,0,0,.06);
+
+      --accent:#ffd166; /* yuzu */
+      --accent-2:#ffc300;
+      --matcha:#17a36b;
     }
+
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(180deg,#0f0f0f 0%, #8b0000 100%);
       color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ===== Header style (comme sur accueil) ===== */
+    /* ===== Header ===== */
     .site-header.jp{
-      background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
+      border-bottom: 1px solid var(--card-border);
+      position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(125%) blur(6px);
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
-    .site-header .logo{
-      width:160px; height:auto; border-radius:50%;
-      box-shadow:0 0 10px rgba(0,0,0,.3); display:block;
-    }
-    @media (min-width:768px){ .site-header .logo{ width:200px; } }
     .brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
-    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:var(--text); text-align:center; }
-    .brand-text .jp-top{ display:block; font-size:.85rem; color:#e9d9d9; letter-spacing:.35em; text-align:center; opacity:.85; }
-    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
-    .main-nav .sep{ color:#e9d9d9; opacity:.6; }
-    .main-nav a{
-      position:relative; color:var(--text); text-decoration:none;
-      padding:4px 6px; border-radius:6px; opacity:.95;
+    .logo{
+      width:160px; height:160px; border-radius:50%; object-fit:cover; background:#fff;
+      box-shadow:0 8px 24px rgba(255,77,109,.15);
+      border:3px solid rgba(255,77,109,.15);
     }
-    .main-nav a:hover{ opacity:1; }
-    .main-nav a::after{
-      content:""; position:absolute; left:10%; right:10%; bottom:-2px; height:2px;
-      background:linear-gradient(90deg, transparent, var(--brand), transparent);
-      opacity:0; transform:translateY(2px); transition:all .18s ease;
-    }
-    .main-nav a:hover::after, .main-nav a.active::after{ opacity:1; transform:translateY(0); }
-    @media (max-width:480px){
-      .brand-text h1{ font-size:1.2rem; }
-      .brand-text .jp-top{ font-size:.78rem; letter-spacing:.28em; }
-    }
+    @media (min-width:768px){ .logo{ width:200px; height:200px; } }
+    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.35rem; color:#1e1e1e; text-align:center; }
+    .jp-top{ display:block; font-size:.85rem; color:#c2173b; letter-spacing:.35em; text-align:center; opacity:.85; }
 
-    /* ===== HERO (même placement que index) ===== */
-    .hero{
-      background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,.75)),url('images/hero.jpg') center/cover no-repeat;
-      padding:60px 20px; text-align:center;
+    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
+    .main-nav .sep{ color:#7a7a7a; opacity:.6; }
+    .main-nav a{
+      color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95;
+      transition:filter .15s ease, transform .15s ease, background .15s ease;
     }
-    .hero .logo{ width:160px; border-radius:50%; box-shadow:0 0 10px rgba(0,0,0,.3); }
-    @media (min-width:768px){ .hero .logo{ width:200px; } }
-    h1.brand{ font-size:2.5rem; margin:10px 0; letter-spacing:2px; font-weight:800; }
+    .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(0,0,0,.04); }
+    .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
+
+    /* ===== HERO ===== */
+    .hero{
+      padding:50px 20px 36px;
+      text-align:center;
+    }
+    .hero .logo{ width:150px; height:150px; }
+    @media (min-width:768px){ .hero .logo{ width:180px; height:180px; } }
+    h1.brand{ font-size:2.3rem; margin:14px 0 4px; letter-spacing:1px; font-weight:800; color:#c2173b; }
 
     /* ===== Layout ===== */
-    .container{ max-width:1100px; margin:0 auto; padding:20px; }
+    .container{ max-width:900px; margin:0 auto; padding:20px; }
     .section{
-      background:#160c0c; border:1px solid rgba(255,255,255,.08);
-      border-radius:18px; padding:20px;
-      box-shadow:0 10px 30px rgba(0,0,0,.25); margin-bottom:25px;
+      background:var(--card); border:1px solid var(--card-border);
+      border-radius:18px; padding:24px;
+      box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04);
+      margin-bottom:25px;
     }
-    .muted{ color:#cfcfcf; opacity:.95; font-size:14px; }
+    .muted{ color:var(--muted); font-size:.95rem; }
 
     /* ===== MERCI ===== */
     .thanks-wrap{ display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; }
-    .thanks-title{ margin:0 0 6px; font-size:1.6rem; }
+    .thanks-title{ margin:0 0 6px; font-size:1.7rem; color:#c2173b; }
     .recap-block{
       width:min(800px,100%);
       text-align:left;
-      background:#111; color:#fff;
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:12px; padding:14px;
+      background:#fff8fc;
+      border:1px solid var(--card-border);
+      border-radius:14px; padding:14px;
       white-space:pre-wrap; overflow:auto; max-height:50vh;
+      color:#333;
     }
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px; }
     .button{
-      background:var(--brand); color:#fff; border:none; border-radius:10px;
-      font-weight:800; padding:10px 14px; cursor:pointer; text-decoration:none;
+      background:var(--accent); color:#111; border:none; border-radius:12px;
+      font-weight:800; padding:11px 16px; cursor:pointer; text-decoration:none;
+      transition:transform .12s ease, filter .12s ease;
     }
-    .button:hover{ background:var(--brand-2); }
+    .button:hover{ transform:translateY(-1px); filter:brightness(1.05); }
 
-    footer{ text-align:center; color:#d7d7d7; margin:28px 0 36px; }
+    footer{ text-align:center; color:#6b6b6b; margin:28px 0 36px; font-size:.9rem; }
+
+    /* Accessibilité */
+    :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
+    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 </head>
 <body>
@@ -121,14 +138,11 @@
         <a href="accueil.html">Accueil</a>
         <span class="sep">・</span>
         <a href="index.html">Menu</a>
-        <span class="sep">・</span>
-        <a href="#panier" id="navPanier">Panier</a>
       </nav>
     </div>
   </header>
-  <!-- /Header -->
 
-  <!-- ===== HERO (identique à index, sans bouton) ===== -->
+  <!-- ===== HERO ===== -->
   <section class="hero">
     <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="lazy" decoding="async">
     <h1 class="brand">YUMEKO SUSHIS</h1>
@@ -137,57 +151,7 @@
   <main class="container">
     <section class="section">
       <div class="thanks-wrap">
-        <h2 class="thanks-title">Merci pour votre commande</h2>
+        <h2 class="thanks-title">Merci pour votre commande !</h2>
         <p class="muted">Nous avons bien reçu votre commande. Voici votre récapitulatif :</p>
 
-        <!-- Pas de rubrique “Articles” séparée : on nettoie juste l’intitulé dans le texte -->
-        <pre id="orderRecap" class="recap-block">(Chargement du récapitulatif…)</pre>
-
-        <div class="actions">
-          <a class="button" href="accueil.html">Retour à l’accueil</a>
-          <a class="button" href="index.html#menu">Nouvelle commande</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
-
-  <script>
-    // Récupère le récap et supprime l’intitulé "Articles :" (on garde la liste)
-    document.addEventListener('DOMContentLoaded', () => {
-      const recapEl = document.getElementById('orderRecap');
-      let text = '';
-      try { text = localStorage.getItem('yumeko_last_order') || ''; } catch(e){}
-
-      if(!text.trim()){
-        recapEl.textContent = "Aucun récapitulatif trouvé.\n\nAstuce : passez une commande depuis le menu pour voir le détail ici.";
-        return;
-      }
-
-      const cleaned = text.replace(/\n?Articles\s*:\s*\n?/i, '');
-      recapEl.textContent = cleaned.trim();
-    });
-
-    // Active l’onglet courant et gère le lien Panier (redirige vers index.html#panier)
-    (function(){
-      const here = location.pathname.split('/').pop() || 'merci.html';
-      document.querySelectorAll('.main-nav a').forEach(a=>{
-        const href = a.getAttribute('href');
-        if(href && !href.startsWith('#') && here === href) a.classList.add('active');
-      });
-
-      const panier = document.getElementById('navPanier');
-      if(panier){
-        panier.addEventListener('click', (e)=>{
-          const here = location.pathname.split('/').pop() || 'merci.html';
-          if(here !== 'index.html'){
-            e.preventDefault();
-            window.location.href = 'index.html#panier';
-          }
-        });
-      }
-    })();
-  </script>
-</body>
-</html>
+        <pre id="orderRecap" class="
