@@ -212,6 +212,18 @@
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
+
+  <!-- ===== EmailJS (SDK + config) ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    // 🔧 A REMPLACER par tes infos EmailJS
+    const EMAILJS_PUBLIC_KEY = 'REMPLACE_PAR_TA_PUBLIC_KEY';
+    const EMAILJS_SERVICE_ID = 'REMPLACE_PAR_TON_SERVICE_ID';
+    const EMAILJS_TEMPLATE_ID = 'REMPLACE_PAR_TON_TEMPLATE_ID';
+    const YUMEKO_EMAIL = 'contact@yumekosushis.fr'; // adresse de réception YUMEKO
+
+    (function(){ try{ emailjs.init(EMAILJS_PUBLIC_KEY); }catch(e){ console.warn('EmailJS init error', e); } })();
+  </script>
 </head>
 <body>
 
@@ -413,7 +425,7 @@
     })();
   </script>
 
-  <!-- Panier / tiroir -->
+  <!-- Panier / tiroir + EmailJS -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const sheet = document.getElementById('cartSheet');
@@ -523,19 +535,24 @@
       overlay?.addEventListener('click', closeSheet);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
+      function itemsTextForEmail(){
+        const items = getCartItems();
+        return items.map(({name,qty})=>`- ${name} x${qty}`).join('\n') || '(aucun)';
+      }
+
       function buildOrderText(){
-        const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
+        const itemsText=itemsTextForEmail();
         const c=document.getElementById('comments')?.value?.trim() || '—';
-        const first=form?.querySelector('[name="first_name"]')?.value || '—';
-        const last =form?.querySelector('[name="last_name"]')?.value || '—';
-        const email=form?.querySelector('[name="email"]')?.value || '—';
+        const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '—';
+        const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '—';
+        const email=form?.querySelector('[name="email"]')?.value?.trim() || '—';
 
         return `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
 
 Articles :
-${itemsText || '(aucun)'}
+${itemsText}
 
 Allergies / autres :
 ${c}`;
@@ -549,18 +566,73 @@ ${c}`;
         }catch(e){}
       }
 
-      // Footer: bouton principal (Valider panier → / Commander →)
-      btnPrimary?.addEventListener('click', ()=>{
+      function validateForm(){
+        if(!form) return false;
+        const first = form.first_name.value.trim();
+        const last  = form.last_name.value.trim();
+        const email = form.email.value.trim();
+        const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if(!first || !last || !okEmail){ form.reportValidity?.(); return false; }
+        return true;
+      }
+
+      async function sendEmails(){
+        if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
+
+        const first = form.first_name.value.trim();
+        const last  = form.last_name.value.trim();
+        const email = form.email.value.trim();
+        const notes = form.comments.value.trim();
+        const items = itemsTextForEmail();
+        const order_full = buildOrderText();
+
+        const templateParams = {
+          to_name: first || 'Client',
+          to_email: email,             // destinataire client
+          admin_email: YUMEKO_EMAIL,   // si ton template l’utilise
+          from_name: 'YUMEKO SUSHIS',
+          subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS',
+          items_text: items,
+          comments: notes || '—',
+          full_name: `${first} ${last}`.trim(),
+          order_full
+        };
+
+        // 1) Client
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+
+        // 2) Admin YUMEKO
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          ...templateParams,
+          to_name: 'YUMEKO',
+          to_email: YUMEKO_EMAIL,
+          subject: 'Nouvelle commande — YUMEKO SUSHIS'
+        });
+      }
+
+      // Bouton principal (Valider panier → / Commander →)
+      btnPrimary?.addEventListener('click', async ()=>{
         if(currentStep === 'cart'){
+          // panier vide ?
+          if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
           setStep('details');
-        }else{
-          if(!form.reportValidity()) return;
-          saveOrderToLocalStorage();
-          document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-          updateSticky();
-          closeSheet();
-          window.location.href = 'merci.html';
+          return;
         }
+
+        // currentStep === 'details'
+        if(!validateForm()) return;
+
+        // Sauvegarde du récap (pour merci.html)
+        saveOrderToLocalStorage();
+
+        // Envoi des emails (non bloquant pour la redirection)
+        try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
+
+        // Reset panier + redirection
+        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+        updateSticky();
+        closeSheet();
+        window.location.href = 'merci.html';
       });
 
       // Ajustements quantités dans le récap
@@ -581,8 +653,8 @@ ${c}`;
         buildRecap();
       });
 
-      // MàJ récap quand on tape dans le formulaire (commentaires, etc.)
-      sheet.addEventListener('input', (e)=>{
+      // MàJ récap quand on tape (commentaires, etc.)
+      document.getElementById('cartSheet').addEventListener('input', (e)=>{
         if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }
       });
 
