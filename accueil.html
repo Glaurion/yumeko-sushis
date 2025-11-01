@@ -10,36 +10,35 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Favicon / thème (identiques au menu) -->
+  <!-- Favicon / thème -->
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#ff4d6d" />
+  <meta name="theme-color" content="#4CAF50" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura & Matcha" (alignée avec la page Menu) ===== */
+    /* ===== Palette lumineuse "Wasabi & Yuzu" ===== */
     :root{
-      --brand:#ff4d6d;           /* sakura */
-      --brand-2:#e63956;         /* sakura + sombre */
+      --brand:#4CAF50;          /* wasabi principal */
+      --brand-2:#3d9e44;        /* wasabi + sombre */
 
-      --text:#1a1a1a;            /* encre */
-      --muted:#5c6870;           /* gris lisible */
+      --text:#1a1a1a;
+      --muted:#5c6870;
 
-      --bg-1:#fffaf3;            /* riz */
-      --bg-2:#ffe5ec;            /* voile sakura */
+      --bg-1:#fffaf3;           /* riz */
+      --bg-2:#e9f8ec;           /* voile vert très doux */
 
-      --card:#ffffff;            /* cartes claires */
+      --card:#ffffff;
       --card-border:rgba(0,0,0,.06);
 
-      --accent:#ffd166;          /* yuzu */
-      --accent-2:#ffc300;        /* yuzu + */
-      --matcha:#17a36b;          /* mini accents */
+      --accent:#ffd166;         /* yuzu (boutons) */
+      --accent-2:#ffc300;
 
-      --gold:#d8b26e;            /* pour la barre décorative si souhaitée */
-      --barShade:.35;            /* opacité gradient sticky (si utilisé) */
+      --gold:#d8b26e;           /* petit liseré décoratif */
     }
 
     *{ box-sizing:border-box; }
     html, body{ height:100%; scroll-behavior:smooth; }
+
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -50,11 +49,12 @@
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ===== Header (clair, aligné au menu) ===== */
+    /* ===== Header (NON-sticky) ===== */
     .site-header.jp{
-      background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
       border-bottom: 1px solid var(--card-border);
-      position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(125%) blur(6px);
+      position: static; /* <- ne suit plus le scroll */
+      top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
@@ -63,27 +63,34 @@
     a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .logo{
       width:160px; height:160px; border-radius:50%;
-      object-fit:cover; background:#fff; box-shadow:0 8px 24px rgba(255,77,109,.15);
-      display:block; border:3px solid rgba(255,77,109,.15);
+      object-fit:cover; background:#fff;
+      box-shadow:0 8px 24px rgba(76,175,80,.15);        /* ombre verdoyante */
+      border:3px solid rgba(76,175,80,.15);            /* liseré vert */
+      display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
-    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
+    .brand-text h1{
+      margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center;
+    }
 
-    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
+    .main-nav{
+      display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600;
+    }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
     .main-nav a{
       color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95;
       transition:filter .15s ease, transform .15s ease, background .15s ease;
     }
     .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(0,0,0,.04); }
-    .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
+    .main-nav a.active{ background:rgba(76,175,80,.12); color:#2a7f32; } /* actif en wasabi */
     @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
     /* ===== Page ===== */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{
       background:var(--card); border:1px solid var(--card-border); border-radius:18px;
-      padding:22px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:22px;
+      padding:22px; box-shadow:0 12px 30px rgba(76,175,80,.10), 0 4px 14px rgba(0,0,0,.04);
+      margin-bottom:22px;
     }
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
     .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),var(--gold),transparent); border-radius:2px; margin:6px 0 16px; }
@@ -94,14 +101,16 @@
     .lead{ font-size:1.06rem; line-height:1.7; color:#2a2a2a; }
     .muted{ color:var(--muted); }
 
-    /* Bandeau CTA (clair et appétissant) */
+    /* Bandeau CTA (vert frais) */
     .cta-band{
-      background:linear-gradient(90deg, rgba(255,244,246,.9), rgba(255,215,221,.9));
+      background:linear-gradient(90deg, rgba(233,248,236,.95), rgba(214,243,223,.95));
       border:1px solid var(--card-border); border-radius:16px; padding:18px;
       display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
-      box-shadow:0 10px 24px rgba(255,77,109,.12);
+      box-shadow:0 10px 24px rgba(76,175,80,.12);
     }
-    @media (min-width:760px){ .cta-band{ flex-direction:row; justify-content:space-between; text-align:left; } }
+    @media (min-width:760px){
+      .cta-band{ flex-direction:row; justify-content:space-between; text-align:left; }
+    }
 
     .btn{
       display:inline-block; border:none; border-radius:14px; padding:12px 16px;
@@ -115,7 +124,9 @@
 
     /* Accessibilité */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
-    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
+    @media (prefers-reduced-motion:reduce){
+      *{ transition:none !important; animation:none !important; scroll-behavior:auto; }
+    }
   </style>
 </head>
 
@@ -161,7 +172,7 @@
     <!-- APPEL À L’ACTION -->
     <section class="cta-band" aria-labelledby="cta-titre">
       <div>
-        <h3 id="cta-titre" style="margin:0 0 6px; color:#c2173b">Prêt à vous régaler ?</h3>
+        <h3 id="cta-titre" style="margin:0 0 6px; color:#2a7f32">Prêt à vous régaler ?</h3>
         <p class="muted" style="margin:0">Commande en quelques clics — rapide, simple et 100% à votre goût.</p>
       </div>
       <div>
@@ -172,7 +183,7 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- JS : nav actif (identique à index) -->
+  <!-- JS : nav actif -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
