@@ -60,11 +60,11 @@
       will-change: transform, opacity;
     }
 
-    /* ===== Header (désormais NON-sticky) ===== */
+    /* ===== Header (NON-sticky) ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
       border-bottom: 1px solid var(--card-border);
-      position: static; /* <- plus sticky */
+      position: static;
       top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
@@ -194,6 +194,20 @@
     /* Empêche le scroll de la page quand le tiroir est ouvert */
     body.modal-open{ overflow:hidden; }
 
+    /* ===== Formulaire (étape coordonnées) ===== */
+    .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    .field.full{ grid-column:1 / -1; }
+    .field label{ font-weight:700; font-size:.92rem; color:#222; }
+    .field input, .field textarea{
+      background:#fff; border:1px solid var(--card-border); border-radius:10px;
+      padding:10px 12px; font-family:inherit; font-size:1rem; color:#111;
+    }
+    .field input:focus, .field textarea:focus{
+      outline:3px solid rgba(255,77,109,.25); border-color:rgba(255,77,109,.45);
+    }
+    @media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
+
     /* Accessibilité / focus */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
@@ -240,22 +254,48 @@
   <!-- OVERLAY pour clic extérieur -->
   <div id="sheetOverlay" aria-hidden="true"></div>
 
-  <!-- TIROIR PANIER (footer simplifié) -->
+  <!-- TIROIR PANIER (2 étapes) -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
       <button id="sheetClose" aria-label="Fermer" type="button">×</button>
     </header>
     <div class="body">
+      <!-- Étape 1 : panier -->
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
+
+      <!-- Étape 2 : coordonnées -->
+      <div id="stepDetails" class="step" style="display:none">
+        <form id="orderForm" action="#" method="post" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="first_name">Prénom</label>
+              <input id="first_name" name="first_name" type="text" required autocomplete="given-name" />
+            </div>
+            <div class="field">
+              <label for="last_name">Nom</label>
+              <input id="last_name" name="last_name" type="text" required autocomplete="family-name" />
+            </div>
+            <div class="field full">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" required autocomplete="email" inputmode="email" />
+            </div>
+            <div class="field full">
+              <label for="comments">Allergies / commentaire (optionnel)</label>
+              <textarea id="comments" name="comments" rows="3" placeholder="Ex : sans sésame, sauce à part…"></textarea>
+            </div>
+          </div>
+          <input type="hidden" id="hiddenOrder" name="order" value="" />
+        </form>
+      </div>
     </div>
     <footer>
       <button class="btn btn-ghost" id="closeSheetBtn" type="button">← Retour</button>
-      <button class="btn btn-primary" id="goCheckout" type="button">Valider le panier →</button>
+      <button class="btn btn-primary" id="goPrimary" type="button">Valider le panier →</button>
     </footer>
   </div>
 
@@ -264,7 +304,7 @@
   </footer>
 
   <!-- =========================
-       Données + Construction du menu (inchangé)
+       Données + Construction du menu
   ========================== -->
   <script>
     const categories={
@@ -381,11 +421,16 @@
       const sheetClose = document.getElementById('sheetClose');
       const btnOpen = document.getElementById('gotoOrder');
       const btnBackClose = document.getElementById('closeSheetBtn');
-      const btnCheckout = document.getElementById('goCheckout');
+      const btnPrimary = document.getElementById('goPrimary');
 
       const recapList = document.getElementById('recapList');
       const recapCom = document.getElementById('recapComment');
-      const form = document.getElementById('orderForm'); // si présent ailleurs
+
+      const stepCart = document.getElementById('stepCart');
+      const stepDetails = document.getElementById('stepDetails');
+      const form = document.getElementById('orderForm');
+
+      let currentStep = 'cart';
 
       function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
       function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
@@ -436,6 +481,17 @@
         recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
       }
 
+      function setStep(which){
+        currentStep = which;
+        const isCart = which === 'cart';
+        stepCart.style.display = isCart ? '' : 'none';
+        stepDetails.style.display = isCart ? 'none' : '';
+        btnPrimary.textContent = isCart ? 'Valider le panier →' : 'Commander →';
+        if(!isCart){
+          form?.querySelector('#first_name')?.focus();
+        }
+      }
+
       /* ==== Ouverture / fermeture + overlay ==== */
       const disableScroll = (e)=>{
         if(!document.body.classList.contains('modal-open')) return;
@@ -443,6 +499,7 @@
       };
       function openSheet(){
         buildRecap();
+        setStep('cart');
         sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
         overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
         document.body.classList.add('modal-open');
@@ -459,7 +516,10 @@
 
       btnOpen?.addEventListener('click', openSheet);
       sheetClose?.addEventListener('click', closeSheet);
-      btnBackClose?.addEventListener('click', closeSheet);
+      btnBackClose?.addEventListener('click', ()=>{
+        if(currentStep === 'details'){ setStep('cart'); }
+        else{ closeSheet(); }
+      });
       overlay?.addEventListener('click', closeSheet);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
@@ -481,16 +541,26 @@ Allergies / autres :
 ${c}`;
       }
       function saveOrderToLocalStorage(){
-        try{ localStorage.setItem('yumeko_last_order', buildOrderText()); }catch(e){}
+        try{
+          const text = buildOrderText();
+          const hidden = document.getElementById('hiddenOrder');
+          if(hidden) hidden.value = text;
+          localStorage.setItem('yumeko_last_order', text);
+        }catch(e){}
       }
 
-      // Footer: Valider le panier => sauvegarde + reset + redirection
-      btnCheckout?.addEventListener('click', ()=>{
-        saveOrderToLocalStorage();
-        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-        updateSticky();
-        closeSheet();
-        window.location.href = 'merci.html';
+      // Footer: bouton principal (Valider panier → / Commander →)
+      btnPrimary?.addEventListener('click', ()=>{
+        if(currentStep === 'cart'){
+          setStep('details');
+        }else{
+          if(!form.reportValidity()) return;
+          saveOrderToLocalStorage();
+          document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+          updateSticky();
+          closeSheet();
+          window.location.href = 'merci.html';
+        }
       });
 
       // Ajustements quantités dans le récap
@@ -509,6 +579,11 @@ ${c}`;
         bump(span);
         updateSticky();
         buildRecap();
+      });
+
+      // MàJ récap quand on tape dans le formulaire (commentaires, etc.)
+      sheet.addEventListener('input', (e)=>{
+        if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }
       });
 
       // Carte: clic carte ouvre la modale quantité
