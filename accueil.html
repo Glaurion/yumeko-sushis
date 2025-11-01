@@ -27,30 +27,37 @@
 
       /* Sakura dynamique (option B ≈ #ffe1eb) */
       --sakura-rgb:255,225,235;
-      --sakuraAmt: 0;                /* 0 (haut) → 1 (bas), injecté au scroll */
-      --sakuraAlphaMid: 0;           /* alpha milieu (douce montée) */
-      --sakuraAlphaEnd: 0;           /* alpha bas de page */
+      --sakuraMid: 0;   /* alpha vers 75–85% de page */
+      --sakuraEnd: 0;   /* alpha bas de page */
     }
 
     *{ box-sizing:border-box; }
     html, body{ height:100%; scroll-behavior:smooth; }
 
+    /* Corps : seulement le "riz" + halo en haut (pas de sakura dynamique ici) */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      /* 1) lumière en haut, 2) unique bande sakura EN BAS, 3) fond riz uniforme */
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        linear-gradient(180deg,
-          rgba(var(--sakura-rgb), 0) 0%,
-          rgba(var(--sakura-rgb), 0) 60%,
-          rgba(var(--sakura-rgb), var(--sakuraAlphaMid)) 85%,
-          rgba(var(--sakura-rgb), var(--sakuraAlphaEnd)) 100%
-        ),
         var(--bg-base);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      transition: background 80ms linear; /* lissage léger */
+    }
+
+    /* Couche sakura dédiée (fixe) -> compatible iOS */
+    .sakura-layer{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      /* une seule bande qui apparaît dans le bas */
+      background: linear-gradient(180deg,
+        rgba(var(--sakura-rgb), 0) 0%,
+        rgba(var(--sakura-rgb), 0) 60%,
+        rgba(var(--sakura-rgb), var(--sakuraMid)) 85%,
+        rgba(var(--sakura-rgb), var(--sakuraEnd)) 100%
+      );
+      /* force la composition GPU sur iOS */
+      -webkit-transform: translateZ(0);
+      will-change: transform, opacity;
     }
 
     /* ===== Header (NON-sticky) ===== */
@@ -126,6 +133,9 @@
 </head>
 
 <body>
+  <!-- Couche sakura iOS-safe -->
+  <div class="sakura-layer" aria-hidden="true"></div>
+
   <!-- ===== Header ===== -->
   <header class="site-header jp">
     <div class="header-inner">
@@ -178,7 +188,7 @@
 
   <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
 
-  <!-- JS : nav actif + sakura dynamique (unique bande en bas) -->
+  <!-- JS : nav actif + mise à jour sakura pour la couche dédiée -->
   <script>
     (function(){
       // Nav active
@@ -190,21 +200,19 @@
     })();
 
     (function(){
-      // Augmente la teinte sakura uniquement pour la bande BAS DE PAGE
+      // Augmente la teinte sakura uniquement pour la couche fixe (iOS-friendly)
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
         const max = (doc.scrollHeight - window.innerHeight) || 1;
         const p = Math.min(1, Math.max(0, window.scrollY / max));
-        const eased = 1 - Math.pow(1 - p, 1.6);             // montée douce
+        const eased = 1 - Math.pow(1 - p, 1.6);   // montée douce
 
-        // Alpha milieu et alpha bas
-        const mid = (eased * 0.5);                           // douceur intermédiaire
-        const end = (eased * 0.9);                           // plus prononcé tout en restant élégant
+        const mid = (eased * 0.5);                // vers 85% de page
+        const end = (eased * 0.9);                // bas de page
 
-        root.style.setProperty('--sakuraAmt', eased.toFixed(3));
-        root.style.setProperty('--sakuraAlphaMid', mid.toFixed(3));
-        root.style.setProperty('--sakuraAlphaEnd', end.toFixed(3));
+        root.style.setProperty('--sakuraMid', mid.toFixed(3));
+        root.style.setProperty('--sakuraEnd', end.toFixed(3));
       }
       updateSakura();
       window.addEventListener('scroll', updateSakura, {passive:true});
