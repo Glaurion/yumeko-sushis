@@ -576,39 +576,49 @@ ${c}`;
         return true;
       }
 
-      async function sendEmails(){
-        if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
+      <script>
+  async function sendEmails(){
+    if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
 
-        const first = form.first_name.value.trim();
-        const last  = form.last_name.value.trim();
-        const email = form.email.value.trim();
-        const notes = form.comments.value.trim();
-        const items = itemsTextForEmail();
-        const order_full = buildOrderText();
+    const first = form.first_name.value.trim();
+    const last  = form.last_name.value.trim();
+    const email = form.email.value.trim();
+    const notes = form.comments.value.trim();
+    const items = itemsTextForEmail();
+    const order_full = buildOrderText();
 
-        const templateParams = {
-          to_name: first || 'Client',
-          to_email: email,             // destinataire client
-          admin_email: YUMEKO_EMAIL,   // si ton template l’utilise
-          from_name: 'YUMEKO SUSHIS',
-          subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS',
-          items_text: items,
-          comments: notes || '—',
-          full_name: `${first} ${last}`.trim(),
-          order_full
-        };
+    const base = {
+      from_name: 'YUMEKO SUSHIS',
+      items_text: items,
+      comments: notes || '—',
+      full_name: `${first} ${last}`.trim(),
+      order_full
+    };
 
-        // 1) Client
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+    // 1) Mail AU CLIENT
+    const paramsCustomer = {
+      ...base,
+      to_name: first || 'Client',
+      to_email: email,          // <— c'est cette variable que le template doit utiliser
+      reply_to: email,
+      subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
+    };
 
-        // 2) Admin YUMEKO
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-          ...templateParams,
-          to_name: 'YUMEKO',
-          to_email: YUMEKO_EMAIL,
-          subject: 'Nouvelle commande — YUMEKO SUSHIS'
-        });
-      }
+    // 2) Mail À L’ADMIN
+    const paramsAdmin = {
+      ...base,
+      to_name: 'YUMEKO',
+      to_email: YUMEKO_EMAIL,   // <— ici on cible l’admin
+      reply_to: email,
+      subject: `Nouvelle commande — ${first} ${last}`.trim()
+    };
+
+    // Envois séparés, objets séparés
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
+  }
+</script>
+
 
       // Bouton principal (Valider panier → / Commander →)
       btnPrimary?.addEventListener('click', async ()=>{
