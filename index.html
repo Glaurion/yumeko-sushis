@@ -16,32 +16,14 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura & Matcha" =====
-       - Sakura / Love: #ff4d6d
-       - Koi (corail): #ff7a59
-       - Yuzu (accent boutons): #ffd166
-       - Matcha (accents fins): #17a36b
-       - Riz (fonds): #fffaf3
-    */
+    /* ===== Palette lumineuse "Sakura & Matcha" ===== */
     :root{
-      --brand:#ff4d6d;           /* sakura */
-      --brand-2:#e63956;         /* sakura + sombre */
-
-      --text:#1a1a1a;            /* encre */
-      --muted:#5c6870;           /* gris lisible */
-
-      --bg-1:#fffaf3;            /* riz */
-      --bg-2:#ffe5ec;            /* voile sakura */
-
-      --card:#ffffff;            /* cartes claires */
-      --card-border:rgba(0,0,0,.06);
-
-      --accent:#ffd166;          /* yuzu */
-      --accent-2:#ffc300;        /* yuzu + */
-      --matcha:#17a36b;          /* mini accents */
-
-      --gold:#d8b26e;            /* conserve l'effet séparateur doré */
-      --barShade:.35;            /* opacité gradient sticky */
+      --brand:#ff4d6d; --brand-2:#e63956;
+      --text:#1a1a1a; --muted:#5c6870;
+      --bg-1:#fffaf3; --bg-2:#ffe5ec;
+      --card:#ffffff; --card-border:rgba(0,0,0,.06);
+      --accent:#ffd166; --accent-2:#ffc300; --matcha:#17a36b;
+      --gold:#d8b26e; --barShade:.35;
     }
 
     *{ box-sizing:border-box; }
@@ -57,11 +39,12 @@
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* ===== Header (clair) ===== */
+    /* ===== Header (désormais NON-sticky) ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
       border-bottom: 1px solid var(--card-border);
-      position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(125%) blur(6px);
+      position: static; /* <- plus sticky */
+      top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto;
@@ -72,17 +55,12 @@
     .logo{
       width:160px; height:160px; border-radius:50%;
       object-fit:cover; background:#fff; box-shadow:0 8px 24px rgba(255,77,109,.15);
-      display:block;
-      border:3px solid rgba(255,77,109,.15);
+      display:block; border:3px solid rgba(255,77,109,.15);
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
-    .brand-text h1{
-      margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center;
-    }
+    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
 
-    .main-nav{
-      display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600;
-    }
+    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
     .main-nav a{
       color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95;
@@ -155,38 +133,49 @@
     }
     #gotoOrder:hover{ filter:brightness(1.05); transform:translateY(-1px); }
 
+    /* Backdrop pour le tiroir (clic dehors = fermer) */
+    #sheetOverlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(110%) blur(2px);
+      opacity:0; pointer-events:none; transition:opacity .22s ease; z-index:101;
+    }
+    #sheetOverlay.open{ opacity:1; pointer-events:auto; }
+
     #cartSheet{
       position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
       width:min(96%,1100px); background:#ffffff; color:#131313;
       border:1px solid var(--card-border); border-radius:16px 16px 0 0;
       box-shadow:0 22px 60px rgba(0,0,0,.15); max-height:70vh;
-      display:flex; flex-direction:column; transition:bottom .28s ease; z-index:101;
+      display:flex; flex-direction:column; transition:bottom .28s ease; z-index:102;
       overscroll-behavior:contain;
     }
     #cartSheet.open{ bottom:0; }
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
     #cartSheet header{ border-bottom:1px solid var(--card-border); }
-    #cartSheet footer{ border-top:1px solid var(--card-border); gap:10px; justify-content:flex-end; }
+    #cartSheet footer{ border-top:1px solid var(--card-border); gap:10px; }
     #cartSheet .body{
       padding:8px 10px; overflow:auto; -webkit-overflow-scrolling:touch;
       max-height:calc(70vh - 100px); overscroll-behavior:contain;
     }
-    .recap-list{
-      list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;
-      max-height:48vh; overflow:auto; -webkit-overflow-scrolling:touch;
-    }
-    .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(0,0,0,.08); }
 
-    .btn-ghost, .btn-primary{ border:none; border-radius:12px; padding:10px 14px; font-weight:900; cursor:pointer; }
-    .btn-ghost{ background:#f3f3f3; color:#222; } .btn-ghost:hover{ filter:brightness(1.05); }
-    .btn-primary{ background:var(--brand); color:#fff; } .btn-primary:hover{ background:var(--brand-2); }
-    .btn-primary[disabled]{ opacity:.6; cursor:not-allowed; }
+    /* Récap plus compact + miniatures réduites */
+    .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+    .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(0,0,0,.08); }
+    .thumb.sm{
+      width:56px; height:56px; object-fit:cover; border-radius:12px; background:#fff6ed;
+      border:1px solid var(--card-border);
+    }
+    .it-label{ font-weight:600; color:#222; }
+    .btn{ border:none; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; }
+    .btn-ghost{ background:#f3f3f3; color:#222; }
+    .btn-primary{ background:var(--brand); color:#fff; }
+    .btn-primary:hover{ background:var(--brand-2); }
+
+    /* Empêche le scroll de la page quand le tiroir est ouvert */
+    body.modal-open{ overflow:hidden; }
 
     /* Accessibilité / focus */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
-    @media (prefers-reduced-motion:reduce){
-      *{ transition:none !important; animation:none !important; scroll-behavior:auto; }
-    }
+    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 </head>
 <body>
@@ -224,7 +213,10 @@
     </div>
   </div>
 
-  <!-- TIROIR RÉCAP / 2 ÉTAPES -->
+  <!-- OVERLAY pour clic extérieur -->
+  <div id="sheetOverlay" aria-hidden="true"></div>
+
+  <!-- TIROIR PANIER (footer simplifié) -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
@@ -236,16 +228,10 @@
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-      <div id="stepDetails" class="step"></div>
     </div>
     <footer>
-      <div id="footerCart" class="step active">
-        <button class="btn-primary" id="goDetails" type="button">Valider le panier →</button>
-      </div>
-      <div id="footerDetails" class="step">
-        <button class="btn-ghost" id="backToCart" type="button">← Retour</button>
-        <button class="btn-primary" id="confirmSend" type="button">Confirmer et envoyer</button>
-      </div>
+      <button class="btn btn-ghost" id="closeSheetBtn" type="button">← Retour</button>
+      <button class="btn btn-primary" id="goCheckout" type="button">Valider le panier →</button>
     </footer>
   </div>
 
@@ -340,12 +326,12 @@
     document.addEventListener('DOMContentLoaded', buildMenu);
   </script>
 
-  <!-- Utilitaires & bandeau (adaptation légère du dégradé) -->
+  <!-- Utilitaires (dégradé sticky bar) -->
   <script>
     (function(){
       if(typeof window.CSS==='undefined') window.CSS={};
       if(typeof window.CSS.escape!=='function'){
-        window.CSS.escape=function(sel){ return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g,'\\$&'); };
+        window.CSS.escape=function(sel){ return String(sel).replace(/[\\0-\\x1F\\x7F\"#%&'()*+,./:;<=>?@\\[\\]^`{|}~]/g,'\\\\$&'); };
       }
     })();
     (function(){
@@ -363,24 +349,19 @@
     })();
   </script>
 
-  <!-- Panier / tiroir / formulaire (inchangé fonctionnellement) -->
+  <!-- Panier / tiroir -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const sheet = document.getElementById('cartSheet');
+      const overlay = document.getElementById('sheetOverlay');
       const sheetClose = document.getElementById('sheetClose');
       const btnOpen = document.getElementById('gotoOrder');
-      const btnGoDetails = document.getElementById('goDetails');
-      const btnBack = document.getElementById('backToCart');
-      const btnConfirm = document.getElementById('confirmSend');
+      const btnBackClose = document.getElementById('closeSheetBtn');
+      const btnCheckout = document.getElementById('goCheckout');
 
       const recapList = document.getElementById('recapList');
       const recapCom = document.getElementById('recapComment');
-      const form = document.getElementById('orderForm');
-
-      const stepCart = document.getElementById('stepCart');
-      const stepDetails = document.getElementById('stepDetails');
-
-      if(form && !stepDetails.contains(form)) stepDetails.appendChild(form);
+      const form = document.getElementById('orderForm'); // si présent ailleurs
 
       function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
       function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
@@ -420,9 +401,9 @@
                 <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
               </div>
               <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
-                <button class="btn recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
-                <span class="qty" aria-live="polite">${qty}</span>
-                <button class="btn recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
+                <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
+                <span class="qty" aria-live="polite" style="min-width:20px;text-align:center;font-weight:800">${qty}</span>
+                <button class="btn btn-ghost recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
               </div>`;
             recapList.appendChild(li);
           });
@@ -431,45 +412,33 @@
         recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
       }
 
-      function setStep(which){
-        const showCart = which==='cart';
-        const showDetails = which==='details';
-        stepCart.classList.toggle('active', showCart);
-        document.getElementById('footerCart').classList.toggle('active', showCart);
-        stepDetails.classList.toggle('active', showDetails);
-        document.getElementById('footerDetails').classList.toggle('active', showDetails);
-      }
-
-      const lockBgScroll = (e)=>{
+      /* ==== Ouverture / fermeture + overlay ==== */
+      const disableScroll = (e)=>{
         if(!document.body.classList.contains('modal-open')) return;
         if(!sheet.contains(e.target)){ e.preventDefault(); }
       };
       function openSheet(){
-        setStep('cart'); buildRecap();
+        buildRecap();
         sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+        overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
         document.body.classList.add('modal-open');
-        window.addEventListener('touchmove', lockBgScroll, {passive:false});
-        window.addEventListener('wheel', lockBgScroll, {passive:false});
+        window.addEventListener('touchmove', disableScroll, {passive:false});
+        window.addEventListener('wheel', disableScroll, {passive:false});
       }
       function closeSheet(){
         sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
+        overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
         document.body.classList.remove('modal-open');
-        window.removeEventListener('touchmove', lockBgScroll);
-        window.removeEventListener('wheel', lockBgScroll);
+        window.removeEventListener('touchmove', disableScroll);
+        window.removeEventListener('wheel', disableScroll);
       }
 
       btnOpen?.addEventListener('click', openSheet);
       sheetClose?.addEventListener('click', closeSheet);
-      btnGoDetails?.addEventListener('click', ()=> setStep('details'));
-      btnBack?.addEventListener('click', ()=> setStep('cart'));
+      btnBackClose?.addEventListener('click', closeSheet);
+      overlay?.addEventListener('click', closeSheet);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
-      function ensureHiddenField(name){
-        if(!form) return null;
-        let input=form.querySelector(`input[name="${name}"]`);
-        if(!input){ input=document.createElement('input'); input.type='hidden'; input.name=name; form.appendChild(input); }
-        return input;
-      }
       function buildOrderText(){
         const itemsText=getCartItems().map(({name,qty})=>`- ${name} x${qty}`).join('\n');
         const c=document.getElementById('comments')?.value?.trim() || '—';
@@ -487,43 +456,20 @@ ${itemsText || '(aucun)'}
 Allergies / autres :
 ${c}`;
       }
-      function prepareOrderText(){
-        const text = buildOrderText();
-        const hidden = ensureHiddenField('order'); if(hidden) hidden.value=text;
-        const hiddenOrder = document.getElementById('hiddenOrder'); if(hiddenOrder) hiddenOrder.value=text;
-        try{ localStorage.setItem('yumeko_last_order', text); }catch(e){}
-        return text;
+      function saveOrderToLocalStorage(){
+        try{ localStorage.setItem('yumeko_last_order', buildOrderText()); }catch(e){}
       }
 
-      document.getElementById('confirmSend')?.addEventListener('click', async ()=>{
-        if(!form) return;
-        if(!form.reportValidity()){
-          setStep('details'); form.querySelector(':invalid')?.focus(); return;
-        }
-        prepareOrderText();
-
-        const fd = new FormData(form);
-        fd.delete('_next');
-
-        const btn = document.getElementById('confirmSend');
-        btn.disabled = true; const old = btn.textContent; btn.textContent = 'Envoi…';
-
-        try{
-          await fetch(form.action, { method:'POST', body: fd, headers:{ 'Accept':'application/json' } });
-        }catch(e){
-          console.warn('FormSubmit error:', e);
-        }finally{
-          document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-          updateSticky();
-          window.location.href = 'merci.html';
-        }
-
-        btn.disabled = false; btn.textContent = old;
+      // Footer: Valider le panier => sauvegarde + reset + redirection
+      btnCheckout?.addEventListener('click', ()=>{
+        saveOrderToLocalStorage();
+        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+        updateSticky();
+        closeSheet();
+        window.location.href = 'merci.html';
       });
 
-      document.getElementById('cartSheet').addEventListener('input', (e)=>{
-        if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }
-      });
+      // Ajustements quantités dans le récap
       recapList.addEventListener('click', (e)=>{
         const plus = e.target.closest('.recap-plus');
         const minus = e.target.closest('.recap-minus');
@@ -541,6 +487,7 @@ ${c}`;
         buildRecap();
       });
 
+      // Carte: clic carte ouvre la modale quantité
       document.addEventListener('click', (e)=>{
         const plusBtn = e.target.closest('.card-plus');
         const card = e.target.closest('.item-card');
@@ -558,6 +505,7 @@ ${c}`;
         }
       });
 
+      // ==== Modale produit légère ====
       function openItemModal(code, name){
         const d=catalog[code]||{};
         const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
@@ -658,7 +606,6 @@ ${c}`;
       }
 
       if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
-
       restoreCart();
       updateSticky();
     });
@@ -675,8 +622,8 @@ ${c}`;
     })();
   </script>
 
-  <!-- ===== Modale produit minimale (si déjà présente ailleurs, ignorer) ===== -->
-  <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:102" aria-hidden="true">
+  <!-- ===== Modale produit minimale ===== -->
+  <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:103" aria-hidden="true">
     <div style="background:#fff;border-radius:16px;border:1px solid var(--card-border);width:min(92%,560px);max-height:80vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.15)">
       <div style="display:flex;gap:14px;padding:14px;align-items:flex-start">
         <img id="mImg" alt="" style="width:140px;height:140px;object-fit:cover;border-radius:12px;background:#fff6ed;border:1px solid var(--card-border)" />
@@ -692,9 +639,9 @@ ${c}`;
         <button id="mClose" aria-label="Fermer" type="button" style="background:transparent;border:none;font-size:1.4rem;line-height:1;padding:4px 6px">×</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:14px;border-top:1px solid var(--card-border)">
-        <button id="mMinus" class="btn" type="button" style="background:#f3f3f3;border:none;border-radius:10px;padding:8px 12px;visibility:hidden">−</button>
+        <button id="mMinus" class="btn btn-ghost" type="button">−</button>
         <span id="mQty" class="qty" style="min-width:20px;text-align:center;font-weight:800">0</span>
-        <button id="mPlus" class="btn" type="button" style="background:var(--accent);border:none;border-radius:10px;padding:8px 12px">+</button>
+        <button id="mPlus" class="btn btn-primary" type="button">+</button>
       </div>
     </div>
   </div>
