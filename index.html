@@ -16,67 +16,77 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura & Matcha" ===== */
+    /* ===== Palette "Sakura" (alignée sur l'accueil) ===== */
     :root{
-      --brand:#ff4d6d; --brand-2:#e63956;
+      --brand:#ff4d6d; --brand-2:#e63956;  /* Rose signature */
       --text:#1a1a1a; --muted:#5c6870;
 
-      --bg-base:#fffaf3; /* riz uniforme */
+      --bg-1:#fffaf3;  /* riz */
+      --bg-2:#ffe5ec;  /* voile sakura doux */
+
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
+      --accent:#ffd166; --accent-2:#ffc300; /* JAUNE = comme "Découvrir le menu" */
 
-      --accent:#ffd166; --accent-2:#ffc300; --matcha:#17a36b;
-      --gold:#d8b26e; --barShade:.35;
-
-      /* Sakura dynamique (option B ≈ #ffe1eb) */
-      --sakura-rgb:255,225,235;
-      --sakuraMid: 0;   /* alpha vers 80–85% de page */
-      --sakuraEnd: 0;   /* alpha bas de page */
+      /* Contrôle du dégradé dynamique */
+      --sakura-rgb:255,77,109; /* rose sakura en RGB */
+      --sakuraAmt: 0;          /* 0 (haut) → 1 (bas), mis à jour au scroll */
     }
 
     *{ box-sizing:border-box; }
-    html, body{ height:100%; scroll-behavior:smooth; }
+    html, body{ height:100%; min-height:100%; scroll-behavior:smooth; }
 
-    /* Corps : halo haut + riz; la bande sakura est dans .sakura-layer */
+    /* ===== Fond : identique à la page Accueil (Option B) ===== */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
+
+      /* Dégradé adouci qui ne colore plus le bas de la page */
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        var(--bg-base);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+        linear-gradient(180deg,
+          rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+          rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%,
+          var(--bg-1) 100%
+        ),
+        var(--bg-1);
+
+      -webkit-font-smoothing:antialiased; 
+      -moz-osx-font-smoothing:grayscale;
+      transition: background 80ms linear;
     }
 
-    /* Couche sakura dédiée (fixe) -> compatible iOS */
-    .sakura-layer{
-      position:fixed; inset:0; z-index:-1; pointer-events:none;
-      background: linear-gradient(180deg,
-        rgba(var(--sakura-rgb), 0) 0%,
-        rgba(var(--sakura-rgb), 0) 60%,
-        rgba(var(--sakura-rgb), var(--sakuraMid)) 85%,
-        rgba(var(--sakura-rgb), var(--sakuraEnd)) 100%
-      );
-      -webkit-transform: translateZ(0);
-      will-change: transform, opacity;
+    /* 📱 Version mobile : réduction du rose pour éviter tout excédent */
+    @media (max-width: 768px){
+      body{
+        background:
+          radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
+          linear-gradient(180deg,
+            rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+            rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%,
+            var(--bg-1) 100%
+          ),
+          var(--bg-1);
+      }
     }
 
-    /* ===== Header (NON-sticky) ===== */
+    /* ===== Header (non-sticky) ===== */
     .site-header.jp{
-      background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
       border-bottom: 1px solid var(--card-border);
-      position: static;
-      top:auto; z-index:auto; backdrop-filter:none;
+      position: static; top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
-      width:min(96%,1100px); margin:0 auto;
-      padding:14px 8px 10px;
+      width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
     a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .logo{
       width:160px; height:160px; border-radius:50%;
-      object-fit:cover; background:#fff; box-shadow:0 8px 24px rgba(255,77,109,.15);
-      display:block; border:3px solid rgba(255,77,109,.15);
+      object-fit:cover; background:#fff;
+      box-shadow:0 8px 24px rgba(255,77,109,.15);
+      border:3px solid rgba(255,77,109,.15);
+      display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
     .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
@@ -98,7 +108,7 @@
       padding:22px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:22px;
     }
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
-    .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),var(--gold),transparent); border-radius:2px; margin:6px 0 16px; }
+    .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
     /* ===== GRID menu ===== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
@@ -120,12 +130,20 @@
     .price{ font-size:.9rem; font-weight:800; color:#0e7a4f; }
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
+
+    /* === Boutons alignés avec "Découvrir le menu" (JAUNE) === */
     .circle{
-      background:var(--accent); border:none; color:#111; width:36px; height:36px; border-radius:12px;
+      background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px;
       font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
       box-shadow:0 4px 0 rgba(0,0,0,.08);
     }
     .circle:hover{ background:var(--accent-2); transform:translateY(-1px); }
+
+    .btn{ border:none; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; }
+    .btn-ghost{ background:#f3f3f3; color:#222; }
+    .btn-primary{ background:var(--accent); color:#111; box-shadow:0 6px 0 rgba(0,0,0,.06); }
+    .btn-primary:hover{ background:var(--accent-2); }
+
     .qty-badge{ min-width:22px; text-align:center; font-weight:800; color:#1a1a1a; }
     .qty-badge:empty{ display:none; }
     .qty.bump{ transform:scale(1.15); transition:transform .2s; }
@@ -141,18 +159,20 @@
     /* ===== Sticky bar + tiroir ===== */
     #stickyBar{
       position:fixed; bottom:0; left:0; right:0; z-index:100;
-      background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,var(--barShade)));
+      background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,.35));
       padding:6px;
     }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
+
+    /* === Bouton Panier = même style que "Découvrir le menu" === */
     #gotoOrder{
-      background:var(--brand); color:#fff; font-weight:900; border:none; border-radius:14px;
+      background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px;
       padding:12px 16px; cursor:pointer; white-space:nowrap;
       transition:filter .15s ease, transform .15s ease, box-shadow .15s ease;
-      box-shadow:0 8px 20px rgba(255,77,109,.35);
+      box-shadow:0 8px 20px rgba(0,0,0,.12);
     }
-    #gotoOrder:hover{ filter:brightness(1.05); transform:translateY(-1px); }
+    #gotoOrder:hover{ background:var(--accent-2); filter:brightness(1.02); transform:translateY(-1px); }
 
     /* Backdrop pour le tiroir (clic dehors = fermer) */
     #sheetOverlay{
@@ -186,15 +206,8 @@
       border:1px solid var(--card-border);
     }
     .it-label{ font-weight:600; color:#222; }
-    .btn{ border:none; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; }
-    .btn-ghost{ background:#f3f3f3; color:#222; }
-    .btn-primary{ background:var(--brand); color:#fff; }
-    .btn-primary:hover{ background:var(--brand-2); }
 
-    /* Empêche le scroll de la page quand le tiroir est ouvert */
-    body.modal-open{ overflow:hidden; }
-
-    /* ===== Formulaire (étape coordonnées) ===== */
+    /* Formulaire */
     .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .field{ display:flex; flex-direction:column; gap:6px; }
     .field.full{ grid-column:1 / -1; }
@@ -208,7 +221,7 @@
     }
     @media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
 
-    /* Accessibilité / focus */
+    /* Accessibilité */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
@@ -220,15 +233,12 @@
     const EMAILJS_PUBLIC_KEY = 'X0lGj86qGqZ49EKOC';
     const EMAILJS_SERVICE_ID = 'service_55t4mql';
     const EMAILJS_TEMPLATE_ID = 'template_9itlkwh';
-    const YUMEKO_EMAIL = 'yumeko.sushis@gmail.com'; // adresse de réception YUMEKO
+    const YUMEKO_EMAIL = 'yumeko.sushis@gmail.com';
 
     (function(){ try{ emailjs.init(EMAILJS_PUBLIC_KEY); }catch(e){ console.warn('EmailJS init error', e); } })();
   </script>
 </head>
 <body>
-
-  <!-- Couche sakura iOS-safe -->
-  <div class="sakura-layer" aria-hidden="true"></div>
 
   <!-- ===== Header ===== -->
   <header class="site-header jp">
@@ -402,29 +412,6 @@
     document.addEventListener('DOMContentLoaded', buildMenu);
   </script>
 
-  <!-- Utilitaires (dégradé sticky bar) -->
-  <script>
-    (function(){
-      if(typeof window.CSS==='undefined') window.CSS={};
-      if(typeof window.CSS.escape!=='function'){
-        window.CSS.escape=function(sel){ return String(sel).replace(/[\0-\x1F\x7F"#%&'()*+,./:;<=>?@\[\]^`{|}~]/g,'\\$&'); };
-      }
-    })();
-    (function(){
-      const root=document.documentElement;
-      function updateBarShade(){
-        const doc=document.documentElement;
-        const max=(doc.scrollHeight - window.innerHeight) || 1;
-        const p=Math.min(1, Math.max(0, window.scrollY/max));
-        const shade=0.35 + (0.85-0.35)*p;
-        root.style.setProperty('--barShade', shade.toFixed(2));
-      }
-      updateBarShade();
-      window.addEventListener('scroll', updateBarShade, {passive:true});
-      window.addEventListener('resize', updateBarShade);
-    })();
-  </script>
-
   <!-- Panier / tiroir + EmailJS -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -484,7 +471,7 @@
               <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
                 <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
                 <span class="qty" aria-live="polite" style="min-width:20px;text-align:center;font-weight:800">${qty}</span>
-                <button class="btn btn-ghost recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
+                <button class="btn btn-primary recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
               </div>`;
             recapList.appendChild(li);
           });
@@ -526,13 +513,14 @@
         window.removeEventListener('wheel', disableScroll);
       }
 
-      btnOpen?.addEventListener('click', openSheet);
-      sheetClose?.addEventListener('click', closeSheet);
-      btnBackClose?.addEventListener('click', ()=>{
+      const btnOpenEl = document.getElementById('gotoOrder');
+      btnOpenEl?.addEventListener('click', openSheet);
+      document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
+      document.getElementById('closeSheetBtn')?.addEventListener('click', ()=>{
         if(currentStep === 'details'){ setStep('cart'); }
         else{ closeSheet(); }
       });
-      overlay?.addEventListener('click', closeSheet);
+      document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
       function itemsTextForEmail(){
@@ -576,52 +564,49 @@ ${c}`;
         return true;
       }
 
-  async function sendEmails(){
-    if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
+      async function sendEmails(){
+        if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
 
-    const first = form.first_name.value.trim();
-    const last  = form.last_name.value.trim();
-    const email = form.email.value.trim();
-    const notes = form.comments.value.trim();
-    const items = itemsTextForEmail();
-    const order_full = buildOrderText();
+        const first = form.first_name.value.trim();
+        const last  = form.last_name.value.trim();
+        const email = form.email.value.trim();
+        const notes = form.comments.value.trim();
+        const items = itemsTextForEmail();
+        const order_full = buildOrderText();
 
-    const base = {
-      from_name: 'YUMEKO SUSHIS',
-      items_text: items,
-      comments: notes || '—',
-      full_name: `${first} ${last}`.trim(),
-      order_full
-    };
+        const base = {
+          from_name: 'YUMEKO SUSHIS',
+          items_text: items,
+          comments: notes || '—',
+          full_name: `${first} ${last}`.trim(),
+          order_full
+        };
 
-    // 1) Mail AU CLIENT
-    const paramsCustomer = {
-      ...base,
-      to_name: first || 'Client',
-      to_email: email,          // <— c'est cette variable que le template doit utiliser
-      reply_to: email,
-      subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
-    };
+        // 1) Mail AU CLIENT
+        const paramsCustomer = {
+          ...base,
+          to_name: first || 'Client',
+          to_email: email,
+          reply_to: email,
+          subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
+        };
 
-    // 2) Mail À L’ADMIN
-    const paramsAdmin = {
-      ...base,
-      to_name: 'YUMEKO',
-      to_email: YUMEKO_EMAIL,   // <— ici on cible l’admin
-      reply_to: email,
-      subject: `Nouvelle commande — ${first} ${last}`.trim()
-    };
+        // 2) Mail À L’ADMIN
+        const paramsAdmin = {
+          ...base,
+          to_name: 'YUMEKO',
+          to_email: YUMEKO_EMAIL,
+          reply_to: email,
+          subject: `Nouvelle commande — ${first} ${last}`.trim()
+        };
 
-    // Envois séparés, objets séparés
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
-  }
-
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
+      }
 
       // Bouton principal (Valider panier → / Commander →)
       btnPrimary?.addEventListener('click', async ()=>{
         if(currentStep === 'cart'){
-          // panier vide ?
           if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
           setStep('details');
           return;
@@ -630,13 +615,10 @@ ${c}`;
         // currentStep === 'details'
         if(!validateForm()) return;
 
-        // Sauvegarde du récap (pour merci.html)
         saveOrderToLocalStorage();
 
-        // Envoi des emails (non bloquant pour la redirection)
         try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
 
-        // Reset panier + redirection
         document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
         updateSticky();
         closeSheet();
@@ -666,7 +648,7 @@ ${c}`;
         if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }
       });
 
-      // Carte: clic carte ouvre la modale quantité
+      // Carte: clic + ouvre la modale quantité (menu déroulant)
       document.addEventListener('click', (e)=>{
         const plusBtn = e.target.closest('.card-plus');
         const card = e.target.closest('.item-card');
@@ -684,7 +666,7 @@ ${c}`;
         }
       });
 
-      // ==== Modale produit légère ====
+      // ==== Modale produit légère (boutons JAUNES) ====
       function openItemModal(code, name){
         const d=catalog[code]||{};
         const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
@@ -740,6 +722,7 @@ ${c}`;
         document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
       })();
 
+      /* Persistance panier */
       const CART_KEY='yumeko_cart_v1';
       function saveCart(){
         const cart=[];
@@ -784,13 +767,13 @@ ${c}`;
         updateMiniRecap(); saveCart();
       }
 
-      if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpen?.click(),0); }
+      if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
       restoreCart();
       updateSticky();
     });
   </script>
 
-  <!-- Nav actif + Sakura dynamique (couche dédiée) -->
+  <!-- Nav actif + Sakura dynamique -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
@@ -801,19 +784,14 @@ ${c}`;
     })();
 
     (function(){
-      // Monte la teinte sakura dans la couche fixe selon le scroll (iOS-friendly)
+      // Monte la teinte sakura selon le scroll (identique à l'accueil)
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
         const max = (doc.scrollHeight - window.innerHeight) || 1;
         const p = Math.min(1, Math.max(0, window.scrollY / max));
-        const eased = 1 - Math.pow(1 - p, 1.6);   // montée douce
-
-        const mid = (eased * 0.5);  // vers 85% de page
-        const end = (eased * 0.9);  // bas de page
-
-        root.style.setProperty('--sakuraMid', mid.toFixed(3));
-        root.style.setProperty('--sakuraEnd', end.toFixed(3));
+        const eased = 1 - Math.pow(1 - p, 1.6);
+        root.style.setProperty('--sakuraAmt', eased.toFixed(3));
       }
       updateSakura();
       window.addEventListener('scroll', updateSakura, {passive:true});
@@ -821,7 +799,7 @@ ${c}`;
     })();
   </script>
 
-  <!-- ===== Modale produit minimale ===== -->
+  <!-- ===== Modale produit ===== -->
   <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:103" aria-hidden="true">
     <div style="background:#fff;border-radius:16px;border:1px solid var(--card-border);width:min(92%,560px);max-height:80vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.15)">
       <div style="display:flex;gap:14px;padding:14px;align-items:flex-start">
