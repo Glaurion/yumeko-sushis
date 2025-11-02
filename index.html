@@ -18,16 +18,15 @@
   <style>
     /* ===== Palette "Sakura" (alignée sur l'accueil) ===== */
     :root{
-      --brand:#ff4d6d; --brand-2:#e63956;  /* Rose signature */
+      --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
 
       --bg-1:#fffaf3;  /* riz */
       --bg-2:#ffe5ec;  /* voile sakura doux */
 
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
-      --accent:#ffd166; --accent-2:#ffc300; /* JAUNE = comme "Découvrir le menu" */
+      --accent:#ffd166; --accent-2:#ffc300; /* jaune = comme "Découvrir le menu" */
 
-      /* Contrôle du dégradé dynamique */
       --sakura-rgb:255,77,109;
       --sakuraAmt: 0;
     }
@@ -35,7 +34,7 @@
     *{ box-sizing:border-box; }
     html, body{ height:100%; min-height:100%; scroll-behavior:smooth; }
 
-    /* ===== Fond : identique à la page Accueil (Option B) ===== */
+    /* Fond identique à l’accueil (option B) */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -48,8 +47,7 @@
           var(--bg-1) 100%
         ),
         var(--bg-1);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
       transition: background 80ms linear;
     }
     @media (max-width: 768px){
@@ -65,11 +63,11 @@
       }
     }
 
-    /* ===== Header (non-sticky) ===== */
+    /* Header */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
       border-bottom: 1px solid var(--card-border);
-      position: static; top:auto; z-index:auto; backdrop-filter:none;
+      position: static;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
@@ -96,7 +94,7 @@
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
     @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    /* ===== Page ===== */
+    /* Page */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{
       background:var(--card); border:1px solid var(--card-border); border-radius:18px;
@@ -105,9 +103,9 @@
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
     .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
-    /* ===== Sous-nav catégories (sticky) ===== */
+    /* Sous-nav catégories (sticky) */
     .cat-nav-wrap{
-      position:sticky; top:0; z-index:10; /* reste visible */
+      position:sticky; top:0; z-index:10;
       padding:10px 0; margin:0 0 14px;
       background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
       backdrop-filter:saturate(120%) blur(2px);
@@ -126,7 +124,7 @@
     .pill:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.06); }
     .pill.active{ background:var(--accent); color:#111; border-color:rgba(0,0,0,.08); }
 
-    /* ===== Bloc catégorie ===== */
+    /* Bloc catégorie */
     .cat-section{
       background:var(--card);
       border:1px solid var(--card-border);
@@ -140,13 +138,12 @@
       margin:2px 2px 14px;
       padding-bottom:8px;
       border-bottom:1px dashed rgba(0,0,0,.08);
+      cursor:pointer; /* clic pour plier/déplier */
     }
     .cat-title{
       margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b;
     }
-    .cat-tools{
-      display:flex; align-items:center; gap:8px;
-    }
+    .cat-tools{ display:flex; align-items:center; gap:8px; }
     .btn-mini{
       border:1px solid var(--card-border);
       background:#fff; color:#222;
@@ -154,7 +151,7 @@
     }
     .btn-mini:hover{ background:#f6f6f6; }
 
-    /* ===== GRID menu ===== */
+    /* GRID menu */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{
       background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden;
@@ -175,7 +172,7 @@
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
 
-    /* === Boutons jaunes (alignés accueil) === */
+    /* Boutons jaunes */
     .circle{
       background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px;
       font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
@@ -199,7 +196,7 @@
       .circle{ width:34px; height:34px; }
     }
 
-    /* ===== Sticky bar + tiroir ===== */
+    /* Sticky bar + tiroir */
     #stickyBar{
       position:fixed; bottom:0; left:0; right:0; z-index:100;
       background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,.35));
@@ -207,8 +204,6 @@
     }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
-
-    /* === Bouton Panier (jaune) === */
     #gotoOrder{
       background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px;
       padding:12px 16px; cursor:pointer; white-space:nowrap;
@@ -262,14 +257,12 @@
     .field input:focus, .field textarea:focus{
       outline:3px solid rgba(255,77,109,.25); border-color:rgba(255,77,109,.45);
     }
-    @media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
 
-    /* Accessibilité */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 
-  <!-- ===== EmailJS (SDK + config) ===== -->
+  <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
     const EMAILJS_PUBLIC_KEY = 'X0lGj86qGqZ49EKOC';
@@ -281,7 +274,7 @@
 </head>
 <body>
 
-  <!-- ===== Header ===== -->
+  <!-- Header -->
   <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
@@ -298,7 +291,6 @@
   </header>
 
   <main class="container">
-    <!-- MENU -->
     <section class="section" id="menuSection" aria-labelledby="titre-menu">
       <h2 id="titre-menu">Notre carte</h2>
       <div class="sep" aria-hidden="true"></div>
@@ -308,7 +300,7 @@
         <div class="cat-nav" id="catNav"></div>
       </div>
 
-      <!-- Catégories rendues ici -->
+      <!-- Catégories -->
       <div id="menu"></div>
     </section>
   </main>
@@ -324,7 +316,7 @@
   <!-- OVERLAY pour clic extérieur -->
   <div id="sheetOverlay" aria-hidden="true"></div>
 
-  <!-- TIROIR PANIER (2 étapes) -->
+  <!-- TIROIR PANIER -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
@@ -414,7 +406,7 @@
       B2:{name:'BIERE ASAHI', img:'b2.jpg'},
       B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
     };
-    const prices={}; // optionnel
+    const prices={};
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
     function slugifyCat(label){
@@ -424,7 +416,7 @@
     function buildCategoryNav(){
       const nav=document.getElementById('catNav');
       nav.innerHTML='';
-      Object.keys(categories).forEach((cat, i)=>{
+      Object.keys(categories).forEach((cat)=>{
         const id=slugifyCat(cat);
         const btn=document.createElement('button');
         btn.className='pill';
@@ -432,26 +424,21 @@
         btn.setAttribute('data-target', '#'+id);
         btn.textContent=cat;
         btn.addEventListener('click', ()=>{
-          const target=document.getElementById(id);
           const already=btn.classList.contains('active');
-
-          // toggle filtre
           document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+          document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display=''); // reset visibilité
           if(!already){
             btn.classList.add('active');
-            // n'afficher que la catégorie cliquée
+            // Afficher uniquement la catégorie choisie
             document.querySelectorAll('.cat-section').forEach(sec=>{
               sec.style.display = (sec.id===id) ? '' : 'none';
             });
-          }else{
-            // reset filtre
-            document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display='');
-          }
-
-          // scroll (si la section est visible)
-          const visible=document.getElementById(id);
-          if(visible && visible.style.display!=='none'){
-            const y=visible.getBoundingClientRect().top + window.scrollY - 80;
+            // Déplier la catégorie ciblée
+            const target=document.getElementById(id);
+            const grid=target?.querySelector('.menu-grid');
+            const toggle=target?.querySelector('[data-action="collapse"]');
+            if(grid && grid.style.display==='none'){ grid.style.display=''; toggle.textContent='Réduire'; target.querySelector('.cat-header')?.setAttribute('aria-expanded','true'); }
+            const y=target.getBoundingClientRect().top + window.scrollY - 80;
             window.scrollTo({top:y, behavior:'smooth'});
           }
         });
@@ -461,6 +448,7 @@
 
     function buildMenu(){
       const menu=document.getElementById('menu'); menu.innerHTML='';
+
       for(const [cat,codes] of Object.entries(categories)){
         const sec=document.createElement('section');
         sec.className='cat-section';
@@ -468,11 +456,12 @@
 
         const header=document.createElement('div');
         header.className='cat-header';
+        header.setAttribute('role','button');
+        header.setAttribute('aria-expanded','false');
         header.innerHTML = `
           <h3 class="cat-title">${cat}</h3>
           <div class="cat-tools">
-            <button type="button" class="btn-mini" data-action="show-all">Tout afficher</button>
-            <button type="button" class="btn-mini" data-action="collapse">Réduire</button>
+            <button type="button" class="btn-mini" data-action="collapse">Déplier</button>
           </div>
         `;
 
@@ -507,32 +496,40 @@
           grid.appendChild(card);
         });
 
+        /* ÉTAT INITIAL = TOUT RÉDUIT */
+        grid.style.display='none';
+
         sec.appendChild(header);
         sec.appendChild(grid);
         menu.appendChild(sec);
       }
 
-      // actions header (Réduire / Tout afficher)
+      /* Actions header (dépliage/repliage + clic header) */
       menu.addEventListener('click',(e)=>{
         const btn=e.target.closest('.btn-mini');
-        if(!btn) return;
-        const sec=e.target.closest('.cat-section');
+        const header=e.target.closest('.cat-header');
+        const sec=e.target.closest('.cat-section') || (header && header.parentElement);
         if(!sec) return;
         const grid=sec.querySelector('.menu-grid');
-        const action=btn.dataset.action;
-        if(action==='collapse'){
-          grid.style.display = (grid.style.display==='none') ? '' : 'none';
-          btn.textContent = (grid.style.display==='none') ? 'Déplier' : 'Réduire';
+        const collapseBtn=sec.querySelector('[data-action="collapse"]');
+
+        // Bouton Déplier/Réduire
+        if(btn && btn.dataset.action==='collapse'){
+          const hidden = grid.style.display==='none';
+          grid.style.display = hidden ? '' : 'none';
+          collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
+          sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
+          return;
         }
-        if(action==='show-all'){
-          document.querySelectorAll('.cat-section').forEach(s=>{
-            const g=s.querySelector('.menu-grid'); if(g) g.style.display='';
-            const cta=s.querySelector('[data-action="collapse"]'); if(cta) cta.textContent='Réduire';
-          });
-          // reset filtre et pills
-          document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+
+        // Clic sur la bande header (hors bouton) => toggle
+        if(header && !btn){
+          const hidden = grid.style.display==='none';
+          grid.style.display = hidden ? '' : 'none';
+          collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
+          header.setAttribute('aria-expanded', hidden ? 'true' : 'false');
         }
-      });
+      }, false);
     }
 
     document.addEventListener('DOMContentLoaded', ()=>{
@@ -541,7 +538,7 @@
     });
   </script>
 
-  <!-- Panier / tiroir + EmailJS -->
+  <!-- Panier / tiroir + EmailJS + interactions carte -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const sheet = document.getElementById('cartSheet');
@@ -620,21 +617,19 @@
 
       const disableScroll = (e)=>{
         if(!document.body.classList.contains('modal-open')) return;
-        if(!document.getElementById('cartSheet').contains(e.target)){ e.preventDefault(); }
+        if(!sheet.contains(e.target)){ e.preventDefault(); }
       };
       function openSheet(){
         buildRecap();
         setStep('cart');
-        document.getElementById('cartSheet').classList.add('open');
-        document.getElementById('cartSheet').setAttribute('aria-hidden','false');
+        sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
         overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
         document.body.classList.add('modal-open');
         window.addEventListener('touchmove', disableScroll, {passive:false});
         window.addEventListener('wheel', disableScroll, {passive:false});
       }
       function closeSheet(){
-        document.getElementById('cartSheet').classList.remove('open');
-        document.getElementById('cartSheet').setAttribute('aria-hidden','true');
+        sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
         overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
         document.body.classList.remove('modal-open');
         window.removeEventListener('touchmove', disableScroll);
@@ -642,12 +637,12 @@
       }
 
       btnOpenEl?.addEventListener('click', openSheet);
-      document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
-      document.getElementById('closeSheetBtn')?.addEventListener('click', ()=>{
+      sheetClose?.addEventListener('click', closeSheet);
+      btnBackClose?.addEventListener('click', ()=>{
         if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); }
       });
       document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && document.getElementById('cartSheet').classList.contains('open')) closeSheet(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
       function itemsTextForEmail(){
         const items = getCartItems();
@@ -746,10 +741,11 @@ ${c}`;
         buildRecap();
       });
 
-      // Carte: clic + ouvre la modale quantité (menu déroulant)
+      // Carte: clic => modale quantité (photo/carte) OU bouton +
       document.addEventListener('click', (e)=>{
         const plusBtn = e.target.closest('.card-plus');
         const card = e.target.closest('.item-card');
+
         if(plusBtn){
           const itemKey = plusBtn.dataset.item;
           openItemModalByKey(itemKey);
@@ -761,9 +757,9 @@ ${c}`;
           openItemModal(code, name);
           return;
         }
-      });
+      }, false);
 
-      // ==== Modale produit légère (boutons JAUNES) ====
+      // Modale produit
       function openItemModal(code, name){
         const d=window.catalog[code]||{};
         const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
@@ -855,7 +851,7 @@ ${c}`;
         }else{
           btn.textContent = `Panier (${totalQty}) • Valider`;
         }
-        updateMiniRecap(); saveCart();
+        saveCart();
       }
       if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
       restoreCart();
@@ -887,7 +883,7 @@ ${c}`;
     })();
   </script>
 
-  <!-- ===== Modale produit ===== -->
+  <!-- Modale produit -->
   <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:103" aria-hidden="true">
     <div style="background:#fff;border-radius:16px;border:1px solid var(--card-border);width:min(92%,560px);max-height:80vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.15)">
       <div style="display:flex;gap:14px;padding:14px;align-items:flex-start">
