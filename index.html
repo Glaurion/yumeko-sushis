@@ -16,168 +16,76 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette "Sakura" (alignée sur l'accueil) ===== */
     :root{
       --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
-
-      --bg-1:#fffaf3;  /* riz */
-      --bg-2:#ffe5ec;  /* voile sakura doux */
-
+      --bg-1:#fffaf3; --bg-2:#ffe5ec;
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
-      --accent:#ffd166; --accent-2:#ffc300; /* jaune = comme "Découvrir le menu" */
-
-      --sakura-rgb:255,77,109;
-      --sakuraAmt: 0;
+      --accent:#ffd166; --accent-2:#ffc300;
+      --sakura-rgb:255,77,109; --sakuraAmt: 0;
     }
-
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; min-height:100%; scroll-behavior:smooth; }
-
-    /* Fond identique à l’accueil (option B) */
+    *{ box-sizing:border-box; } html,body{ height:100%; min-height:100%; scroll-behavior:smooth; }
     body{
-      margin:0;
-      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
+      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        linear-gradient(180deg,
-          rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-          rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%,
-          var(--bg-1) 100%
-        ),
-        var(--bg-1);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      transition: background 80ms linear;
+        linear-gradient(180deg, rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+                               rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%, var(--bg-1) 100%), var(--bg-1);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; transition:background 80ms linear;
     }
-    @media (max-width: 768px){
-      body{
-        background:
-          radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
-          linear-gradient(180deg,
-            rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-            rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%,
-            var(--bg-1) 100%
-          ),
-          var(--bg-1);
-      }
+    @media (max-width:768px){
+      body{ background:
+        radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
+        linear-gradient(180deg, rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+                               rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%, var(--bg-1) 100%), var(--bg-1); }
     }
 
-    /* Header */
-    .site-header.jp{
-      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
-      border-bottom: 1px solid var(--card-border);
-      position: static;
-    }
-    .site-header .header-inner{
-      width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
-      display:flex; flex-direction:column; align-items:center; gap:8px;
-    }
+    .site-header.jp{ background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65)); border-bottom:1px solid var(--card-border); position:static; }
+    .site-header .header-inner{ width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; }
     a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
-    .logo{
-      width:160px; height:160px; border-radius:50%;
-      object-fit:cover; background:#fff;
-      box-shadow:0 8px 24px rgba(255,77,109,.15);
-      border:3px solid rgba(255,77,109,.15);
-      display:block;
-    }
+    .logo{ width:160px; height:160px; border-radius:50%; object-fit:cover; background:#fff; box-shadow:0 8px 24px rgba(255,77,109,.15); border:3px solid rgba(255,77,109,.15); display:block; }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
     .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
-
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
-    .main-nav a{
-      color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95;
-      transition:filter .15s ease, transform .15s ease, background .15s ease;
-    }
+    .main-nav a{ color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95; transition:filter .15s, transform .15s, background .15s; }
     .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(0,0,0,.04); }
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
-    @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    /* Page */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
-    .section{
-      background:var(--card); border:1px solid var(--card-border); border-radius:18px;
-      padding:22px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:22px;
-    }
+    .section{ background:var(--card); border:1px solid var(--card-border); border-radius:18px; padding:22px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:22px; }
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
     .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
-    /* Sous-nav catégories (sticky) */
-    .cat-nav-wrap{
-      position:sticky; top:0; z-index:10;
-      padding:10px 0; margin:0 0 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
-      backdrop-filter:saturate(120%) blur(2px);
-      border-bottom:1px solid rgba(0,0,0,.06);
-      border-radius:12px;
-    }
-    .cat-nav{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
-    }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none;
-      background:#fff; border:1px solid var(--card-border);
-      font-weight:800; color:#333; transition:transform .12s, box-shadow .12s, background .12s, border-color .12s;
-    }
+    .cat-nav-wrap{ position:sticky; top:0; z-index:10; padding:10px 0; margin:0 0 14px;
+      background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.85)); backdrop-filter:saturate(120%) blur(2px);
+      border-bottom:1px solid rgba(0,0,0,.06); border-radius:12px; }
+    .cat-nav{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; }
+    .pill{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none;
+      background:#fff; border:1px solid var(--card-border); font-weight:800; color:#333; transition:transform .12s, box-shadow .12s, background .12s, border-color .12s; }
     .pill:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.06); }
     .pill.active{ background:var(--accent); color:#111; border-color:rgba(0,0,0,.08); }
 
-    /* Bloc catégorie */
-    .cat-section{
-      background:var(--card);
-      border:1px solid var(--card-border);
-      border-radius:16px;
-      padding:16px;
-      margin:18px 0;
-      box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04);
-    }
-    .cat-header{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin:2px 2px 14px;
-      padding-bottom:8px;
-      border-bottom:1px dashed rgba(0,0,0,.08);
-      cursor:pointer; /* clic pour plier/déplier */
-    }
-    .cat-title{
-      margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b;
-    }
+    .cat-section{ background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:16px; margin:18px 0; box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04); }
+    .cat-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 2px 14px; padding-bottom:8px; border-bottom:1px dashed rgba(0,0,0,.08); cursor:pointer; }
+    .cat-title{ margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b; }
     .cat-tools{ display:flex; align-items:center; gap:8px; }
-    .btn-mini{
-      border:1px solid var(--card-border);
-      background:#fff; color:#222;
-      padding:6px 10px; border-radius:10px; font-weight:700; cursor:pointer;
-    }
+    .btn-mini{ border:1px solid var(--card-border); background:#fff; color:#222; padding:6px 10px; border-radius:10px; font-weight:700; cursor:pointer; }
     .btn-mini:hover{ background:#f6f6f6; }
 
-    /* GRID menu */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    .item-card{
-      background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden;
-      cursor:pointer; transition:transform .12s, box-shadow .12s, border-color .12s;
-      display:flex; flex-direction:column;
-    }
+    .item-card{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .12s, box-shadow .12s, border-color .12s; display:flex; flex-direction:column; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,77,109,.15); border-color:rgba(255,77,109,.25); }
     .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#fff6ed; }
     .item-name{ font-weight:800; font-size:1.02rem; padding:10px 12px 4px; color:#1f1f1f; }
     .card-body{ padding:0 12px 12px; margin-top:auto; }
-    .card-footer{
-      display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
-      padding-top:10px; border-top:1px dashed rgba(0,0,0,.08);
-    }
+    .card-footer{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding-top:10px; border-top:1px dashed rgba(0,0,0,.08); }
     .meta{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; line-height:1.15; }
     .pieces{ font-size:.78rem; color:var(--muted); }
     .price{ font-size:.9rem; font-weight:800; color:#0e7a4f; }
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
-
-    /* Boutons jaunes */
-    .circle{
-      background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px;
-      font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
-      box-shadow:0 4px 0 rgba(0,0,0,.08);
-    }
+    .circle{ background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px; font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease; box-shadow:0 4px 0 rgba(0,0,0,.08); }
     .circle:hover{ background:var(--accent-2); transform:translateY(-1px); }
     .btn{ border:none; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; }
     .btn-ghost{ background:#f3f3f3; color:#222; }
@@ -190,76 +98,38 @@
 
     @media (max-width:480px){
       .menu-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
-      .item-card{ border-radius:12px; }
-      .item-name{ font-size:.95rem; padding:8px 10px 2px; }
-      .card-body{ padding:0 10px 10px; }
+      .item-card{ border-radius:12px; } .item-name{ font-size:.95rem; padding:8px 10px 2px; } .card-body{ padding:0 10px 10px; }
       .circle{ width:34px; height:34px; }
     }
 
-    /* Sticky bar + tiroir */
-    #stickyBar{
-      position:fixed; bottom:0; left:0; right:0; z-index:100;
-      background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,.35));
-      padding:6px;
-    }
+    #stickyBar{ position:fixed; bottom:0; left:0; right:0; z-index:100; background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,.35)); padding:6px; }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
-    #gotoOrder{
-      background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px;
-      padding:12px 16px; cursor:pointer; white-space:nowrap;
-      transition:filter .15s ease, transform .15s ease, box-shadow .15s ease;
-      box-shadow:0 8px 20px rgba(0,0,0,.12);
-    }
+    #gotoOrder{ background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px; padding:12px 16px; cursor:pointer; white-space:nowrap; transition:filter .15s, transform .15s, box-shadow .15s; box-shadow:0 8px 20px rgba(0,0,0,.12); }
     #gotoOrder:hover{ background:var(--accent-2); filter:brightness(1.02); transform:translateY(-1px); }
 
-    /* Backdrop tiroir */
-    #sheetOverlay{
-      position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(110%) blur(2px);
-      opacity:0; pointer-events:none; transition:opacity .22s ease; z-index:101;
-    }
+    #sheetOverlay{ position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(110%) blur(2px); opacity:0; pointer-events:none; transition:opacity .22s ease; z-index:101; }
     #sheetOverlay.open{ opacity:1; pointer-events:auto; }
 
-    #cartSheet{
-      position:fixed; left:50%; transform:translateX(-50%); bottom:-100%;
-      width:min(96%,1100px); background:#ffffff; color:#131313;
-      border:1px solid var(--card-border); border-radius:16px 16px 0 0;
-      box-shadow:0 22px 60px rgba(0,0,0,.15); max-height:70vh;
-      display:flex; flex-direction:column; transition:bottom .28s ease; z-index:102;
-      overscroll-behavior:contain;
-    }
+    #cartSheet{ position:fixed; left:50%; transform:translateX(-50%); bottom:-100%; width:min(96%,1100px); background:#ffffff; color:#131313; border:1px solid var(--card-border); border-radius:16px 16px 0 0; box-shadow:0 22px 60px rgba(0,0,0,.15); max-height:70vh; display:flex; flex-direction:column; transition:bottom .28s ease; z-index:102; overscroll-behavior:contain; }
     #cartSheet.open{ bottom:0; }
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
-    #cartSheet header{ border-bottom:1px solid var(--card-border); }
-    #cartSheet footer{ border-top:1px solid var(--card-border); gap:10px; }
-    #cartSheet .body{
-      padding:8px 10px; overflow:auto; -webkit-overflow-scrolling:touch;
-      max-height:calc(70vh - 100px); overscroll-behavior:contain;
-    }
+    #cartSheet header{ border-bottom:1px solid var(--card-border); } #cartSheet footer{ border-top:1px solid var(--card-border); gap:10px; }
+    #cartSheet .body{ padding:8px 10px; overflow:auto; -webkit-overflow-scrolling:touch; max-height:calc(70vh - 100px); overscroll-behavior:contain; }
 
-    /* Récap */
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(0,0,0,.08); }
-    .thumb.sm{
-      width:56px; height:56px; object-fit:cover; border-radius:12px; background:#fff6ed;
-      border:1px solid var(--card-border);
-    }
+    .thumb.sm{ width:56px; height:56px; object-fit:cover; border-radius:12px; background:#fff6ed; border:1px solid var(--card-border); }
     .it-label{ font-weight:600; color:#222; }
 
-    /* Formulaire */
     .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .field{ display:flex; flex-direction:column; gap:6px; }
     .field.full{ grid-column:1 / -1; }
     .field label{ font-weight:700; font-size:.92rem; color:#222; }
-    .field input, .field textarea{
-      background:#fff; border:1px solid var(--card-border); border-radius:10px;
-      padding:10px 12px; font-family:inherit; font-size:1rem; color:#111;
-    }
-    .field input:focus, .field textarea:focus{
-      outline:3px solid rgba(255,77,109,.25); border-color:rgba(255,77,109,.45);
-    }
+    .field input, .field textarea{ background:#fff; border:1px solid var(--card-border); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:1rem; color:#111; }
+    .field input:focus, .field textarea:focus{ outline:3px solid rgba(255,77,109,.25); border-color:rgba(255,77,109,.45); }
 
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
-    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 
   <!-- EmailJS -->
@@ -281,7 +151,6 @@
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
         <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
-
       <nav class="main-nav" aria-label="Navigation principale">
         <a href="accueil.html">Accueil</a>
         <span class="sep" aria-hidden="true">・</span>
@@ -294,13 +163,7 @@
     <section class="section" id="menuSection" aria-labelledby="titre-menu">
       <h2 id="titre-menu">Notre carte</h2>
       <div class="sep" aria-hidden="true"></div>
-
-      <!-- Sous-nav catégories -->
-      <div class="cat-nav-wrap">
-        <div class="cat-nav" id="catNav"></div>
-      </div>
-
-      <!-- Catégories -->
+      <div class="cat-nav-wrap"><div class="cat-nav" id="catNav"></div></div>
       <div id="menu"></div>
     </section>
   </main>
@@ -313,7 +176,7 @@
     </div>
   </div>
 
-  <!-- OVERLAY pour clic extérieur -->
+  <!-- OVERLAY -->
   <div id="sheetOverlay" aria-hidden="true"></div>
 
   <!-- TIROIR PANIER -->
@@ -362,11 +225,10 @@
     © 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles
   </footer>
 
-  <!-- =========================
-       Données + Construction du menu (INIT ROBUSTE)
-  ========================== -->
+  <!-- ===== Données + construction du menu (INIT ROBUSTE) ===== -->
   <script>
-    const categories={
+    /* --- Données --- */
+    const categories = {
       'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
       'LES CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
       'LES MAKI PRINTEMPS':['P1','P2','P3','P4'],
@@ -375,7 +237,7 @@
       'LES NIGIRI':['N1','N2'],
       'LES BOISSONS':['B1','B2','B3']
     };
-    const catalog={
+    const catalog = {
       M1:{name:'MAKI SAUMON', img:'m1.jpg', pieces:6, comp:'Riz, nori, saumon', allergens:'Poisson', desc:''},
       M2:{name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:6, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
       M3:{name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:6, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:''},
@@ -406,8 +268,14 @@
       B2:{name:'BIERE ASAHI', img:'b2.jpg'},
       B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
     };
-    const prices={};
-    const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+    const prices = {};
+    const fmt = new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+
+    /* 👉 Publication globale pour éviter l’erreur window.catalog undefined */
+    window.categories = categories;
+    window.catalog    = catalog;
+    window.prices     = prices;
+
     const esc = (window.CSS && CSS.escape) ? CSS.escape : (s)=>String(s).replace(/"/g,'\\"');
 
     function slugifyCat(label){
@@ -415,27 +283,19 @@
     }
 
     function buildCategoryNav(){
-      const nav=document.getElementById('catNav');
-      if(!nav) return;
+      const nav=document.getElementById('catNav'); if(!nav) return;
       nav.innerHTML='';
       Object.keys(categories).forEach((cat)=>{
         const id=slugifyCat(cat);
         const btn=document.createElement('button');
-        btn.className='pill';
-        btn.type='button';
-        btn.setAttribute('data-target', '#'+id);
-        btn.textContent=cat;
+        btn.className='pill'; btn.type='button'; btn.setAttribute('data-target','#'+id); btn.textContent=cat;
         btn.addEventListener('click', ()=>{
           const already=btn.classList.contains('active');
           document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-          document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display=''); // reset visibilité
+          document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display='');
           if(!already){
             btn.classList.add('active');
-            // Afficher uniquement la catégorie choisie
-            document.querySelectorAll('.cat-section').forEach(sec=>{
-              sec.style.display = (sec.id===id) ? '' : 'none';
-            });
-            // Déplier la catégorie ciblée
+            document.querySelectorAll('.cat-section').forEach(sec=>{ sec.style.display = (sec.id===id) ? '' : 'none'; });
             const target=document.getElementById(id);
             const grid=target?.querySelector('.menu-grid');
             const toggle=target?.querySelector('[data-action="collapse"]');
@@ -453,25 +313,15 @@
       menu.innerHTML='';
 
       for(const [cat,codes] of Object.entries(categories)){
-        const sec=document.createElement('section');
-        sec.className='cat-section';
-        sec.id = slugifyCat(cat);
+        const sec=document.createElement('section'); sec.className='cat-section'; sec.id = slugifyCat(cat);
 
         const header=document.createElement('div');
-        header.className='cat-header';
-        header.setAttribute('role','button');
-        header.setAttribute('aria-expanded','false');
-        header.innerHTML = `
-          <h3 class="cat-title">${cat}</h3>
-          <div class="cat-tools">
-            <button type="button" class="btn-mini" data-action="collapse">Déplier</button>
-          </div>
-        `;
+        header.className='cat-header'; header.setAttribute('role','button'); header.setAttribute('aria-expanded','false');
+        header.innerHTML = `<h3 class="cat-title">${cat}</h3>
+          <div class="cat-tools"><button type="button" class="btn-mini" data-action="collapse">Déplier</button></div>`;
 
-        const grid=document.createElement('div');
-        grid.className='menu-grid';
+        const grid=document.createElement('div'); grid.className='menu-grid';
 
-        // items
         codes.forEach(code=>{
           const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
           const name=d.name||code;
@@ -499,15 +349,10 @@
           grid.appendChild(card);
         });
 
-        /* ÉTAT INITIAL = TOUT RÉDUIT */
         grid.style.display='none';
-
-        sec.appendChild(header);
-        sec.appendChild(grid);
-        menu.appendChild(sec);
+        sec.appendChild(header); sec.appendChild(grid); menu.appendChild(sec);
       }
 
-      /* Actions header (dépliage/repliage + clic header) */
       menu.addEventListener('click',(e)=>{
         const btn=e.target.closest('.btn-mini');
         const header=e.target.closest('.cat-header');
@@ -516,7 +361,6 @@
         const grid=sec.querySelector('.menu-grid');
         const collapseBtn=sec.querySelector('[data-action="collapse"]');
 
-        // Bouton Déplier/Réduire
         if(btn && btn.dataset.action==='collapse'){
           const hidden = grid.style.display==='none';
           grid.style.display = hidden ? '' : 'none';
@@ -524,8 +368,6 @@
           sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
           return;
         }
-
-        // Clic sur la bande header (hors bouton) => toggle
         if(header && !btn){
           const hidden = grid.style.display==='none';
           grid.style.display = hidden ? '' : 'none';
@@ -535,22 +377,20 @@
       }, false);
     }
 
-    // INIT ROBUSTE pour la partie MENU
-    (function(){
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ()=>{ buildCategoryNav(); buildMenu(); });
-      } else {
-        buildCategoryNav(); buildMenu();
-      }
-    })();
+    // INIT ROBUSTE (menu)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', ()=>{ buildCategoryNav(); buildMenu(); });
+    } else {
+      buildCategoryNav(); buildMenu();
+    }
   </script>
 
-  <!-- Panier / tiroir + EmailJS + interactions carte (INIT ROBUSTE) -->
+  <!-- ===== Panier / modale (INIT ROBUSTE) ===== -->
   <script>
-    (function initCartScript(){
+    (function initCart(){
       const esc = (window.CSS && CSS.escape) ? CSS.escape : (s)=>String(s).replace(/"/g,'\\"');
 
-      function initCartAndModal () {
+      function init(){
         const sheet = document.getElementById('cartSheet');
         const overlay = document.getElementById('sheetOverlay');
         const sheetClose = document.getElementById('sheetClose');
@@ -630,8 +470,7 @@
           if(!sheet.contains(e.target)){ e.preventDefault(); }
         };
         function openSheet(){
-          buildRecap();
-          setStep('cart');
+          buildRecap(); setStep('cart');
           sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
           overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
           document.body.classList.add('modal-open');
@@ -648,9 +487,7 @@
 
         btnOpenEl?.addEventListener('click', openSheet);
         sheetClose?.addEventListener('click', closeSheet);
-        btnBackClose?.addEventListener('click', ()=>{
-          if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); }
-        });
+        btnBackClose?.addEventListener('click', ()=>{ if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); } });
         document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
         document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
@@ -700,21 +537,9 @@ ${c}`;
           const notes = form.comments.value.trim();
           const items = itemsTextForEmail();
           const order_full = buildOrderText();
-          const base = {
-            from_name: 'YUMEKO SUSHIS',
-            items_text: items,
-            comments: notes || '—',
-            full_name: `${first} ${last}`.trim(),
-            order_full
-          };
-          const paramsCustomer = {
-            ...base, to_name: first || 'Client', to_email: email, reply_to: email,
-            subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
-          };
-          const paramsAdmin = {
-            ...base, to_name: 'YUMEKO', to_email: YUMEKO_EMAIL, reply_to: email,
-            subject: `Nouvelle commande — ${first} ${last}`.trim()
-          };
+          const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes || '—', full_name:`${first} ${last}`.trim(), order_full };
+          const paramsCustomer = { ...base, to_name:first || 'Client', to_email:email, reply_to:email, subject:'Votre récapitulatif de commande — YUMEKO SUSHIS' };
+          const paramsAdmin = { ...base, to_name:'YUMEKO', to_email:YUMEKO_EMAIL, reply_to:email, subject:`Nouvelle commande — ${first} ${last}`.trim() };
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
         }
@@ -728,17 +553,14 @@ ${c}`;
           saveOrderToLocalStorage();
           try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
           document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-          updateSticky();
-          closeSheet();
-          window.location.href = 'merci.html';
+          updateSticky(); closeSheet(); window.location.href='merci.html';
         });
 
         // Ajustements quantités dans le récap
-        document.getElementById('recapList').addEventListener('click', (e)=>{
+        recapList.addEventListener('click', (e)=>{
           const plus = e.target.closest('.recap-plus');
           const minus = e.target.closest('.recap-minus');
-          const btn = plus || minus;
-          if(!btn) return;
+          const btn = plus || minus; if(!btn) return;
           const item = btn.dataset.item;
           const span = document.querySelector(`.qty[data-item="${esc(item)}"]`);
           if(!span) return;
@@ -746,52 +568,45 @@ ${c}`;
           const inc = plus ? 1 : -1;
           const v = Math.max(0, cur + inc);
           span.textContent = v>0 ? String(v) : '';
-          bump(span);
-          updateSticky();
-          buildRecap();
+          bump(span); updateSticky(); buildRecap();
         });
 
-        // Carte: clic => modale quantité (photo/carte) OU bouton +
+        // Carte: clic + ou carte -> ouvrir modale
         document.addEventListener('click', (e)=>{
           const plusBtn = e.target.closest('.card-plus');
           const card = e.target.closest('.item-card');
-
-          if(plusBtn){
-            const itemKey = plusBtn.dataset.item;
-            openItemModalByKey(itemKey);
-            return;
-          }
-          if(card && !e.target.closest('.ctrls')){
-            const code=card.dataset.code;
-            const name=card.dataset.name;
-            openItemModal(code, name);
-            return;
-          }
+          if(plusBtn){ openItemModalByKey(plusBtn.dataset.item); return; }
+          if(card && !e.target.closest('.ctrls')){ openItemModal(card.dataset.code, card.dataset.name); return; }
         }, false);
 
-        // Modale produit
+        // --- Modale produit ---
         function openItemModal(code, name){
-          const d=window.catalog[code]||{};
-          const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-          document.getElementById('mImg').src=img;
-          document.getElementById('mImg').alt=name;
-          document.getElementById('mTitle').textContent=name;
-          document.getElementById('mPieces').textContent=d.pieces ?? '—';
-          document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
-          document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
-          document.getElementById('mDesc').textContent=d.desc || '—';
+          /* Accès sécurisé au catalogue même si pas sur window */
+          const d = (window.catalog?.[code]) || (typeof catalog !== 'undefined' ? catalog[code] : undefined) || {};
+          const img='images/'+(d.img || (String(code).toLowerCase()+'.jpg'));
+          const mImg=document.getElementById('mImg'); const mTitle=document.getElementById('mTitle');
+          const mPieces=document.getElementById('mPieces'); const mAllergens=document.getElementById('mAllergens');
+          const mComp=document.getElementById('mComp'); const mDesc=document.getElementById('mDesc');
+
+          if(mImg){ mImg.src=img; mImg.alt=name; }
+          if(mTitle) mTitle.textContent=name;
+          if(mPieces) mPieces.textContent=d.pieces ?? '—';
+          if(mAllergens) mAllergens.textContent=d.allergens || 'Non renseigné';
+          if(mComp) mComp.textContent=d.comp || 'Non renseigné';
+          if(mDesc) mDesc.textContent=d.desc || '—';
+
           const itemKey=`${code}- ${name}`;
           const qtySpan=document.querySelector(`.qty[data-item="${esc(itemKey)}"]`);
           const current=parseInt(qtySpan?.textContent)||0;
+
           const mQty=document.getElementById('mQty');
           const mMinus=document.getElementById('mMinus');
-          mQty.textContent=current;
-          mMinus.style.visibility=current>0?'visible':'hidden';
-          mMinus.dataset.item=itemKey;
-          document.getElementById('mPlus').dataset.item=itemKey;
+          if(mQty) mQty.textContent=current;
+          if(mMinus){ mMinus.style.visibility=current>0?'visible':'hidden'; mMinus.dataset.item=itemKey; }
+          const mPlus=document.getElementById('mPlus'); if(mPlus) mPlus.dataset.item=itemKey;
+
           const modal=document.getElementById('itemModal');
-          modal.style.display='flex';
-          modal.setAttribute('aria-hidden','false');
+          if(modal){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
         }
         function openItemModalByKey(itemKey){
           const code = (String(itemKey).split('-')[0]||'').trim();
@@ -809,25 +624,22 @@ ${c}`;
             const span=document.querySelector(`.qty[data-item="${esc(itemKey)}"]`);
             if(!span) return;
             span.textContent = newVal>0 ? String(newVal) : '';
-            mQty.textContent=newVal;
-            document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
+            if(mQty) mQty.textContent=newVal;
+            const minusBtn=document.getElementById('mMinus');
+            if(minusBtn) minusBtn.style.visibility=newVal>0?'visible':'hidden';
             updateSticky(); buildRecap();
           }
-          mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
-          mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
-          closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
-          modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-          document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+          mMinus?.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
+          mPlus ?.addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
+          closeBtn?.addEventListener('click', ()=>{ if(modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+          modal?.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+          document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
         })();
 
-        /* Persistance panier */
+        // Persistance + bouton sticky
         const CART_KEY='yumeko_cart_v1';
         function saveCart(){
-          const cart=[];
-          document.querySelectorAll('.qty[data-item]').forEach(q=>{
-            const n=parseInt(q.textContent)||0;
-            if(n>0) cart.push({key:q.dataset.item, qty:n});
-          });
+          const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
           try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
         }
         function restoreCart(){
@@ -840,8 +652,6 @@ ${c}`;
             updateSticky();
           }catch(e){ console.warn('restoreCart error', e); }
         }
-        function updateMiniRecap(){}
-
         function updateSticky(){
           const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
           qtyNodes.forEach(q=>{
@@ -865,20 +675,15 @@ ${c}`;
           saveCart();
         }
         if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
-        restoreCart();
-        updateSticky();
+        restoreCart(); updateSticky();
       }
 
-      // INIT ROBUSTE pour la partie PANIER/MODALE
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initCartAndModal);
-      } else {
-        initCartAndModal();
-      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
+      else { init(); }
     })();
   </script>
 
-  <!-- Nav actif + Sakura dynamique -->
+  <!-- Nav actif + Sakura -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
@@ -896,9 +701,7 @@ ${c}`;
         const eased = 1 - Math.pow(1 - p, 1.6);
         root.style.setProperty('--sakuraAmt', eased.toFixed(3));
       }
-      updateSakura();
-      window.addEventListener('scroll', updateSakura, {passive:true});
-      window.addEventListener('resize', updateSakura);
+      updateSakura(); window.addEventListener('scroll', updateSakura, {passive:true}); window.addEventListener('resize', updateSakura);
     })();
   </script>
 
