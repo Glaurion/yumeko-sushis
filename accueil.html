@@ -16,46 +16,65 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura" — Option 3 (fix) ===== */
+    /* ===== Palette "Sakura" (fix iOS double couche) ===== */
     :root{
       --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
 
-      /* Légèrement moins blanc, dégradé statique plus lissé */
-      --bg-1:#fff0f4;   /* avant: #fffaf3 */
-      --bg-2:#ffd9e2;   /* avant: #ffe5ec */
+      /* Légèrement moins blanc, rosé doux */
+      --bg-1:#fff0f4;
+      --bg-2:#ffd9e2;
+      --bg-end:#f7d1dc; /* couleur finale = color de fond */
 
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
       --accent:#ffd166; --accent-2:#ffc300;
 
-      /* Contrôle du dégradé dynamique */
       --sakura-rgb:255,77,109;
-      --sakuraAmt: 0;
+      --sakuraAmt: 0;  /* 0 → 1, mis à jour au scroll */
     }
 
     *{ box-sizing:border-box; }
     html, body{ height:100%; scroll-behavior:smooth; }
 
+    /* ===== Fond de page (statique, une seule couche) =====
+       Important pour iOS : même couleur au dernier stop ET background-color identique.
+    */
+    html{ background-color: var(--bg-end); } /* fallback derrière body */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
       background:
-        /* Voile rosé doux élargi pour éviter la démarcation haute */
+        linear-gradient(180deg,
+          var(--bg-1) 0%,
+          var(--bg-2) 80%,
+          var(--bg-end) 100%
+        );
+      background-repeat:no-repeat;
+      background-attachment:scroll;
+      background-color: var(--bg-end); /* évite la "seconde couche" au bas sur iOS */
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    /* ===== Couches décoratives (radial + sakura dynamique) en overlay fixe =====
+       -> pas de couture en bas, pas d'empilement sur le fond statique
+    */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-1; /* derrière le contenu mais au-dessus du fond statique */
+      background:
         radial-gradient(1500px 800px at 20% -12%, rgba(255,225,236,.38), transparent 70%),
-        /* Sakura dynamique légèrement réduit pour éviter bande */
         linear-gradient(180deg,
           rgba(var(--sakura-rgb), calc(.06 * var(--sakuraAmt))) 0%,
           rgba(var(--sakura-rgb), calc(.50 * var(--sakuraAmt))) 100%
-        ),
-        /* Dégradé statique lissé (3 stops) pour supprimer l’effet de double couche */
-        linear-gradient(180deg, 
-          var(--bg-1) 0%, 
-          var(--bg-2) 80%,    
-          #f7d1dc 100%        
         );
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      transition: background 100ms linear;
+      background-repeat:no-repeat;
+      will-change: transform, opacity;
     }
 
     /* ===== Header ===== */
@@ -205,7 +224,7 @@
     })();
 
     (function(){
-      // Sakura plus doux et plus uniforme en bas
+      // Sakura (met à jour uniquement la variable, l'overlay est dans ::before)
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
