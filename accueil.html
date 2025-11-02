@@ -1,223 +1,144 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>YUMEKO SUSHIS — Accueil</title>
+<style>
+  /* ===== Thème "Sakura Night" (assombri, rose sakura) ===== */
+  :root{
+    /* Marque / accents */
+    --brand:#ff4d6d;        /* rose sakura vif (liens/états actifs) */
+    --brand-2:#e63956;
 
-  <!-- Police Poppins -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    /* Texte sur fond sombre */
+    --text:#f7f2f4;         /* texte principal */
+    --muted:#cdb5c2;        /* texte atténué */
 
-  <!-- Favicon / thème -->
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
-  <meta name="theme-color" content="#ff4d6d" />
+    /* Fonds & cartes (sombres) */
+    --bg-base:#120c11;      /* fond général — prune/noir */
+    --card:#1a1319;         /* blocs/cadres */
+    --card-border:rgba(255,255,255,.08);
 
-  <style>
-    /* ===== Palette "Sakura" (option B: rose moyen) ===== */
-    :root{
-      --brand:#ff4d6d; --brand-2:#e63956;
-      --text:#1a1a1a; --muted:#5c6870;
+    /* Accent doux (boutons) */
+    --accent:#ffc1d0;       /* bouton / CTA */
+    --accent-2:#ffb3c2;
 
-      --bg-base:#fffaf3;             /* riz, fond principal uniforme */
-      --card:#ffffff; --card-border:rgba(0,0,0,.06);
-      --accent:#ffd166; --accent-2:#ffc300;
+    /* Sakura (lueur rose) */
+    --sakura-rgb:255,210,225; /* rose clair (lueur) */
+    --sakuraMid:.16;          /* intensité par défaut (milieu bas de page) */
+    --sakuraEnd:.32;          /* intensité par défaut (tout en bas) */
+  }
 
-      /* Sakura dynamique (option B ≈ #ffe1eb) */
-      --sakura-rgb:255,225,235;
-      --sakuraMid: 0;   /* alpha vers 75–85% de page */
-      --sakuraEnd: 0;   /* alpha bas de page */
-    }
+  *{ box-sizing:border-box; }
+  html, body{ height:100%; scroll-behavior:smooth; }
 
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; scroll-behavior:smooth; }
+  /* Fond sombre + halos rosés très subtils */
+  body{
+    margin:0;
+    font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(255,170,195,.08), transparent 60%),
+      radial-gradient(900px 420px at 90% -6%, rgba(255,200,220,.06), transparent 60%),
+      var(--bg-base);
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
 
-    /* Corps : seulement le "riz" + halo en haut (pas de sakura dynamique ici) */
-    body{
-      margin:0;
-      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        var(--bg-base);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-    }
+  /* Couche sakura : voile rose en bas de page (iOS-friendly) */
+  .sakura-layer{
+    position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background: linear-gradient(180deg,
+      rgba(var(--sakura-rgb), 0) 0%,
+      rgba(var(--sakura-rgb), 0) 55%,
+      rgba(var(--sakura-rgb), var(--sakuraMid)) 82%,
+      rgba(var(--sakura-rgb), var(--sakuraEnd)) 100%
+    );
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
+  }
 
-    /* Couche sakura dédiée (fixe) -> compatible iOS */
-    .sakura-layer{
-      position:fixed; inset:0; z-index:-1; pointer-events:none;
-      /* une seule bande qui apparaît dans le bas */
-      background: linear-gradient(180deg,
-        rgba(var(--sakura-rgb), 0) 0%,
-        rgba(var(--sakura-rgb), 0) 60%,
-        rgba(var(--sakura-rgb), var(--sakuraMid)) 85%,
-        rgba(var(--sakura-rgb), var(--sakuraEnd)) 100%
-      );
-      /* force la composition GPU sur iOS */
-      -webkit-transform: translateZ(0);
-      will-change: transform, opacity;
-    }
+  /* ===== Header (non-sticky) ===== */
+  .site-header.jp{
+    background: linear-gradient(180deg,
+      rgba(10,7,10,.78),
+      rgba(10,7,10,.48)
+    );
+    border-bottom: 1px solid var(--card-border);
+    position: static; top:auto; z-index:auto; backdrop-filter: blur(6px);
+  }
+  .site-header .header-inner{
+    width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+  .logo{
+    width:160px; height:160px; border-radius:50%;
+    object-fit:cover; background:#0e0a0d;
+    box-shadow:0 10px 28px rgba(255,77,109,.20);
+    border:3px solid rgba(255,77,109,.18);
+    display:block;
+  }
+  @media (min-width:768px){ .logo{ width:200px; height:200px; } }
+  .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#ffe9f0; text-align:center; }
 
-    /* ===== Header (NON-sticky) ===== */
-    .site-header.jp{
-      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
-      border-bottom: 1px solid var(--card-border);
-      position: static; /* <- ne suit plus le scroll */
-      top:auto; z-index:auto; backdrop-filter:none;
-    }
-    .site-header .header-inner{
-      width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
-      display:flex; flex-direction:column; align-items:center; gap:8px;
-    }
-    a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
-    .logo{
-      width:160px; height:160px; border-radius:50%;
-      object-fit:cover; background:#fff;
-      box-shadow:0 8px 24px rgba(255,77,109,.15);
-      border:3px solid rgba(255,77,109,.15);
-      display:block;
-    }
-    @media (min-width:768px){ .logo{ width:200px; height:200px; } }
-    .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
+  .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
+  .main-nav .sep{ color:#e7ccd8; opacity:.45; }
+  .main-nav a{
+    color:#ffe1eb; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95;
+    transition:filter .15s ease, transform .15s ease, background .15s ease;
+  }
+  .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(255,225,235,.08); }
+  .main-nav a.active{ background:rgba(255,77,109,.16); color:#ffb0c2; }
+  @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
-    .main-nav .sep{ color:#7a7a7a; opacity:.6; }
-    .main-nav a{
-      color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95;
-      transition:filter .15s ease, transform .15s ease, background .15s ease;
-    }
-    .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(0,0,0,.04); }
-    .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
-    @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
+  /* ===== Page ===== */
+  .container{ max-width:1100px; margin:0 auto; padding:22px; }
+  .section{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:
+      0 16px 40px rgba(0,0,0,.45),
+      0 4px 14px rgba(255,77,109,.08);
+    margin-bottom:22px;
+  }
+  .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#ffeaf1; }
+  .sep{
+    height:2px; width:84px;
+    background:linear-gradient(90deg,#ff4d6d,#e5c18a,transparent);
+    border-radius:2px; margin:6px 0 16px;
+  }
 
-    /* ===== Page ===== */
-    .container{ max-width:1100px; margin:0 auto; padding:22px; }
-    .section{
-      background:var(--card); border:1px solid var(--card-border); border-radius:18px;
-      padding:22px; box-shadow:0 12px 30px rgba(255,77,109,.08), 0 4px 14px rgba(0,0,0,.04); margin-bottom:22px;
-    }
-    .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
-    .sep{ height:2px; width:84px; background:linear-gradient(90deg,#ff4d6d,#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
+  .grid-2{ display:grid; grid-template-columns:1fr; gap:18px; align-items:start; }
+  @media (min-width:820px){ .grid-2{ grid-template-columns:1.1fr .9fr; } }
 
-    .grid-2{ display:grid; grid-template-columns:1fr; gap:18px; align-items:start; }
-    @media (min-width:820px){ .grid-2{ grid-template-columns:1.1fr .9fr; } }
+  .lead{ font-size:1.06rem; line-height:1.7; color:#f5e8ee; }
+  .muted{ color:var(--muted); }
 
-    .lead{ font-size:1.06rem; line-height:1.7; color:#2a2a2a; }
-    .muted{ color:var(--muted); }
+  /* Bandeau CTA — dégradé rose doux */
+  .cta-band{
+    background:linear-gradient(90deg,
+      rgba(255,220,232,.10),
+      rgba(255,195,210,.10)
+    );
+    border:1px solid var(--card-border);
+    border-radius:16px; padding:18px;
+    display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  @media (min-width:760px){ .cta-band{ flex-direction:row; justify-content:space-between; text-align:left; } }
 
-    /* Bandeau CTA */
-    .cta-band{
-      background:linear-gradient(90deg, rgba(255,244,246,.9), rgba(255,215,221,.9));
-      border:1px solid var(--card-border); border-radius:16px; padding:18px;
-      display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
-      box-shadow:0 10px 24px rgba(255,77,109,.12);
-    }
-    @media (min-width:760px){ .cta-band{ flex-direction:row; justify-content:space-between; text-align:left; } }
+  .btn{
+    display:inline-block; border:none; border-radius:14px; padding:12px 16px;
+    font-weight:800; cursor:pointer; text-decoration:none;
+    color:#1a0f14; background:var(--accent);
+    transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    white-space:nowrap; box-shadow:0 6px 0 rgba(0,0,0,.25);
+  }
+  .btn:hover{ transform:translateY(-1px); filter:brightness(1.06); }
+  .btn:active{ transform:translateY(0); box-shadow:0 3px 0 rgba(0,0,0,.25); }
 
-    .btn{
-      display:inline-block; border:none; border-radius:14px; padding:12px 16px;
-      font-weight:800; cursor:pointer; text-decoration:none; color:#111;
-      background:var(--accent); transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
-      white-space:nowrap; box-shadow:0 6px 0 rgba(0,0,0,.06);
-    }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+  footer{ text-align:center; color:#d9c4cf; margin:28px 0 36px; font-size:.95rem; }
 
-    footer{ text-align:center; color:#5b5b5b; margin:28px 0 36px; font-size:.95rem; }
-
-    /* Accessibilité */
-    :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
-    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
-  </style>
-</head>
-
-<body>
-  <!-- Couche sakura iOS-safe -->
-  <div class="sakura-layer" aria-hidden="true"></div>
-
-  <!-- ===== Header ===== -->
-  <header class="site-header jp">
-    <div class="header-inner">
-      <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
-        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
-        <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
-      </a>
-
-      <nav class="main-nav" aria-label="Navigation principale">
-        <a href="accueil.html" class="active">Accueil</a>
-        <span class="sep" aria-hidden="true">・</span>
-        <a href="index.html">Menu</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container">
-    <!-- SECTION UNIQUE -->
-    <section class="section" aria-labelledby="titre-accueil">
-      <h2 id="titre-accueil">Bienvenue chez Yumeko Sushis</h2>
-      <div class="sep" aria-hidden="true"></div>
-
-      <div class="grid-2">
-        <div>
-          <p class="lead">
-            Je m’appelle <strong>Benjamin</strong>. J’ai commencé en cuisinant des sushis pour mon entourage :
-            les retours ont été tellement positifs que j’ai voulu aller plus loin. J’aime la cuisine et
-            <strong>encore plus</strong> l’art des sushis.
-          </p>
-          <p class="lead" style="margin-bottom:0">
-            Le nom <strong>Yumeko</strong> est un clin d’œil à mes deux chats : <em>Yume</em> et <em>Uniko</em> —
-            avec une promesse simple : <strong>fraîcheur irréprochable</strong> et <strong>goût</strong> à chaque bouchée.
-          </p>
-        </div>
-        <!-- Colonne droite volontairement vide pour un visuel aéré -->
-      </div>
-    </section>
-
-    <!-- APPEL À L’ACTION -->
-    <section class="cta-band" aria-labelledby="cta-titre">
-      <div>
-        <h3 id="cta-titre" style="margin:0 0 6px; color:#c2173b">Prêt à vous régaler ?</h3>
-        <p class="muted" style="margin:0">Commande en quelques clics — rapide, simple et 100% à votre goût.</p>
-      </div>
-      <div>
-        <a class="btn" href="index.html#menu" aria-label="Aller au menu pour commander">Commander maintenant</a>
-      </div>
-    </section>
-  </main>
-
-  <footer>© 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles</footer>
-
-  <!-- JS : nav actif + mise à jour sakura pour la couche dédiée -->
-  <script>
-    (function(){
-      // Nav active
-      const here = location.pathname.split('/').pop() || 'index.html';
-      document.querySelectorAll('.main-nav a').forEach(a=>{
-        const href = a.getAttribute('href');
-        if(href && !href.startsWith('#') && here === href) a.classList.add('active');
-      });
-    })();
-
-    (function(){
-      // Augmente la teinte sakura uniquement pour la couche fixe (iOS-friendly)
-      const root = document.documentElement;
-      function updateSakura(){
-        const doc = document.documentElement;
-        const max = (doc.scrollHeight - window.innerHeight) || 1;
-        const p = Math.min(1, Math.max(0, window.scrollY / max));
-        const eased = 1 - Math.pow(1 - p, 1.6);   // montée douce
-
-        const mid = (eased * 0.5);                // vers 85% de page
-        const end = (eased * 0.9);                // bas de page
-
-        root.style.setProperty('--sakuraMid', mid.toFixed(3));
-        root.style.setProperty('--sakuraEnd', end.toFixed(3));
-      }
-      updateSakura();
-      window.addEventListener('scroll', updateSakura, {passive:true});
-      window.addEventListener('resize', updateSakura);
-    })();
-  </script>
-</body>
-</html>
+  /* Accessibilité */
+  :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
+  @media (prefers-reduced-motion:reduce){
+    *{ transition:none !important; animation:none !important; scroll-behavior:auto; }
+  }
+</style>
