@@ -16,62 +16,93 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura" ===== */
+    /* ===== Sakura Soft — fix iPhone bande bas ===== */
     :root{
       --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
 
-      --bg-1:#fffaf3;  /* riz */
-      --bg-2:#ffe5ec;  /* voile sakura doux */
+      /* Légèrement moins blanc + rosé doux */
+      --bg-1:#fff1f5;  /* était #fffaf3 */
+      --bg-2:#ffdce5;  /* était #ffe5ec */
+      --bg-end:#f7d1dc;/* couleur finale = background-color */
 
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
       --accent:#ffd166; --accent-2:#ffc300;
 
-      /* Contrôle du dégradé dynamique */
-      --sakura-rgb:255,77,109; /* rose sakura en RGB */
-      --sakuraAmt: 0;          /* 0 (haut) → 1 (bas), mis à jour au scroll */
+      /* Dégradé dynamique */
+      --sakura-rgb:255,77,109;
+      --sakuraAmt: 0;  /* 0 → 1 selon scroll */
     }
 
     *{ box-sizing:border-box; }
     html, body{ height:100%; scroll-behavior:smooth; }
 
+    /* Fallback derrière le body si besoin */
+    html{ background-color: var(--bg-end); }
+
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      /* 1) grain de lumière 2) couche sakura dynamique 3) fond riz→rose doux */
+
+      /* Dégradé statique UNIQUEMENT (pas d’empilement) */
       background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
         linear-gradient(180deg,
-          rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-          rgba(var(--sakura-rgb), calc(.45 * var(--sakuraAmt))) 100%
-        ),
-        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+          var(--bg-1) 0%,
+          var(--bg-2) 80%,
+          var(--bg-end) 100%
+        );
+      background-color: var(--bg-end); /* évite la bande résiduelle iOS */
+      background-repeat:no-repeat;
+      background-attachment:scroll;
+
+      position:relative;
+      overflow-x:hidden;
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      transition: background 80ms linear; /* lissage léger */
     }
 
-    /* ===== Header (NON-sticky) ===== */
+    /* Overlay fixe = voiles décoratifs (radial + dynamique) */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-1;           /* derrière tout mais au-dessus du fond statique */
+      pointer-events:none;
+      background:
+        radial-gradient(1400px 700px at 12% -10%, rgba(255,235,242,.50), transparent 65%),
+        linear-gradient(180deg,
+          rgba(var(--sakura-rgb), calc(.08 * var(--sakuraAmt))) 0%,
+          rgba(var(--sakura-rgb), calc(.60 * var(--sakuraAmt))) 100%
+        );
+      background-repeat:no-repeat;
+      will-change:opacity, transform;
+    }
+
+    /* ===== Header ===== */
     .site-header.jp{
-      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
+      background: linear-gradient(180deg,
+        rgba(255,245,248,.92),
+        rgba(255,230,238,.72)
+      );
       border-bottom: 1px solid var(--card-border);
-      position: static;     /* <- ne suit plus le scroll */
-      top:auto; z-index:auto;
-      backdrop-filter:none;
+      position: static;
+      box-shadow: 0 6px 14px rgba(255,77,109,.08);
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
+
     a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .logo{
       width:160px; height:160px; border-radius:50%;
       object-fit:cover; background:#fff;
-      box-shadow:0 8px 24px rgba(255,77,109,.15);
-      border:3px solid rgba(255,77,109,.15);
+      border:4px solid rgba(255,255,255,.95);               /* anneau blanc discret */
+      box-shadow:0 10px 26px rgba(255,77,109,.18);          /* démarcation douce */
       display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
+
     .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
 
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
@@ -99,9 +130,9 @@
     .lead{ font-size:1.06rem; line-height:1.7; color:#2a2a2a; }
     .muted{ color:var(--muted); }
 
-    /* Bandeau CTA */
+    /* CTA */
     .cta-band{
-      background:linear-gradient(90deg, rgba(255,244,246,.9), rgba(255,215,221,.9));
+      background:linear-gradient(90deg, rgba(255,244,246,.92), rgba(255,215,221,.92));
       border:1px solid var(--card-border); border-radius:16px; padding:18px;
       display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
       box-shadow:0 10px 24px rgba(255,77,109,.12);
@@ -156,10 +187,9 @@
           </p>
           <p class="lead" style="margin-bottom:0">
             Le nom <strong>Yumeko</strong> est un clin d’œil à mes deux chats : <em>Yume</em> et <em>Uniko</em> —
-            avec une promesse simple : <strong>fraîcheur irréprochable</strong> et <strong>voyage</strong> à chaque bouchée.
+            avec une promesse simple : <strong>fraîcheur irréprochable</strong> et <strong>goût</strong> à chaque bouchée.
           </p>
         </div>
-        <!-- Colonne droite volontairement vide pour un visuel aéré -->
       </div>
     </section>
 
@@ -189,14 +219,13 @@
     })();
 
     (function(){
-      // Fait augmenter la teinte "sakura" en descendant
+      // Met simplement à jour la variable; l'overlay est rendu par ::before
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
         const max = (doc.scrollHeight - window.innerHeight) || 1;
         const p = Math.min(1, Math.max(0, window.scrollY / max));
-        // adoucit un peu la montée (courbe ease-out)
-        const eased = 1 - Math.pow(1 - p, 1.7);
+        const eased = 1 - Math.pow(1 - p, 1.85);
         root.style.setProperty('--sakuraAmt', eased.toFixed(3));
       }
       updateSakura();
