@@ -16,21 +16,21 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette lumineuse "Sakura" — Option 3 : Medium Light ===== */
+    /* ===== Palette lumineuse "Sakura" — Option 3 (fix) ===== */
     :root{
       --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
 
-      /* Légèrement moins blanc, un peu plus rosé */
-      --bg-1:#fff1f5;  /* avant: #fffaf3 */
-      --bg-2:#ffdce5;  /* avant: #ffe5ec */
+      /* Légèrement moins blanc, dégradé statique plus lissé */
+      --bg-1:#fff0f4;   /* avant: #fffaf3 */
+      --bg-2:#ffd9e2;   /* avant: #ffe5ec */
 
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
       --accent:#ffd166; --accent-2:#ffc300;
 
       /* Contrôle du dégradé dynamique */
-      --sakura-rgb:255,77,109; /* rose sakura en RGB */
-      --sakuraAmt: 0;          /* 0 (haut) → 1 (bas), mis à jour au scroll */
+      --sakura-rgb:255,77,109;
+      --sakuraAmt: 0;
     }
 
     *{ box-sizing:border-box; }
@@ -40,44 +40,57 @@
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      /* 1) voile rosé très doux 2) couche sakura dynamique 3) fond riz→rose doux */
       background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(255,235,242,.50), transparent 60%),
+        /* Voile rosé doux élargi pour éviter la démarcation haute */
+        radial-gradient(1500px 800px at 20% -12%, rgba(255,225,236,.38), transparent 70%),
+        /* Sakura dynamique légèrement réduit pour éviter bande */
         linear-gradient(180deg,
-          rgba(var(--sakura-rgb), calc(.08 * var(--sakuraAmt))) 0%,
-          rgba(var(--sakura-rgb), calc(.60 * var(--sakuraAmt))) 100%
+          rgba(var(--sakura-rgb), calc(.06 * var(--sakuraAmt))) 0%,
+          rgba(var(--sakura-rgb), calc(.50 * var(--sakuraAmt))) 100%
         ),
-        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+        /* Dégradé statique lissé (3 stops) pour supprimer l’effet de double couche */
+        linear-gradient(180deg, 
+          var(--bg-1) 0%, 
+          var(--bg-2) 80%,    
+          #f7d1dc 100%        
+        );
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      transition: background 100ms linear; /* lissage léger */
+      transition: background 100ms linear;
     }
 
-    /* ===== Header (NON-sticky) — très léger voile rose ===== */
+    /* ===== Header ===== */
     .site-header.jp{
       background: linear-gradient(180deg,
-        rgba(255,245,248,.88),
-        rgba(255,230,238,.70)
+        rgba(255,245,248,.92),
+        rgba(255,228,236,.76)
       );
       border-bottom: 1px solid var(--card-border);
-      position: static;     /* <- ne suit plus le scroll */
+      position: static;
       top:auto; z-index:auto;
-      backdrop-filter:none;
+      backdrop-filter: none;
+      box-shadow: 0 6px 14px rgba(255,77,109,.08);
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
       display:flex; flex-direction:column; align-items:center; gap:8px;
     }
     a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
+
+    /* Logo plus démarqué */
     .logo{
       width:160px; height:160px; border-radius:50%;
       object-fit:cover; background:#fff;
-      box-shadow:0 8px 24px rgba(255,77,109,.15);
-      border:3px solid rgba(255,77,109,.15);
+      border:4px solid rgba(255,255,255,.95);
+      box-shadow:
+        0 10px 26px rgba(255,77,109,.18),
+        0 2px 0 rgba(0,0,0,.02) inset;
       display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
+
     .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
 
+    /* ===== Navigation ===== */
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
     .main-nav a{
@@ -103,7 +116,7 @@
     .lead{ font-size:1.06rem; line-height:1.7; color:#2a2a2a; }
     .muted{ color:var(--muted); }
 
-    /* Bandeau CTA */
+    /* CTA */
     .cta-band{
       background:linear-gradient(90deg, rgba(255,244,246,.92), rgba(255,215,221,.92));
       border:1px solid var(--card-border); border-radius:16px; padding:18px;
@@ -163,7 +176,6 @@
             avec une promesse simple : <strong>fraîcheur irréprochable</strong> et <strong>goût</strong> à chaque bouchée.
           </p>
         </div>
-        <!-- Colonne droite volontairement vide pour un visuel aéré -->
       </div>
     </section>
 
@@ -193,13 +205,12 @@
     })();
 
     (function(){
-      // Teinte "sakura" un peu plus sensible en descendant (Medium Light)
+      // Sakura plus doux et plus uniforme en bas
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
         const max = (doc.scrollHeight - window.innerHeight) || 1;
         const p = Math.min(1, Math.max(0, window.scrollY / max));
-        // courbe un poil plus marquée que l’original (1.85 au lieu de 1.7)
         const eased = 1 - Math.pow(1 - p, 1.85);
         root.style.setProperty('--sakuraAmt', eased.toFixed(3));
       }
