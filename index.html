@@ -363,7 +363,7 @@
   </footer>
 
   <!-- =========================
-       Données + Construction du menu
+       Données + Construction du menu (INIT ROBUSTE)
   ========================== -->
   <script>
     const categories={
@@ -408,6 +408,7 @@
     };
     const prices={};
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+    const esc = (window.CSS && CSS.escape) ? CSS.escape : (s)=>String(s).replace(/"/g,'\\"');
 
     function slugifyCat(label){
       return 'cat-' + label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
@@ -415,6 +416,7 @@
 
     function buildCategoryNav(){
       const nav=document.getElementById('catNav');
+      if(!nav) return;
       nav.innerHTML='';
       Object.keys(categories).forEach((cat)=>{
         const id=slugifyCat(cat);
@@ -437,7 +439,7 @@
             const target=document.getElementById(id);
             const grid=target?.querySelector('.menu-grid');
             const toggle=target?.querySelector('[data-action="collapse"]');
-            if(grid && grid.style.display==='none'){ grid.style.display=''; toggle.textContent='Réduire'; target.querySelector('.cat-header')?.setAttribute('aria-expanded','true'); }
+            if(grid && grid.style.display==='none'){ grid.style.display=''; if(toggle) toggle.textContent='Réduire'; target.querySelector('.cat-header')?.setAttribute('aria-expanded','true'); }
             const y=target.getBoundingClientRect().top + window.scrollY - 80;
             window.scrollTo({top:y, behavior:'smooth'});
           }
@@ -447,7 +449,8 @@
     }
 
     function buildMenu(){
-      const menu=document.getElementById('menu'); menu.innerHTML='';
+      const menu=document.getElementById('menu'); if(!menu) return;
+      menu.innerHTML='';
 
       for(const [cat,codes] of Object.entries(categories)){
         const sec=document.createElement('section');
@@ -517,7 +520,7 @@
         if(btn && btn.dataset.action==='collapse'){
           const hidden = grid.style.display==='none';
           grid.style.display = hidden ? '' : 'none';
-          collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
+          if(collapseBtn) collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
           sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
           return;
         }
@@ -526,135 +529,142 @@
         if(header && !btn){
           const hidden = grid.style.display==='none';
           grid.style.display = hidden ? '' : 'none';
-          collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
+          if(collapseBtn) collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
           header.setAttribute('aria-expanded', hidden ? 'true' : 'false');
         }
       }, false);
     }
 
-    document.addEventListener('DOMContentLoaded', ()=>{
-      buildCategoryNav();
-      buildMenu();
-    });
+    // INIT ROBUSTE pour la partie MENU
+    (function(){
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ()=>{ buildCategoryNav(); buildMenu(); });
+      } else {
+        buildCategoryNav(); buildMenu();
+      }
+    })();
   </script>
 
-  <!-- Panier / tiroir + EmailJS + interactions carte -->
+  <!-- Panier / tiroir + EmailJS + interactions carte (INIT ROBUSTE) -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const sheet = document.getElementById('cartSheet');
-      const overlay = document.getElementById('sheetOverlay');
-      const sheetClose = document.getElementById('sheetClose');
-      const btnOpenEl = document.getElementById('gotoOrder');
-      const btnBackClose = document.getElementById('closeSheetBtn');
-      const btnPrimary = document.getElementById('goPrimary');
+    (function initCartScript(){
+      const esc = (window.CSS && CSS.escape) ? CSS.escape : (s)=>String(s).replace(/"/g,'\\"');
 
-      const recapList = document.getElementById('recapList');
-      const recapCom = document.getElementById('recapComment');
+      function initCartAndModal () {
+        const sheet = document.getElementById('cartSheet');
+        const overlay = document.getElementById('sheetOverlay');
+        const sheetClose = document.getElementById('sheetClose');
+        const btnOpenEl = document.getElementById('gotoOrder');
+        const btnBackClose = document.getElementById('closeSheetBtn');
+        const btnPrimary = document.getElementById('goPrimary');
 
-      const stepCart = document.getElementById('stepCart');
-      const stepDetails = document.getElementById('stepDetails');
-      const form = document.getElementById('orderForm');
+        const recapList = document.getElementById('recapList');
+        const recapCom = document.getElementById('recapComment');
 
-      let currentStep = 'cart';
+        const stepCart = document.getElementById('stepCart');
+        const stepDetails = document.getElementById('stepDetails');
+        const form = document.getElementById('orderForm');
 
-      function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
-      function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
+        let currentStep = 'cart';
 
-      function parseItem(full){
-        const parts=String(full).split('-');
-        const code=(parts[0]||'').trim();
-        const name=parts.slice(1).join('-').trim()||full.trim();
-        return {code,name};
-      }
-      function getCartItems(){
-        const items=[];
-        document.querySelectorAll('.qty[data-item]').forEach(span=>{
-          const qty=safeInt(span);
-          if(qty>0){
-            const full=span.dataset.item;
-            const {code,name}=parseItem(full);
-            items.push({code,name,qty});
-          }
-        });
-        return items;
-      }
+        function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
+        function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
 
-      function buildRecap(){
-        const items=getCartItems();
-        recapList.innerHTML='';
-        if(items.length===0){
-          recapList.innerHTML='<li class="muted">Aucun article pour le moment.</li>';
-        }else{
-          items.forEach(({code,name,qty})=>{
-            const li=document.createElement('li');
-            li.className='recap-item';
-            const codeLower=(code||'').toLowerCase();
-            li.innerHTML=`
-              <div class="it-left" style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-                <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
-                <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
-              </div>
-              <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
-                <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
-                <span class="qty" aria-live="polite" style="min-width:20px;text-align:center;font-weight:800">${qty}</span>
-                <button class="btn btn-primary recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
-              </div>`;
-            recapList.appendChild(li);
-          });
+        function parseItem(full){
+          const parts=String(full).split('-');
+          const code=(parts[0]||'').trim();
+          const name=parts.slice(1).join('-').trim()||full.trim();
+          return {code,name};
         }
-        const c=document.getElementById('comments')?.value?.trim()||'';
-        recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
-      }
+        function getCartItems(){
+          const items=[];
+          document.querySelectorAll('.qty[data-item]').forEach(span=>{
+            const qty=safeInt(span);
+            if(qty>0){
+              const full=span.dataset.item;
+              const {code,name}=parseItem(full);
+              items.push({code,name,qty});
+            }
+          });
+          return items;
+        }
 
-      function setStep(which){
-        currentStep = which;
-        const isCart = which === 'cart';
-        stepCart.style.display = isCart ? '' : 'none';
-        stepDetails.style.display = isCart ? 'none' : '';
-        btnPrimary.textContent = isCart ? 'Valider le panier →' : 'Commander →';
-        if(!isCart){ form?.querySelector('#first_name')?.focus(); }
-      }
+        function buildRecap(){
+          const items=getCartItems();
+          recapList.innerHTML='';
+          if(items.length===0){
+            recapList.innerHTML='<li class="muted">Aucun article pour le moment.</li>';
+          }else{
+            items.forEach(({code,name,qty})=>{
+              const li=document.createElement('li');
+              li.className='recap-item';
+              const codeLower=(code||'').toLowerCase();
+              li.innerHTML=`
+                <div class="it-left" style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+                  <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
+                  <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
+                </div>
+                <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
+                  <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
+                  <span class="qty" aria-live="polite" style="min-width:20px;text-align:center;font-weight:800">${qty}</span>
+                  <button class="btn btn-primary recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
+                </div>`;
+              recapList.appendChild(li);
+            });
+          }
+          const c=document.getElementById('comments')?.value?.trim()||'';
+          recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
+        }
 
-      const disableScroll = (e)=>{
-        if(!document.body.classList.contains('modal-open')) return;
-        if(!sheet.contains(e.target)){ e.preventDefault(); }
-      };
-      function openSheet(){
-        buildRecap();
-        setStep('cart');
-        sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
-        overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
-        document.body.classList.add('modal-open');
-        window.addEventListener('touchmove', disableScroll, {passive:false});
-        window.addEventListener('wheel', disableScroll, {passive:false});
-      }
-      function closeSheet(){
-        sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
-        overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
-        document.body.classList.remove('modal-open');
-        window.removeEventListener('touchmove', disableScroll);
-        window.removeEventListener('wheel', disableScroll);
-      }
+        function setStep(which){
+          currentStep = which;
+          const isCart = which === 'cart';
+          stepCart.style.display = isCart ? '' : 'none';
+          stepDetails.style.display = isCart ? 'none' : '';
+          btnPrimary.textContent = isCart ? 'Valider le panier →' : 'Commander →';
+          if(!isCart){ form?.querySelector('#first_name')?.focus(); }
+        }
 
-      btnOpenEl?.addEventListener('click', openSheet);
-      sheetClose?.addEventListener('click', closeSheet);
-      btnBackClose?.addEventListener('click', ()=>{
-        if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); }
-      });
-      document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+        const disableScroll = (e)=>{
+          if(!document.body.classList.contains('modal-open')) return;
+          if(!sheet.contains(e.target)){ e.preventDefault(); }
+        };
+        function openSheet(){
+          buildRecap();
+          setStep('cart');
+          sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+          overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+          document.body.classList.add('modal-open');
+          window.addEventListener('touchmove', disableScroll, {passive:false});
+          window.addEventListener('wheel', disableScroll, {passive:false});
+        }
+        function closeSheet(){
+          sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
+          overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
+          document.body.classList.remove('modal-open');
+          window.removeEventListener('touchmove', disableScroll);
+          window.removeEventListener('wheel', disableScroll);
+        }
 
-      function itemsTextForEmail(){
-        const items = getCartItems();
-        return items.map(({name,qty})=>`- ${name} x${qty}`).join('\n') || '(aucun)';
-      }
-      function buildOrderText(){
-        const itemsText=itemsTextForEmail();
-        const c=document.getElementById('comments')?.value?.trim() || '—';
-        const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '—';
-        const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '—';
-        const email=form?.querySelector('[name="email"]')?.value?.trim() || '—';
-        return `Commande YUMEKO
+        btnOpenEl?.addEventListener('click', openSheet);
+        sheetClose?.addEventListener('click', closeSheet);
+        btnBackClose?.addEventListener('click', ()=>{
+          if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); }
+        });
+        document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+
+        function itemsTextForEmail(){
+          const items = getCartItems();
+          return items.map(({name,qty})=>`- ${name} x${qty}`).join('\n') || '(aucun)';
+        }
+        function buildOrderText(){
+          const itemsText=itemsTextForEmail();
+          const c=document.getElementById('comments')?.value?.trim() || '—';
+          const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '—';
+          const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '—';
+          const email=form?.querySelector('[name="email"]')?.value?.trim() || '—';
+          return `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
 
@@ -663,200 +673,209 @@ ${itemsText}
 
 Allergies / autres :
 ${c}`;
-      }
-      function saveOrderToLocalStorage(){
-        try{
-          const text = buildOrderText();
-          const hidden = document.getElementById('hiddenOrder');
-          if(hidden) hidden.value = text;
-          localStorage.setItem('yumeko_last_order', text);
-        }catch(e){}
-      }
-      function validateForm(){
-        if(!form) return false;
-        const first = form.first_name.value.trim();
-        const last  = form.last_name.value.trim();
-        const email = form.email.value.trim();
-        const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        if(!first || !last || !okEmail){ form.reportValidity?.(); return false; }
-        return true;
-      }
-
-      async function sendEmails(){
-        if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
-        const first = form.first_name.value.trim();
-        const last  = form.last_name.value.trim();
-        const email = form.email.value.trim();
-        const notes = form.comments.value.trim();
-        const items = itemsTextForEmail();
-        const order_full = buildOrderText();
-        const base = {
-          from_name: 'YUMEKO SUSHIS',
-          items_text: items,
-          comments: notes || '—',
-          full_name: `${first} ${last}`.trim(),
-          order_full
-        };
-        const paramsCustomer = {
-          ...base, to_name: first || 'Client', to_email: email, reply_to: email,
-          subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
-        };
-        const paramsAdmin = {
-          ...base, to_name: 'YUMEKO', to_email: YUMEKO_EMAIL, reply_to: email,
-          subject: `Nouvelle commande — ${first} ${last}`.trim()
-        };
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
-      }
-
-      btnPrimary?.addEventListener('click', async ()=>{
-        if(currentStep === 'cart'){
-          if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
-          setStep('details'); return;
         }
-        if(!validateForm()) return;
-        saveOrderToLocalStorage();
-        try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
-        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-        updateSticky();
-        closeSheet();
-        window.location.href = 'merci.html';
-      });
-
-      // Ajustements quantités dans le récap
-      document.getElementById('recapList').addEventListener('click', (e)=>{
-        const plus = e.target.closest('.recap-plus');
-        const minus = e.target.closest('.recap-minus');
-        const btn = plus || minus;
-        if(!btn) return;
-        const item = btn.dataset.item;
-        const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-        if(!span) return;
-        const cur = parseInt(span.textContent)||0;
-        const inc = plus ? 1 : -1;
-        const v = Math.max(0, cur + inc);
-        span.textContent = v>0 ? String(v) : '';
-        bump(span);
-        updateSticky();
-        buildRecap();
-      });
-
-      // Carte: clic => modale quantité (photo/carte) OU bouton +
-      document.addEventListener('click', (e)=>{
-        const plusBtn = e.target.closest('.card-plus');
-        const card = e.target.closest('.item-card');
-
-        if(plusBtn){
-          const itemKey = plusBtn.dataset.item;
-          openItemModalByKey(itemKey);
-          return;
+        function saveOrderToLocalStorage(){
+          try{
+            const text = buildOrderText();
+            const hidden = document.getElementById('hiddenOrder');
+            if(hidden) hidden.value = text;
+            localStorage.setItem('yumeko_last_order', text);
+          }catch(e){}
         }
-        if(card && !e.target.closest('.ctrls')){
-          const code=card.dataset.code;
-          const name=card.dataset.name;
-          openItemModal(code, name);
-          return;
+        function validateForm(){
+          if(!form) return false;
+          const first = form.first_name.value.trim();
+          const last  = form.last_name.value.trim();
+          const email = form.email.value.trim();
+          const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          if(!first || !last || !okEmail){ form.reportValidity?.(); return false; }
+          return true;
         }
-      }, false);
 
-      // Modale produit
-      function openItemModal(code, name){
-        const d=window.catalog[code]||{};
-        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-        document.getElementById('mImg').src=img;
-        document.getElementById('mImg').alt=name;
-        document.getElementById('mTitle').textContent=name;
-        document.getElementById('mPieces').textContent=d.pieces ?? '—';
-        document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
-        document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
-        document.getElementById('mDesc').textContent=d.desc || '—';
-        const itemKey=`${code}- ${name}`;
-        const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        const current=parseInt(qtySpan?.textContent)||0;
-        const mQty=document.getElementById('mQty');
-        const mMinus=document.getElementById('mMinus');
-        mQty.textContent=current;
-        mMinus.style.visibility=current>0?'visible':'hidden';
-        mMinus.dataset.item=itemKey;
-        document.getElementById('mPlus').dataset.item=itemKey;
-        const modal=document.getElementById('itemModal');
-        modal.style.display='flex';
-        modal.setAttribute('aria-hidden','false');
-      }
-      function openItemModalByKey(itemKey){
-        const code = (String(itemKey).split('-')[0]||'').trim();
-        const name = String(itemKey).split('-').slice(1).join('-').trim();
-        if(!code || !name) return;
-        openItemModal(code, name);
-      }
-      (function(){
-        const modal=document.getElementById('itemModal');
-        const closeBtn=document.getElementById('mClose');
-        const mMinus=document.getElementById('mMinus');
-        const mPlus=document.getElementById('mPlus');
-        const mQty=document.getElementById('mQty');
-        function setQty(itemKey,newVal){
-          const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-          if(!span) return;
-          span.textContent = newVal>0 ? String(newVal) : '';
-          mQty.textContent=newVal;
-          document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
-          updateSticky(); buildRecap();
+        async function sendEmails(){
+          if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
+          const first = form.first_name.value.trim();
+          const last  = form.last_name.value.trim();
+          const email = form.email.value.trim();
+          const notes = form.comments.value.trim();
+          const items = itemsTextForEmail();
+          const order_full = buildOrderText();
+          const base = {
+            from_name: 'YUMEKO SUSHIS',
+            items_text: items,
+            comments: notes || '—',
+            full_name: `${first} ${last}`.trim(),
+            order_full
+          };
+          const paramsCustomer = {
+            ...base, to_name: first || 'Client', to_email: email, reply_to: email,
+            subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
+          };
+          const paramsAdmin = {
+            ...base, to_name: 'YUMEKO', to_email: YUMEKO_EMAIL, reply_to: email,
+            subject: `Nouvelle commande — ${first} ${last}`.trim()
+          };
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
         }
-        mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
-        mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
-        closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
-        modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-      })();
 
-      /* Persistance panier */
-      const CART_KEY='yumeko_cart_v1';
-      function saveCart(){
-        const cart=[];
-        document.querySelectorAll('.qty[data-item]').forEach(q=>{
-          const n=parseInt(q.textContent)||0;
-          if(n>0) cart.push({key:q.dataset.item, qty:n});
-        });
-        try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
-      }
-      function restoreCart(){
-        try{
-          const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-          saved.forEach(({key,qty})=>{
-            const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-            if(span){ span.textContent=qty; }
-          });
-          updateSticky();
-        }catch(e){ console.warn('restoreCart error', e); }
-      }
-      function updateMiniRecap(){}
-      function updateSticky(){
-        const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
-        qtyNodes.forEach(q=>{
-          const n=parseInt(q.textContent)||0; totalQty+=n;
-          if(n>0){
-            const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-            const d=window.catalog?.[code] || {};
-            const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
-                      ? window.prices[code]
-                      : (typeof d.price==='number'?d.price:undefined);
-            if(typeof p==='number') totalPrice += p*n;
+        btnPrimary?.addEventListener('click', async ()=>{
+          if(currentStep === 'cart'){
+            if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
+            setStep('details'); return;
           }
+          if(!validateForm()) return;
+          saveOrderToLocalStorage();
+          try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
+          document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
+          updateSticky();
+          closeSheet();
+          window.location.href = 'merci.html';
         });
-        const btn=document.getElementById('gotoOrder'); if(!btn) return;
-        if(totalPrice>0){
-          const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
-          btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
-        }else{
-          btn.textContent = `Panier (${totalQty}) • Valider`;
+
+        // Ajustements quantités dans le récap
+        document.getElementById('recapList').addEventListener('click', (e)=>{
+          const plus = e.target.closest('.recap-plus');
+          const minus = e.target.closest('.recap-minus');
+          const btn = plus || minus;
+          if(!btn) return;
+          const item = btn.dataset.item;
+          const span = document.querySelector(`.qty[data-item="${esc(item)}"]`);
+          if(!span) return;
+          const cur = parseInt(span.textContent)||0;
+          const inc = plus ? 1 : -1;
+          const v = Math.max(0, cur + inc);
+          span.textContent = v>0 ? String(v) : '';
+          bump(span);
+          updateSticky();
+          buildRecap();
+        });
+
+        // Carte: clic => modale quantité (photo/carte) OU bouton +
+        document.addEventListener('click', (e)=>{
+          const plusBtn = e.target.closest('.card-plus');
+          const card = e.target.closest('.item-card');
+
+          if(plusBtn){
+            const itemKey = plusBtn.dataset.item;
+            openItemModalByKey(itemKey);
+            return;
+          }
+          if(card && !e.target.closest('.ctrls')){
+            const code=card.dataset.code;
+            const name=card.dataset.name;
+            openItemModal(code, name);
+            return;
+          }
+        }, false);
+
+        // Modale produit
+        function openItemModal(code, name){
+          const d=window.catalog[code]||{};
+          const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+          document.getElementById('mImg').src=img;
+          document.getElementById('mImg').alt=name;
+          document.getElementById('mTitle').textContent=name;
+          document.getElementById('mPieces').textContent=d.pieces ?? '—';
+          document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
+          document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
+          document.getElementById('mDesc').textContent=d.desc || '—';
+          const itemKey=`${code}- ${name}`;
+          const qtySpan=document.querySelector(`.qty[data-item="${esc(itemKey)}"]`);
+          const current=parseInt(qtySpan?.textContent)||0;
+          const mQty=document.getElementById('mQty');
+          const mMinus=document.getElementById('mMinus');
+          mQty.textContent=current;
+          mMinus.style.visibility=current>0?'visible':'hidden';
+          mMinus.dataset.item=itemKey;
+          document.getElementById('mPlus').dataset.item=itemKey;
+          const modal=document.getElementById('itemModal');
+          modal.style.display='flex';
+          modal.setAttribute('aria-hidden','false');
         }
-        saveCart();
+        function openItemModalByKey(itemKey){
+          const code = (String(itemKey).split('-')[0]||'').trim();
+          const name = String(itemKey).split('-').slice(1).join('-').trim();
+          if(!code || !name) return;
+          openItemModal(code, name);
+        }
+        (function(){
+          const modal=document.getElementById('itemModal');
+          const closeBtn=document.getElementById('mClose');
+          const mMinus=document.getElementById('mMinus');
+          const mPlus=document.getElementById('mPlus');
+          const mQty=document.getElementById('mQty');
+          function setQty(itemKey,newVal){
+            const span=document.querySelector(`.qty[data-item="${esc(itemKey)}"]`);
+            if(!span) return;
+            span.textContent = newVal>0 ? String(newVal) : '';
+            mQty.textContent=newVal;
+            document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
+            updateSticky(); buildRecap();
+          }
+          mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
+          mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
+          closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
+          modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+          document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+        })();
+
+        /* Persistance panier */
+        const CART_KEY='yumeko_cart_v1';
+        function saveCart(){
+          const cart=[];
+          document.querySelectorAll('.qty[data-item]').forEach(q=>{
+            const n=parseInt(q.textContent)||0;
+            if(n>0) cart.push({key:q.dataset.item, qty:n});
+          });
+          try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+        }
+        function restoreCart(){
+          try{
+            const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+            saved.forEach(({key,qty})=>{
+              const span=document.querySelector(`.qty[data-item="${esc(key)}"]`);
+              if(span){ span.textContent=qty; }
+            });
+            updateSticky();
+          }catch(e){ console.warn('restoreCart error', e); }
+        }
+        function updateMiniRecap(){}
+
+        function updateSticky(){
+          const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
+          qtyNodes.forEach(q=>{
+            const n=parseInt(q.textContent)||0; totalQty+=n;
+            if(n>0){
+              const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
+              const d=window.catalog?.[code] || {};
+              const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
+                        ? window.prices[code]
+                        : (typeof d.price==='number'?d.price:undefined);
+              if(typeof p==='number') totalPrice += p*n;
+            }
+          });
+          const btn=document.getElementById('gotoOrder'); if(!btn) return;
+          if(totalPrice>0){
+            const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
+            btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
+          }else{
+            btn.textContent = `Panier (${totalQty}) • Valider`;
+          }
+          saveCart();
+        }
+        if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
+        restoreCart();
+        updateSticky();
       }
-      if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
-      restoreCart();
-      updateSticky();
-    });
+
+      // INIT ROBUSTE pour la partie PANIER/MODALE
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCartAndModal);
+      } else {
+        initCartAndModal();
+      }
+    })();
   </script>
 
   <!-- Nav actif + Sakura dynamique -->
