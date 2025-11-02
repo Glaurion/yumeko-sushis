@@ -11,8 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Favicon / thème -->
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link rel="apple-touch-icon" href="/images/favicon.png" />
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
@@ -123,7 +123,15 @@
       display:flex; flex-direction:column;
     }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,77,109,.15); border-color:rgba(255,77,109,.25); }
-    .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#fff6ed; }
+
+    /* Zone image + fallback carré universel */
+    .thumb-wrap{ position:relative; width:100%; }
+    .thumb-wrap::before{ content:""; display:block; padding-top:100%; }
+    .thumb{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; object-position:center; display:block; background:#fff6ed;
+    }
+
     .item-name{ font-weight:800; font-size:1.02rem; padding:10px 12px 4px; color:#1f1f1f; }
     .card-body{ padding:0 12px 12px; margin-top:auto; }
     .card-footer{
@@ -237,7 +245,7 @@
   <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
-        <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
+        <img src="/images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
         <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
       <nav class="main-nav" aria-label="Navigation principale">
@@ -398,14 +406,18 @@
         codes.forEach(code=>{
           const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
           const name=d.name||code;
-          const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+          const img='/images/'+(d.img || (code.toLowerCase()+'.jpg'));
           const pieces=d.pieces ?? '';
           const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
           const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
 
           const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
           card.innerHTML=`
-            <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
+            <div class="thumb-wrap">
+              <img class="thumb" width="600" height="600" loading="lazy" decoding="async"
+                   src="${img}" alt="${name}"
+                   onerror="this.src='/images/placeholder.jpg'; this.style.display='block'">
+            </div>
             <div class="item-name">${name}</div>
             <div class="card-body">
               <div class="card-footer">
@@ -469,13 +481,13 @@
       overlay?.addEventListener('click', closeSheet);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
-      /* (le reste du checkout/EmailJS identique à ta version précédente — non modifié pour se concentrer sur le bug de clic) */
+      /* (checkout/EmailJS à implémenter ici si besoin) */
     }
 
     /* ==== Modale produit ==== */
     function openItemModal(code, name){
       const d=window.catalog[code]||{};
-      const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+      const img='/images/'+(d.img || (code.toLowerCase()+'.jpg'));
       document.getElementById('mImg').src=img;
       document.getElementById('mImg').alt=name;
       document.getElementById('mTitle').textContent=name;
@@ -560,7 +572,7 @@
   <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:103" aria-hidden="true">
     <div style="background:#fff;border-radius:16px;border:1px solid var(--card-border);width:min(92%,560px);max-height:80vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.15)">
       <div style="display:flex;gap:14px;padding:14px;align-items:flex-start">
-        <img id="mImg" alt="" style="width:140px;height:140px;object-fit:cover;border-radius:12px;background:#fff6ed;border:1px solid var(--card-border)" />
+        <img id="mImg" alt="" style="width:140px;height:140px;object-fit:cover;object-position:center;border-radius:12px;background:#fff6ed;border:1px solid var(--card-border)" />
         <div style="flex:1;min-width:0">
           <h4 id="mTitle" style="margin:6px 0 6px;font-size:1.15rem">Produit</h4>
           <p style="margin:0;color:var(--muted);font-size:.9rem">
@@ -603,6 +615,16 @@
       modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
     })();
+  </script>
+
+  <!-- Logger d'images manquantes -->
+  <script>
+    document.addEventListener('error', (e) => {
+      const t = e.target;
+      if (t.tagName === 'IMG') {
+        console.warn('Image introuvable:', t.getAttribute('src'));
+      }
+    }, true);
   </script>
 </body>
 </html>
