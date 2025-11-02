@@ -28,8 +28,8 @@
       --accent:#ffd166; --accent-2:#ffc300; /* JAUNE = comme "Découvrir le menu" */
 
       /* Contrôle du dégradé dynamique */
-      --sakura-rgb:255,77,109; /* rose sakura en RGB */
-      --sakuraAmt: 0;          /* 0 (haut) → 1 (bas), mis à jour au scroll */
+      --sakura-rgb:255,77,109;
+      --sakuraAmt: 0;
     }
 
     *{ box-sizing:border-box; }
@@ -40,8 +40,6 @@
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-
-      /* Dégradé adouci qui ne colore plus le bas de la page */
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
         linear-gradient(180deg,
@@ -50,13 +48,10 @@
           var(--bg-1) 100%
         ),
         var(--bg-1);
-
-      -webkit-font-smoothing:antialiased; 
+      -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       transition: background 80ms linear;
     }
-
-    /* 📱 Version mobile : réduction du rose pour éviter tout excédent */
     @media (max-width: 768px){
       body{
         background:
@@ -110,6 +105,55 @@
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
     .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
+    /* ===== Sous-nav catégories (sticky) ===== */
+    .cat-nav-wrap{
+      position:sticky; top:0; z-index:10; /* reste visible */
+      padding:10px 0; margin:0 0 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
+      backdrop-filter:saturate(120%) blur(2px);
+      border-bottom:1px solid rgba(0,0,0,.06);
+      border-radius:12px;
+    }
+    .cat-nav{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none;
+      background:#fff; border:1px solid var(--card-border);
+      font-weight:800; color:#333; transition:transform .12s, box-shadow .12s, background .12s, border-color .12s;
+    }
+    .pill:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.06); }
+    .pill.active{ background:var(--accent); color:#111; border-color:rgba(0,0,0,.08); }
+
+    /* ===== Bloc catégorie ===== */
+    .cat-section{
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:16px;
+      padding:16px;
+      margin:18px 0;
+      box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04);
+    }
+    .cat-header{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin:2px 2px 14px;
+      padding-bottom:8px;
+      border-bottom:1px dashed rgba(0,0,0,.08);
+    }
+    .cat-title{
+      margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b;
+    }
+    .cat-tools{
+      display:flex; align-items:center; gap:8px;
+    }
+    .btn-mini{
+      border:1px solid var(--card-border);
+      background:#fff; color:#222;
+      padding:6px 10px; border-radius:10px; font-weight:700; cursor:pointer;
+    }
+    .btn-mini:hover{ background:#f6f6f6; }
+
     /* ===== GRID menu ===== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{
@@ -131,14 +175,13 @@
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
 
-    /* === Boutons alignés avec "Découvrir le menu" (JAUNE) === */
+    /* === Boutons jaunes (alignés accueil) === */
     .circle{
       background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px;
       font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
       box-shadow:0 4px 0 rgba(0,0,0,.08);
     }
     .circle:hover{ background:var(--accent-2); transform:translateY(-1px); }
-
     .btn{ border:none; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; }
     .btn-ghost{ background:#f3f3f3; color:#222; }
     .btn-primary{ background:var(--accent); color:#111; box-shadow:0 6px 0 rgba(0,0,0,.06); }
@@ -165,7 +208,7 @@
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
 
-    /* === Bouton Panier = même style que "Découvrir le menu" === */
+    /* === Bouton Panier (jaune) === */
     #gotoOrder{
       background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px;
       padding:12px 16px; cursor:pointer; white-space:nowrap;
@@ -174,7 +217,7 @@
     }
     #gotoOrder:hover{ background:var(--accent-2); filter:brightness(1.02); transform:translateY(-1px); }
 
-    /* Backdrop pour le tiroir (clic dehors = fermer) */
+    /* Backdrop tiroir */
     #sheetOverlay{
       position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(110%) blur(2px);
       opacity:0; pointer-events:none; transition:opacity .22s ease; z-index:101;
@@ -198,7 +241,7 @@
       max-height:calc(70vh - 100px); overscroll-behavior:contain;
     }
 
-    /* Récap plus compact + miniatures réduites */
+    /* Récap */
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(0,0,0,.08); }
     .thumb.sm{
@@ -229,12 +272,10 @@
   <!-- ===== EmailJS (SDK + config) ===== -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
-    // 🔧 A REMPLACER par tes infos EmailJS
     const EMAILJS_PUBLIC_KEY = 'X0lGj86qGqZ49EKOC';
     const EMAILJS_SERVICE_ID = 'service_55t4mql';
     const EMAILJS_TEMPLATE_ID = 'template_9itlkwh';
     const YUMEKO_EMAIL = 'yumeko.sushis@gmail.com';
-
     (function(){ try{ emailjs.init(EMAILJS_PUBLIC_KEY); }catch(e){ console.warn('EmailJS init error', e); } })();
   </script>
 </head>
@@ -261,6 +302,13 @@
     <section class="section" id="menuSection" aria-labelledby="titre-menu">
       <h2 id="titre-menu">Notre carte</h2>
       <div class="sep" aria-hidden="true"></div>
+
+      <!-- Sous-nav catégories -->
+      <div class="cat-nav-wrap">
+        <div class="cat-nav" id="catNav"></div>
+      </div>
+
+      <!-- Catégories rendues ici -->
       <div id="menu"></div>
     </section>
   </main>
@@ -283,14 +331,11 @@
       <button id="sheetClose" aria-label="Fermer" type="button">×</button>
     </header>
     <div class="body">
-      <!-- Étape 1 : panier -->
       <div id="stepCart" class="step active">
         <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
-
-      <!-- Étape 2 : coordonnées -->
       <div id="stepDetails" class="step" style="display:none">
         <form id="orderForm" action="#" method="post" novalidate>
           <div class="form-grid">
@@ -307,8 +352,8 @@
               <input id="email" name="email" type="email" required autocomplete="email" inputmode="email" />
             </div>
             <div class="field full">
-              <label for="comments">Commentaire (optionnel)</label>
-              <textarea id="comments" name="comments" rows="3" placeholder="Ex : Allergies, etc ..."></textarea>
+              <label for="comments">Allergies / commentaire (optionnel)</label>
+              <textarea id="comments" name="comments" rows="3" placeholder="Ex : sans sésame, sauce à part…"></textarea>
             </div>
           </div>
           <input type="hidden" id="hiddenOrder" name="order" value="" />
@@ -372,13 +417,69 @@
     const prices={}; // optionnel
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
+    function slugifyCat(label){
+      return 'cat-' + label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    }
+
+    function buildCategoryNav(){
+      const nav=document.getElementById('catNav');
+      nav.innerHTML='';
+      Object.keys(categories).forEach((cat, i)=>{
+        const id=slugifyCat(cat);
+        const btn=document.createElement('button');
+        btn.className='pill';
+        btn.type='button';
+        btn.setAttribute('data-target', '#'+id);
+        btn.textContent=cat;
+        btn.addEventListener('click', ()=>{
+          const target=document.getElementById(id);
+          const already=btn.classList.contains('active');
+
+          // toggle filtre
+          document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+          if(!already){
+            btn.classList.add('active');
+            // n'afficher que la catégorie cliquée
+            document.querySelectorAll('.cat-section').forEach(sec=>{
+              sec.style.display = (sec.id===id) ? '' : 'none';
+            });
+          }else{
+            // reset filtre
+            document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display='');
+          }
+
+          // scroll (si la section est visible)
+          const visible=document.getElementById(id);
+          if(visible && visible.style.display!=='none'){
+            const y=visible.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({top:y, behavior:'smooth'});
+          }
+        });
+        nav.appendChild(btn);
+      });
+    }
+
     function buildMenu(){
       const menu=document.getElementById('menu'); menu.innerHTML='';
       for(const [cat,codes] of Object.entries(categories)){
-        const wrap=document.createElement('div'); wrap.className='category';
-        wrap.innerHTML=`<h3 style="text-align:center;text-transform:uppercase;letter-spacing:1px;margin:0 0 18px;color:#c2173b">${cat}</h3><div class="menu-grid"></div>`;
-        const grid=wrap.querySelector('.menu-grid');
+        const sec=document.createElement('section');
+        sec.className='cat-section';
+        sec.id = slugifyCat(cat);
 
+        const header=document.createElement('div');
+        header.className='cat-header';
+        header.innerHTML = `
+          <h3 class="cat-title">${cat}</h3>
+          <div class="cat-tools">
+            <button type="button" class="btn-mini" data-action="show-all">Tout afficher</button>
+            <button type="button" class="btn-mini" data-action="collapse">Réduire</button>
+          </div>
+        `;
+
+        const grid=document.createElement('div');
+        grid.className='menu-grid';
+
+        // items
         codes.forEach(code=>{
           const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
           const name=d.name||code;
@@ -406,10 +507,38 @@
           grid.appendChild(card);
         });
 
-        menu.appendChild(wrap);
+        sec.appendChild(header);
+        sec.appendChild(grid);
+        menu.appendChild(sec);
       }
+
+      // actions header (Réduire / Tout afficher)
+      menu.addEventListener('click',(e)=>{
+        const btn=e.target.closest('.btn-mini');
+        if(!btn) return;
+        const sec=e.target.closest('.cat-section');
+        if(!sec) return;
+        const grid=sec.querySelector('.menu-grid');
+        const action=btn.dataset.action;
+        if(action==='collapse'){
+          grid.style.display = (grid.style.display==='none') ? '' : 'none';
+          btn.textContent = (grid.style.display==='none') ? 'Déplier' : 'Réduire';
+        }
+        if(action==='show-all'){
+          document.querySelectorAll('.cat-section').forEach(s=>{
+            const g=s.querySelector('.menu-grid'); if(g) g.style.display='';
+            const cta=s.querySelector('[data-action="collapse"]'); if(cta) cta.textContent='Réduire';
+          });
+          // reset filtre et pills
+          document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+        }
+      });
     }
-    document.addEventListener('DOMContentLoaded', buildMenu);
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      buildCategoryNav();
+      buildMenu();
+    });
   </script>
 
   <!-- Panier / tiroir + EmailJS -->
@@ -418,7 +547,7 @@
       const sheet = document.getElementById('cartSheet');
       const overlay = document.getElementById('sheetOverlay');
       const sheetClose = document.getElementById('sheetClose');
-      const btnOpen = document.getElementById('gotoOrder');
+      const btnOpenEl = document.getElementById('gotoOrder');
       const btnBackClose = document.getElementById('closeSheetBtn');
       const btnPrimary = document.getElementById('goPrimary');
 
@@ -486,55 +615,50 @@
         stepCart.style.display = isCart ? '' : 'none';
         stepDetails.style.display = isCart ? 'none' : '';
         btnPrimary.textContent = isCart ? 'Valider le panier →' : 'Commander →';
-        if(!isCart){
-          form?.querySelector('#first_name')?.focus();
-        }
+        if(!isCart){ form?.querySelector('#first_name')?.focus(); }
       }
 
-      /* ==== Ouverture / fermeture + overlay ==== */
       const disableScroll = (e)=>{
         if(!document.body.classList.contains('modal-open')) return;
-        if(!sheet.contains(e.target)){ e.preventDefault(); }
+        if(!document.getElementById('cartSheet').contains(e.target)){ e.preventDefault(); }
       };
       function openSheet(){
         buildRecap();
         setStep('cart');
-        sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+        document.getElementById('cartSheet').classList.add('open');
+        document.getElementById('cartSheet').setAttribute('aria-hidden','false');
         overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
         document.body.classList.add('modal-open');
         window.addEventListener('touchmove', disableScroll, {passive:false});
         window.addEventListener('wheel', disableScroll, {passive:false});
       }
       function closeSheet(){
-        sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
+        document.getElementById('cartSheet').classList.remove('open');
+        document.getElementById('cartSheet').setAttribute('aria-hidden','true');
         overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
         document.body.classList.remove('modal-open');
         window.removeEventListener('touchmove', disableScroll);
         window.removeEventListener('wheel', disableScroll);
       }
 
-      const btnOpenEl = document.getElementById('gotoOrder');
       btnOpenEl?.addEventListener('click', openSheet);
       document.getElementById('sheetClose')?.addEventListener('click', closeSheet);
       document.getElementById('closeSheetBtn')?.addEventListener('click', ()=>{
-        if(currentStep === 'details'){ setStep('cart'); }
-        else{ closeSheet(); }
+        if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); }
       });
       document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && document.getElementById('cartSheet').classList.contains('open')) closeSheet(); });
 
       function itemsTextForEmail(){
         const items = getCartItems();
         return items.map(({name,qty})=>`- ${name} x${qty}`).join('\n') || '(aucun)';
       }
-
       function buildOrderText(){
         const itemsText=itemsTextForEmail();
         const c=document.getElementById('comments')?.value?.trim() || '—';
         const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '—';
         const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '—';
         const email=form?.querySelector('[name="email"]')?.value?.trim() || '—';
-
         return `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
@@ -553,7 +677,6 @@ ${c}`;
           localStorage.setItem('yumeko_last_order', text);
         }catch(e){}
       }
-
       function validateForm(){
         if(!form) return false;
         const first = form.first_name.value.trim();
@@ -566,14 +689,12 @@ ${c}`;
 
       async function sendEmails(){
         if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
-
         const first = form.first_name.value.trim();
         const last  = form.last_name.value.trim();
         const email = form.email.value.trim();
         const notes = form.comments.value.trim();
         const items = itemsTextForEmail();
         const order_full = buildOrderText();
-
         const base = {
           from_name: 'YUMEKO SUSHIS',
           items_text: items,
@@ -581,44 +702,26 @@ ${c}`;
           full_name: `${first} ${last}`.trim(),
           order_full
         };
-
-        // 1) Mail AU CLIENT
         const paramsCustomer = {
-          ...base,
-          to_name: first || 'Client',
-          to_email: email,
-          reply_to: email,
+          ...base, to_name: first || 'Client', to_email: email, reply_to: email,
           subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
         };
-
-        // 2) Mail À L’ADMIN
         const paramsAdmin = {
-          ...base,
-          to_name: 'YUMEKO',
-          to_email: YUMEKO_EMAIL,
-          reply_to: email,
+          ...base, to_name: 'YUMEKO', to_email: YUMEKO_EMAIL, reply_to: email,
           subject: `Nouvelle commande — ${first} ${last}`.trim()
         };
-
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
       }
 
-      // Bouton principal (Valider panier → / Commander →)
       btnPrimary?.addEventListener('click', async ()=>{
         if(currentStep === 'cart'){
           if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
-          setStep('details');
-          return;
+          setStep('details'); return;
         }
-
-        // currentStep === 'details'
         if(!validateForm()) return;
-
         saveOrderToLocalStorage();
-
         try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
-
         document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
         updateSticky();
         closeSheet();
@@ -626,7 +729,7 @@ ${c}`;
       });
 
       // Ajustements quantités dans le récap
-      recapList.addEventListener('click', (e)=>{
+      document.getElementById('recapList').addEventListener('click', (e)=>{
         const plus = e.target.closest('.recap-plus');
         const minus = e.target.closest('.recap-minus');
         const btn = plus || minus;
@@ -643,16 +746,10 @@ ${c}`;
         buildRecap();
       });
 
-      // MàJ récap quand on tape (commentaires, etc.)
-      document.getElementById('cartSheet').addEventListener('input', (e)=>{
-        if(e.target.matches('textarea,input')){ buildRecap(); updateSticky(); }
-      });
-
       // Carte: clic + ouvre la modale quantité (menu déroulant)
       document.addEventListener('click', (e)=>{
         const plusBtn = e.target.closest('.card-plus');
         const card = e.target.closest('.item-card');
-
         if(plusBtn){
           const itemKey = plusBtn.dataset.item;
           openItemModalByKey(itemKey);
@@ -668,7 +765,7 @@ ${c}`;
 
       // ==== Modale produit légère (boutons JAUNES) ====
       function openItemModal(code, name){
-        const d=catalog[code]||{};
+        const d=window.catalog[code]||{};
         const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
         document.getElementById('mImg').src=img;
         document.getElementById('mImg').alt=name;
@@ -677,7 +774,6 @@ ${c}`;
         document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
         document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
         document.getElementById('mDesc').textContent=d.desc || '—';
-
         const itemKey=`${code}- ${name}`;
         const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
         const current=parseInt(qtySpan?.textContent)||0;
@@ -687,7 +783,6 @@ ${c}`;
         mMinus.style.visibility=current>0?'visible':'hidden';
         mMinus.dataset.item=itemKey;
         document.getElementById('mPlus').dataset.item=itemKey;
-
         const modal=document.getElementById('itemModal');
         modal.style.display='flex';
         modal.setAttribute('aria-hidden','false');
@@ -698,14 +793,12 @@ ${c}`;
         if(!code || !name) return;
         openItemModal(code, name);
       }
-
       (function(){
         const modal=document.getElementById('itemModal');
         const closeBtn=document.getElementById('mClose');
         const mMinus=document.getElementById('mMinus');
         const mPlus=document.getElementById('mPlus');
         const mQty=document.getElementById('mQty');
-
         function setQty(itemKey,newVal){
           const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
           if(!span) return;
@@ -716,7 +809,6 @@ ${c}`;
         }
         mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
         mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
-
         closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
         modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
         document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
@@ -742,7 +834,6 @@ ${c}`;
           updateSticky();
         }catch(e){ console.warn('restoreCart error', e); }
       }
-
       function updateMiniRecap(){}
       function updateSticky(){
         const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
@@ -766,7 +857,6 @@ ${c}`;
         }
         updateMiniRecap(); saveCart();
       }
-
       if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
       restoreCart();
       updateSticky();
@@ -782,9 +872,7 @@ ${c}`;
         if(href && !href.startsWith('#') && here === href) a.classList.add('active');
       });
     })();
-
     (function(){
-      // Monte la teinte sakura selon le scroll (identique à l'accueil)
       const root = document.documentElement;
       function updateSakura(){
         const doc = document.documentElement;
