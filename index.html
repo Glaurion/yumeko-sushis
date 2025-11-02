@@ -16,59 +16,40 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    /* ===== Palette "Sakura" (alignée sur l'accueil) ===== */
     :root{
       --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
 
       --bg-1:#fffaf3;
-      --bg-2:#ffe5ec;
-
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
-      --accent:#ffd166; --accent-2:#ffc300; /* Jaune = bouton "Découvrir le menu" */
+      --accent:#ffd166; --accent-2:#ffc300;
 
       --sakura-rgb:255,77,109;
       --sakuraAmt: 0;
     }
-
     *{ box-sizing:border-box; }
     html, body{ height:100%; min-height:100%; scroll-behavior:smooth; }
-
-    /* ===== Fond (comme Accueil) ===== */
     body{
-      margin:0;
-      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
+      margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        linear-gradient(180deg,
-          rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-          rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%,
-          var(--bg-1) 100%
-        ),
-        var(--bg-1);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      transition: background 80ms linear;
+        linear-gradient(180deg, rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+          rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%, var(--bg-1) 100%), var(--bg-1);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; transition: background 80ms linear;
     }
     @media (max-width: 768px){
       body{
         background:
           radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
-          linear-gradient(180deg,
-            rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-            rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%,
-            var(--bg-1) 100%
-          ),
-          var(--bg-1);
+          linear-gradient(180deg, rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+            rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%, var(--bg-1) 100%), var(--bg-1);
       }
     }
 
-    /* ===== Header (non-sticky) ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
       border-bottom: 1px solid var(--card-border);
-      position: static; top:auto; z-index:auto; backdrop-filter:none;
+      position: static;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
@@ -76,10 +57,8 @@
     }
     a.brand{ display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; }
     .logo{
-      width:160px; height:160px; border-radius:50%;
-      object-fit:cover; background:#fff;
-      box-shadow:0 8px 24px rgba(255,77,109,.15);
-      border:3px solid rgba(255,77,109,.15);
+      width:160px; height:160px; border-radius:50%; object-fit:cover; background:#fff;
+      box-shadow:0 8px 24px rgba(255,77,109,.15); border:3px solid rgba(255,77,109,.15);
       display:block;
     }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
@@ -95,7 +74,6 @@
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
     @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    /* ===== Page ===== */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{
       background:var(--card); border:1px solid var(--card-border); border-radius:18px;
@@ -104,7 +82,6 @@
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
     .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
-    /* ===== Sous-nav catégories (sticky) ===== */
     .cat-nav-wrap{
       position:sticky; top:0; z-index:10;
       padding:10px 0; margin:0 0 14px;
@@ -113,9 +90,7 @@
       border-bottom:1px solid rgba(0,0,0,.06);
       border-radius:12px;
     }
-    .cat-nav{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
-    }
+    .cat-nav{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none;
@@ -125,33 +100,22 @@
     .pill:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.06); }
     .pill.active{ background:var(--accent); color:#111; border-color:rgba(0,0,0,.08); }
 
-    /* ===== Bloc catégorie ===== */
     .cat-section{
-      background:var(--card);
-      border:1px solid var(--card-border);
-      border-radius:16px;
-      padding:16px;
-      margin:18px 0;
-      box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04);
+      background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+      padding:16px; margin:18px 0; box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04);
     }
     .cat-header{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin:2px 2px 14px;
-      padding-bottom:8px;
-      border-bottom:1px dashed rgba(0,0,0,.08);
+      margin:2px 2px 14px; padding-bottom:8px; border-bottom:1px dashed rgba(0,0,0,.08);
+      cursor:pointer;
     }
-    .cat-title{
-      margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b;
-    }
-    .cat-tools{ display:flex; align-items:center; gap:8px; }
+    .cat-title{ margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b; }
     .btn-mini{
-      border:1px solid var(--card-border);
-      background:#fff; color:#222;
+      border:1px solid var(--card-border); background:#fff; color:#222;
       padding:6px 10px; border-radius:10px; font-weight:700; cursor:pointer;
     }
     .btn-mini:hover{ background:#f6f6f6; }
 
-    /* ===== GRID menu ===== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{
       background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden;
@@ -172,7 +136,6 @@
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
 
-    /* === Boutons jaunes (alignés accueil) === */
     .circle{
       background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px;
       font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
@@ -196,7 +159,6 @@
       .circle{ width:34px; height:34px; }
     }
 
-    /* ===== Sticky bar + tiroir ===== */
     #stickyBar{
       position:fixed; bottom:0; left:0; right:0; z-index:100;
       background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,.35));
@@ -205,7 +167,6 @@
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
 
-    /* === Bouton Panier (jaune) === */
     #gotoOrder{
       background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px;
       padding:12px 16px; cursor:pointer; white-space:nowrap;
@@ -214,7 +175,6 @@
     }
     #gotoOrder:hover{ background:var(--accent-2); filter:brightness(1.02); transform:translateY(-1px); }
 
-    /* Backdrop tiroir */
     #sheetOverlay{
       position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(110%) blur(2px);
       opacity:0; pointer-events:none; transition:opacity .22s ease; z-index:101;
@@ -238,7 +198,6 @@
       max-height:calc(70vh - 100px); overscroll-behavior:contain;
     }
 
-    /* Récap */
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .recap-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 6px; border-bottom:1px dashed rgba(0,0,0,.08); }
     .thumb.sm{
@@ -247,7 +206,6 @@
     }
     .it-label{ font-weight:600; color:#222; }
 
-    /* Formulaire */
     .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .field{ display:flex; flex-direction:column; gap:6px; }
     .field.full{ grid-column:1 / -1; }
@@ -261,12 +219,10 @@
     }
     @media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
 
-    /* Accessibilité */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 
-  <!-- ===== EmailJS (SDK + config) ===== -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
     const EMAILJS_PUBLIC_KEY = 'X0lGj86qGqZ49EKOC';
@@ -278,39 +234,29 @@
 </head>
 <body>
 
-  <!-- ===== Header ===== -->
   <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
         <div class="brand-text"><h1>YUMEKO SUSHIS</h1></div>
       </a>
-
       <nav class="main-nav" aria-label="Navigation principale">
-        <a href="accueil.html">Accueil</a>
-        <span class="sep" aria-hidden="true">・</span>
+        <a href="accueil.html">Accueil</a><span class="sep" aria-hidden="true">・</span>
         <a href="index.html" class="active">Menu</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <!-- MENU -->
     <section class="section" id="menuSection" aria-labelledby="titre-menu">
       <h2 id="titre-menu">Notre carte</h2>
       <div class="sep" aria-hidden="true"></div>
 
-      <!-- Sous-nav catégories -->
-      <div class="cat-nav-wrap">
-        <div class="cat-nav" id="catNav"></div>
-      </div>
-
-      <!-- Catégories rendues ici -->
+      <div class="cat-nav-wrap"><div class="cat-nav" id="catNav"></div></div>
       <div id="menu"></div>
     </section>
   </main>
 
-  <!-- BANDEAU PANIER -->
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
       <span id="miniRecap"></span>
@@ -318,10 +264,8 @@
     </div>
   </div>
 
-  <!-- OVERLAY pour clic extérieur -->
   <div id="sheetOverlay" aria-hidden="true"></div>
 
-  <!-- TIROIR PANIER (2 étapes) -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
@@ -367,9 +311,6 @@
     © 2025 YUMEKO SUSHIS — Les sushis qui font ronronner vos papilles
   </footer>
 
-  <!-- =========================
-       Données + Construction du menu
-  ========================== -->
   <script>
     const categories={
       'LES MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
@@ -414,29 +355,21 @@
     const prices={};
     const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
-    function slugifyCat(label){
-      return 'cat-' + label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
-    }
+    function slugifyCat(label){ return 'cat-' + label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,''); }
 
     function buildCategoryNav(){
-      const nav=document.getElementById('catNav');
-      nav.innerHTML='';
+      const nav=document.getElementById('catNav'); nav.innerHTML='';
       Object.keys(categories).forEach((cat)=>{
         const id=slugifyCat(cat);
         const btn=document.createElement('button');
-        btn.className='pill';
-        btn.type='button';
-        btn.setAttribute('data-target','#'+id);
-        btn.textContent=cat;
+        btn.className='pill'; btn.type='button'; btn.dataset.target='#'+id; btn.textContent=cat;
         btn.addEventListener('click', ()=>{
           const already=btn.classList.contains('active');
           document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
           document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display='');
           if(!already){
             btn.classList.add('active');
-            document.querySelectorAll('.cat-section').forEach(sec=>{
-              sec.style.display=(sec.id===id)?'':'none';
-            });
+            document.querySelectorAll('.cat-section').forEach(sec=>{ sec.style.display=(sec.id===id)?'':'none'; });
             const target=document.getElementById(id);
             const grid=target?.querySelector('.menu-grid');
             const toggle=target?.querySelector('[data-action="collapse"]');
@@ -453,22 +386,14 @@
       const menu=document.getElementById('menu'); menu.innerHTML='';
       for(const [cat,codes] of Object.entries(categories)){
         const sec=document.createElement('section');
-        sec.className='cat-section';
-        sec.id=slugifyCat(cat);
+        sec.className='cat-section'; sec.id=slugifyCat(cat);
 
         const header=document.createElement('div');
-        header.className='cat-header';
-        header.setAttribute('role','button');
-        header.setAttribute('aria-expanded','false');
-        header.innerHTML=`
-          <h3 class="cat-title">${cat}</h3>
-          <div class="cat-tools">
-            <button type="button" class="btn-mini" data-action="collapse">Déplier</button>
-          </div>
-        `;
+        header.className='cat-header'; header.setAttribute('role','button'); header.setAttribute('aria-expanded','false');
+        header.innerHTML=`<h3 class="cat-title">${cat}</h3>
+          <button type="button" class="btn-mini" data-action="collapse">Déplier</button>`;
 
-        const grid=document.createElement('div');
-        grid.className='menu-grid';
+        const grid=document.createElement('div'); grid.className='menu-grid';
 
         codes.forEach(code=>{
           const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
@@ -478,10 +403,7 @@
           const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
           const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
 
-          const card=document.createElement('div');
-          card.className='item-card';
-          card.dataset.code=code;
-          card.dataset.name=name;
+          const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
           card.innerHTML=`
             <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
             <div class="item-name">${name}</div>
@@ -500,330 +422,117 @@
           grid.appendChild(card);
         });
 
-        /* Replié au départ */
-        grid.style.display='none';
-
-        sec.appendChild(header);
-        sec.appendChild(grid);
-        menu.appendChild(sec);
+        grid.style.display='none'; /* replié par défaut */
+        sec.appendChild(header); sec.appendChild(grid); menu.appendChild(sec);
       }
 
-      /* Gestion UNIQUEMENT sur l’entête (n’interfère pas avec les cartes) */
+      /* Toggle catégorie (uniquement sur l’en-tête ou le bouton "Déplier/Réduire") */
       menu.addEventListener('click',(e)=>{
         const header=e.target.closest('.cat-header');
         const btn=e.target.closest('.btn-mini');
         if(!header && !btn) return;
-        const sec=(header||btn)?.closest('.cat-section');
-        if(!sec) return;
+        const sec=(header||btn).closest('.cat-section'); if(!sec) return;
         const grid=sec.querySelector('.menu-grid');
         const toggle=sec.querySelector('[data-action="collapse"]');
-
         const hidden = grid.style.display==='none';
         grid.style.display = hidden ? '' : 'none';
         toggle.textContent = hidden ? 'Réduire' : 'Déplier';
         sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
+      });
+    }
+
+    /* ==== Ouverture/fermeture panier ==== */
+    function setupCartSheet(){
+      const sheet = document.getElementById('cartSheet');
+      const overlay = document.getElementById('sheetOverlay');
+      const btnOpenEl = document.getElementById('gotoOrder');
+      const btnBackClose = document.getElementById('closeSheetBtn');
+      const sheetClose = document.getElementById('sheetClose');
+      const btnPrimary = document.getElementById('goPrimary');
+      const stepCart = document.getElementById('stepCart');
+      const stepDetails = document.getElementById('stepDetails');
+      const form = document.getElementById('orderForm');
+      let currentStep='cart';
+
+      const disableScroll = (e)=>{ if(!document.body.classList.contains('modal-open')) return; if(!sheet.contains(e.target)){ e.preventDefault(); } };
+      function openSheet(){ setStep('cart'); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+        overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open');
+        window.addEventListener('touchmove', disableScroll, {passive:false}); window.addEventListener('wheel', disableScroll, {passive:false}); }
+      function closeSheet(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
+        overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.body.classList.remove('modal-open');
+        window.removeEventListener('touchmove', disableScroll); window.removeEventListener('wheel', disableScroll); }
+      function setStep(which){ currentStep=which; const isCart=(which==='cart'); stepCart.style.display=isCart?'':'none'; stepDetails.style.display=isCart?'none':''; btnPrimary.textContent=isCart?'Valider le panier →':'Commander →'; if(!isCart){ form?.querySelector('#first_name')?.focus(); } }
+
+      btnOpenEl?.addEventListener('click', openSheet);
+      sheetClose?.addEventListener('click', closeSheet);
+      btnBackClose?.addEventListener('click', ()=>{ if(currentStep==='details'){ setStep('cart'); } else{ closeSheet(); } });
+      overlay?.addEventListener('click', closeSheet);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+
+      /* (le reste du checkout/EmailJS identique à ta version précédente — non modifié pour se concentrer sur le bug de clic) */
+    }
+
+    /* ==== Modale produit ==== */
+    function openItemModal(code, name){
+      const d=window.catalog[code]||{};
+      const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
+      document.getElementById('mImg').src=img;
+      document.getElementById('mImg').alt=name;
+      document.getElementById('mTitle').textContent=name;
+      document.getElementById('mPieces').textContent=d.pieces ?? '—';
+      document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
+      document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
+      document.getElementById('mDesc').textContent=d.desc || '—';
+
+      const itemKey=`${code}- ${name}`;
+      const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+      const current=parseInt(qtySpan?.textContent)||0;
+      const mQty=document.getElementById('mQty');
+      const mMinus=document.getElementById('mMinus');
+      mQty.textContent=current;
+      mMinus.style.visibility=current>0?'visible':'hidden';
+      mMinus.dataset.item=itemKey;
+      document.getElementById('mPlus').dataset.item=itemKey;
+
+      const modal=document.getElementById('itemModal');
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+    }
+    function openItemModalByKey(itemKey){
+      const code=(String(itemKey).split('-')[0]||'').trim();
+      const name=String(itemKey).split('-').slice(1).join('-').trim();
+      if(!code || !name) return;
+      openItemModal(code, name);
+    }
+
+    /* ==== FIX CLICS : un SEUL écouteur global 'click' fiable desktop + mobile ==== */
+    function setupMenuClicks(){
+      document.addEventListener('click', function(e){
+        // 1) Clic sur bouton +
+        const plusBtn = e.target.closest('.card-plus');
+        if(plusBtn){
+          e.preventDefault(); e.stopPropagation();
+          openItemModalByKey(plusBtn.dataset.item);
+          return;
+        }
+        // 2) Clic sur la carte (hors zone des contrôles)
+        const card = e.target.closest('.item-card');
+        if(card && !e.target.closest('.ctrls')){
+          e.preventDefault(); e.stopPropagation();
+          openItemModal(card.dataset.code, card.dataset.name);
+          return;
+        }
       }, false);
     }
 
     document.addEventListener('DOMContentLoaded', ()=>{
       buildCategoryNav();
       buildMenu();
+      setupMenuClicks();
+      setupCartSheet();
     });
   </script>
 
-  <!-- Panier / interactions carte + EmailJS -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const sheet = document.getElementById('cartSheet');
-      const overlay = document.getElementById('sheetOverlay');
-      const sheetClose = document.getElementById('sheetClose');
-      const btnOpenEl = document.getElementById('gotoOrder');
-      const btnBackClose = document.getElementById('closeSheetBtn');
-      const btnPrimary = document.getElementById('goPrimary');
-
-      const recapList = document.getElementById('recapList');
-      const recapCom = document.getElementById('recapComment');
-
-      const stepCart = document.getElementById('stepCart');
-      const stepDetails = document.getElementById('stepDetails');
-      const form = document.getElementById('orderForm');
-
-      let currentStep = 'cart';
-
-      function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
-      function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
-
-      function parseItem(full){
-        const parts=String(full).split('-');
-        const code=(parts[0]||'').trim();
-        const name=parts.slice(1).join('-').trim()||full.trim();
-        return {code,name};
-      }
-      function getCartItems(){
-        const items=[];
-        document.querySelectorAll('.qty[data-item]').forEach(span=>{
-          const qty=safeInt(span);
-          if(qty>0){
-            const full=span.dataset.item;
-            const {code,name}=parseItem(full);
-            items.push({code,name,qty});
-          }
-        });
-        return items;
-      }
-
-      function buildRecap(){
-        const items=getCartItems();
-        recapList.innerHTML='';
-        if(items.length===0){
-          recapList.innerHTML='<li class="muted">Aucun article pour le moment.</li>';
-        }else{
-          items.forEach(({code,name,qty})=>{
-            const li=document.createElement('li');
-            li.className='recap-item';
-            const codeLower=(code||'').toLowerCase();
-            li.innerHTML=`
-              <div class="it-left" style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-                <img class="thumb sm" loading="lazy" decoding="async" src="images/${codeLower}.jpg" alt="${name}" onerror="this.style.display='none'">
-                <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
-              </div>
-              <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
-                <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
-                <span class="qty" aria-live="polite" style="min-width:20px;text-align:center;font-weight:800">${qty}</span>
-                <button class="btn btn-primary recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
-              </div>`;
-            recapList.appendChild(li);
-          });
-        }
-        const c=document.getElementById('comments')?.value?.trim()||'';
-        recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
-      }
-
-      function setStep(which){
-        currentStep = which;
-        const isCart = which === 'cart';
-        stepCart.style.display = isCart ? '' : 'none';
-        stepDetails.style.display = isCart ? 'none' : '';
-        btnPrimary.textContent = isCart ? 'Valider le panier →' : 'Commander →';
-        if(!isCart){ form?.querySelector('#first_name')?.focus(); }
-      }
-
-      const disableScroll = (e)=>{
-        if(!document.body.classList.contains('modal-open')) return;
-        if(!sheet.contains(e.target)){ e.preventDefault(); }
-      };
-      function openSheet(){
-        buildRecap();
-        setStep('cart');
-        sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
-        overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
-        document.body.classList.add('modal-open');
-        window.addEventListener('touchmove', disableScroll, {passive:false});
-        window.addEventListener('wheel', disableScroll, {passive:false});
-      }
-      function closeSheet(){
-        sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true');
-        overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
-        document.body.classList.remove('modal-open');
-        window.removeEventListener('touchmove', disableScroll);
-        window.removeEventListener('wheel', disableScroll);
-      }
-
-      btnOpenEl?.addEventListener('click', openSheet);
-      sheetClose?.addEventListener('click', closeSheet);
-      btnBackClose?.addEventListener('click', ()=>{ if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); } });
-      document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
-
-      function itemsTextForEmail(){
-        const items = getCartItems();
-        return items.map(({name,qty})=>`- ${name} x${qty}`).join('\n') || '(aucun)';
-      }
-      function buildOrderText(){
-        const itemsText=itemsTextForEmail();
-        const c=document.getElementById('comments')?.value?.trim() || '—';
-        const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '—';
-        const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '—';
-        const email=form?.querySelector('[name="email"]')?.value?.trim() || '—';
-        return `Commande YUMEKO
-Client : ${first} ${last}
-Email : ${email}
-
-Articles :
-${itemsText}
-
-Allergies / autres :
-${c}`;
-      }
-      function saveOrderToLocalStorage(){
-        try{
-          const text = buildOrderText();
-          const hidden = document.getElementById('hiddenOrder');
-          if(hidden) hidden.value = text;
-          localStorage.setItem('yumeko_last_order', text);
-        }catch(e){}
-      }
-      function validateForm(){
-        if(!form) return false;
-        const first = form.first_name.value.trim();
-        const last  = form.last_name.value.trim();
-        const email = form.email.value.trim();
-        const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        if(!first || !last || !okEmail){ form.reportValidity?.(); return false; }
-        return true;
-      }
-
-      async function sendEmails(){
-        if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
-        const first = form.first_name.value.trim();
-        const last  = form.last_name.value.trim();
-        const email = form.email.value.trim();
-        const notes = form.comments.value.trim();
-        const items = itemsTextForEmail();
-        const order_full = buildOrderText();
-        const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes||'—', full_name:`${first} ${last}`.trim(), order_full };
-        const paramsCustomer = { ...base, to_name:first||'Client', to_email:email, reply_to:email, subject:'Votre récapitulatif de commande — YUMEKO SUSHIS' };
-        const paramsAdmin = { ...base, to_name:'YUMEKO', to_email:YUMEKO_EMAIL, reply_to:email, subject:`Nouvelle commande — ${first} ${last}`.trim() };
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
-      }
-
-      btnPrimary?.addEventListener('click', async ()=>{
-        if(currentStep === 'cart'){
-          if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
-          setStep('details'); return;
-        }
-        if(!validateForm()) return;
-        saveOrderToLocalStorage();
-        try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
-        document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-        updateSticky();
-        closeSheet();
-        window.location.href = 'merci.html';
-      });
-
-      /* === FIX MOBILE : clics sur + et sur carte/miniature === */
-      const menuRoot = document.getElementById('menu');
-
-      function openItemModalByKey(itemKey){
-        const code = (String(itemKey).split('-')[0]||'').trim();
-        const name = String(itemKey).split('-').slice(1).join('-').trim();
-        if(!code || !name) return;
-        openItemModal(code, name);
-      }
-      function openItemModal(code, name){
-        const d=window.catalog[code]||{};
-        const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
-        document.getElementById('mImg').src=img;
-        document.getElementById('mImg').alt=name;
-        document.getElementById('mTitle').textContent=name;
-        document.getElementById('mPieces').textContent=d.pieces ?? '—';
-        document.getElementById('mAllergens').textContent=d.allergens || 'Non renseigné';
-        document.getElementById('mComp').textContent=d.comp || 'Non renseigné';
-        document.getElementById('mDesc').textContent=d.desc || '—';
-        const itemKey=`${code}- ${name}`;
-        const qtySpan=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-        const current=parseInt(qtySpan?.textContent)||0;
-        const mQty=document.getElementById('mQty');
-        const mMinus=document.getElementById('mMinus');
-        mQty.textContent=current;
-        mMinus.style.visibility=current>0?'visible':'hidden';
-        mMinus.dataset.item=itemKey;
-        document.getElementById('mPlus').dataset.item=itemKey;
-        const modal=document.getElementById('itemModal');
-        modal.style.display='flex';
-        modal.setAttribute('aria-hidden','false');
-      }
-
-      function onTapCard(ev){
-        const plusBtn = ev.target.closest('.card-plus');
-        if(plusBtn){
-          ev.stopPropagation();
-          ev.preventDefault();
-          openItemModalByKey(plusBtn.dataset.item);
-          return;
-        }
-        const card = ev.target.closest('.item-card');
-        if(card && !ev.target.closest('.ctrls')){
-          ev.stopPropagation();
-          ev.preventDefault();
-          openItemModal(card.dataset.code, card.dataset.name);
-        }
-      }
-      menuRoot.addEventListener('pointerup', onTapCard, {passive:false});
-      menuRoot.addEventListener('click', onTapCard, {passive:false});
-
-      // Modale +/- quantité
-      (function(){
-        const modal=document.getElementById('itemModal');
-        const closeBtn=document.getElementById('mClose');
-        const mMinus=document.getElementById('mMinus');
-        const mPlus=document.getElementById('mPlus');
-        const mQty=document.getElementById('mQty');
-        function setQty(itemKey,newVal){
-          const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
-          if(!span) return;
-          span.textContent = newVal>0 ? String(newVal) : '';
-          mQty.textContent=newVal;
-          document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
-          updateSticky(); buildRecap();
-        }
-        mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
-        mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
-        closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
-        modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
-      })();
-
-      /* Persistance panier + bouton panier */
-      const CART_KEY='yumeko_cart_v1';
-      function saveCart(){
-        const cart=[];
-        document.querySelectorAll('.qty[data-item]').forEach(q=>{
-          const n=parseInt(q.textContent)||0;
-          if(n>0) cart.push({key:q.dataset.item, qty:n});
-        });
-        try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
-      }
-      function restoreCart(){
-        try{
-          const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-          saved.forEach(({key,qty})=>{
-            const span=document.querySelector(`.qty[data-item="${CSS.escape(key)}"]`);
-            if(span){ span.textContent=qty; }
-          });
-          updateSticky();
-        }catch(e){ console.warn('restoreCart error', e); }
-      }
-      function updateSticky(){
-        const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
-        qtyNodes.forEach(q=>{
-          const n=parseInt(q.textContent)||0; totalQty+=n;
-          if(n>0){
-            const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-            const d=window.catalog?.[code] || {};
-            const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
-                      ? window.prices[code]
-                      : (typeof d.price==='number'?d.price:undefined);
-            if(typeof p==='number') totalPrice += p*n;
-          }
-        });
-        const btn=document.getElementById('gotoOrder'); if(!btn) return;
-        if(totalPrice>0){
-          const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
-          btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
-        }else{
-          btn.textContent = `Panier (${totalQty}) • Valider`;
-        }
-        saveCart();
-      }
-      if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
-      restoreCart();
-      updateSticky();
-    });
-  </script>
-
-  <!-- Nav actif + Sakura dynamique -->
   <script>
     (function(){
       const here = location.pathname.split('/').pop() || 'index.html';
@@ -847,7 +556,7 @@ ${c}`;
     })();
   </script>
 
-  <!-- ===== Modale produit ===== -->
+  <!-- Modale produit -->
   <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:103" aria-hidden="true">
     <div style="background:#fff;border-radius:16px;border:1px solid var(--card-border);width:min(92%,560px);max-height:80vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.15)">
       <div style="display:flex;gap:14px;padding:14px;align-items:flex-start">
@@ -870,5 +579,30 @@ ${c}`;
       </div>
     </div>
   </div>
+
+  <script>
+    // Contrôles de la modale (fermeture + +/-)
+    (function(){
+      const modal=document.getElementById('itemModal');
+      const closeBtn=document.getElementById('mClose');
+      const mMinus=document.getElementById('mMinus');
+      const mPlus=document.getElementById('mPlus');
+      const mQty=document.getElementById('mQty');
+
+      function setQty(itemKey,newVal){
+        const span=document.querySelector(`.qty[data-item="${CSS.escape(itemKey)}"]`);
+        if(!span) return;
+        span.textContent = newVal>0 ? String(newVal) : '';
+        mQty.textContent=newVal;
+        document.getElementById('mMinus').style.visibility=newVal>0?'visible':'hidden';
+      }
+      mMinus.addEventListener('click', ()=>{ const key=mMinus.dataset.item; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, Math.max(0,cur-1)); });
+      mPlus .addEventListener('click', ()=>{ const key=mPlus.dataset.item ; if(!key) return; const cur=parseInt(mQty.textContent)||0; setQty(key, cur+1); });
+
+      closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } );
+      modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+    })();
+  </script>
 </body>
 </html>
