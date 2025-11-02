@@ -21,11 +21,11 @@
       --brand:#ff4d6d; --brand-2:#e63956;
       --text:#1a1a1a; --muted:#5c6870;
 
-      --bg-1:#fffaf3;  /* riz */
-      --bg-2:#ffe5ec;  /* voile sakura doux */
+      --bg-1:#fffaf3;
+      --bg-2:#ffe5ec;
 
       --card:#ffffff; --card-border:rgba(0,0,0,.06);
-      --accent:#ffd166; --accent-2:#ffc300; /* jaune = comme "Découvrir le menu" */
+      --accent:#ffd166; --accent-2:#ffc300; /* Jaune = bouton "Découvrir le menu" */
 
       --sakura-rgb:255,77,109;
       --sakuraAmt: 0;
@@ -34,7 +34,7 @@
     *{ box-sizing:border-box; }
     html, body{ height:100%; min-height:100%; scroll-behavior:smooth; }
 
-    /* Fond identique à l’accueil (option B) */
+    /* ===== Fond (comme Accueil) ===== */
     body{
       margin:0;
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -47,7 +47,8 @@
           var(--bg-1) 100%
         ),
         var(--bg-1);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
       transition: background 80ms linear;
     }
     @media (max-width: 768px){
@@ -63,11 +64,11 @@
       }
     }
 
-    /* Header */
+    /* ===== Header (non-sticky) ===== */
     .site-header.jp{
       background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.65));
       border-bottom: 1px solid var(--card-border);
-      position: static;
+      position: static; top:auto; z-index:auto; backdrop-filter:none;
     }
     .site-header .header-inner{
       width:min(96%,1100px); margin:0 auto; padding:14px 8px 10px;
@@ -94,7 +95,7 @@
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
     @media (max-width:480px){ .brand-text h1{ font-size:1.2rem; } }
 
-    /* Page */
+    /* ===== Page ===== */
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
     .section{
       background:var(--card); border:1px solid var(--card-border); border-radius:18px;
@@ -103,7 +104,7 @@
     .section h2{ margin:0 0 8px; font-size:1.7rem; letter-spacing:.5px; color:#1f1f1f; }
     .sep{ height:2px; width:84px; background:linear-gradient(90deg,var(--brand),#d8b26e,transparent); border-radius:2px; margin:6px 0 16px; }
 
-    /* Sous-nav catégories (sticky) */
+    /* ===== Sous-nav catégories (sticky) ===== */
     .cat-nav-wrap{
       position:sticky; top:0; z-index:10;
       padding:10px 0; margin:0 0 14px;
@@ -124,7 +125,7 @@
     .pill:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.06); }
     .pill.active{ background:var(--accent); color:#111; border-color:rgba(0,0,0,.08); }
 
-    /* Bloc catégorie */
+    /* ===== Bloc catégorie ===== */
     .cat-section{
       background:var(--card);
       border:1px solid var(--card-border);
@@ -138,7 +139,6 @@
       margin:2px 2px 14px;
       padding-bottom:8px;
       border-bottom:1px dashed rgba(0,0,0,.08);
-      cursor:pointer; /* clic pour plier/déplier */
     }
     .cat-title{
       margin:0; font-size:1.2rem; letter-spacing:.5px; text-transform:uppercase; color:#c2173b;
@@ -151,7 +151,7 @@
     }
     .btn-mini:hover{ background:#f6f6f6; }
 
-    /* GRID menu */
+    /* ===== GRID menu ===== */
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{
       background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden;
@@ -172,7 +172,7 @@
 
     .ctrls{ display:flex; align-items:center; gap:8px; }
 
-    /* Boutons jaunes */
+    /* === Boutons jaunes (alignés accueil) === */
     .circle{
       background:var(--accent); color:#111; border:none; width:36px; height:36px; border-radius:12px;
       font-weight:900; cursor:pointer; transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
@@ -196,7 +196,7 @@
       .circle{ width:34px; height:34px; }
     }
 
-    /* Sticky bar + tiroir */
+    /* ===== Sticky bar + tiroir ===== */
     #stickyBar{
       position:fixed; bottom:0; left:0; right:0; z-index:100;
       background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,232,237,.35));
@@ -204,6 +204,8 @@
     }
     #stickyInner{ width:min(96%,1100px); margin:0 auto; display:flex; flex-direction:column; gap:8px; align-items:center; }
     #miniRecap{ display:none !important; }
+
+    /* === Bouton Panier (jaune) === */
     #gotoOrder{
       background:var(--accent); color:#111; font-weight:900; border:none; border-radius:14px;
       padding:12px 16px; cursor:pointer; white-space:nowrap;
@@ -257,12 +259,14 @@
     .field input:focus, .field textarea:focus{
       outline:3px solid rgba(255,77,109,.25); border-color:rgba(255,77,109,.45);
     }
+    @media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
 
+    /* Accessibilité */
     :focus-visible{ outline:3px solid var(--brand); outline-offset:3px; border-radius:8px; }
     @media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; scroll-behavior:auto; } }
   </style>
 
-  <!-- EmailJS -->
+  <!-- ===== EmailJS (SDK + config) ===== -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
     const EMAILJS_PUBLIC_KEY = 'X0lGj86qGqZ49EKOC';
@@ -274,7 +278,7 @@
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- ===== Header ===== -->
   <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
@@ -291,6 +295,7 @@
   </header>
 
   <main class="container">
+    <!-- MENU -->
     <section class="section" id="menuSection" aria-labelledby="titre-menu">
       <h2 id="titre-menu">Notre carte</h2>
       <div class="sep" aria-hidden="true"></div>
@@ -300,7 +305,7 @@
         <div class="cat-nav" id="catNav"></div>
       </div>
 
-      <!-- Catégories -->
+      <!-- Catégories rendues ici -->
       <div id="menu"></div>
     </section>
   </main>
@@ -316,7 +321,7 @@
   <!-- OVERLAY pour clic extérieur -->
   <div id="sheetOverlay" aria-hidden="true"></div>
 
-  <!-- TIROIR PANIER -->
+  <!-- TIROIR PANIER (2 étapes) -->
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
@@ -421,19 +426,17 @@
         const btn=document.createElement('button');
         btn.className='pill';
         btn.type='button';
-        btn.setAttribute('data-target', '#'+id);
+        btn.setAttribute('data-target','#'+id);
         btn.textContent=cat;
         btn.addEventListener('click', ()=>{
           const already=btn.classList.contains('active');
           document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-          document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display=''); // reset visibilité
+          document.querySelectorAll('.cat-section').forEach(sec=>sec.style.display='');
           if(!already){
             btn.classList.add('active');
-            // Afficher uniquement la catégorie choisie
             document.querySelectorAll('.cat-section').forEach(sec=>{
-              sec.style.display = (sec.id===id) ? '' : 'none';
+              sec.style.display=(sec.id===id)?'':'none';
             });
-            // Déplier la catégorie ciblée
             const target=document.getElementById(id);
             const grid=target?.querySelector('.menu-grid');
             const toggle=target?.querySelector('[data-action="collapse"]');
@@ -448,17 +451,16 @@
 
     function buildMenu(){
       const menu=document.getElementById('menu'); menu.innerHTML='';
-
       for(const [cat,codes] of Object.entries(categories)){
         const sec=document.createElement('section');
         sec.className='cat-section';
-        sec.id = slugifyCat(cat);
+        sec.id=slugifyCat(cat);
 
         const header=document.createElement('div');
         header.className='cat-header';
         header.setAttribute('role','button');
         header.setAttribute('aria-expanded','false');
-        header.innerHTML = `
+        header.innerHTML=`
           <h3 class="cat-title">${cat}</h3>
           <div class="cat-tools">
             <button type="button" class="btn-mini" data-action="collapse">Déplier</button>
@@ -468,7 +470,6 @@
         const grid=document.createElement('div');
         grid.className='menu-grid';
 
-        // items
         codes.forEach(code=>{
           const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
           const name=d.name||code;
@@ -477,7 +478,10 @@
           const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
           const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
 
-          const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
+          const card=document.createElement('div');
+          card.className='item-card';
+          card.dataset.code=code;
+          card.dataset.name=name;
           card.innerHTML=`
             <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
             <div class="item-name">${name}</div>
@@ -496,7 +500,7 @@
           grid.appendChild(card);
         });
 
-        /* ÉTAT INITIAL = TOUT RÉDUIT */
+        /* Replié au départ */
         grid.style.display='none';
 
         sec.appendChild(header);
@@ -504,31 +508,20 @@
         menu.appendChild(sec);
       }
 
-      /* Actions header (dépliage/repliage + clic header) */
+      /* Gestion UNIQUEMENT sur l’entête (n’interfère pas avec les cartes) */
       menu.addEventListener('click',(e)=>{
-        const btn=e.target.closest('.btn-mini');
         const header=e.target.closest('.cat-header');
-        const sec=e.target.closest('.cat-section') || (header && header.parentElement);
+        const btn=e.target.closest('.btn-mini');
+        if(!header && !btn) return;
+        const sec=(header||btn)?.closest('.cat-section');
         if(!sec) return;
         const grid=sec.querySelector('.menu-grid');
-        const collapseBtn=sec.querySelector('[data-action="collapse"]');
+        const toggle=sec.querySelector('[data-action="collapse"]');
 
-        // Bouton Déplier/Réduire
-        if(btn && btn.dataset.action==='collapse'){
-          const hidden = grid.style.display==='none';
-          grid.style.display = hidden ? '' : 'none';
-          collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
-          sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
-          return;
-        }
-
-        // Clic sur la bande header (hors bouton) => toggle
-        if(header && !btn){
-          const hidden = grid.style.display==='none';
-          grid.style.display = hidden ? '' : 'none';
-          collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
-          header.setAttribute('aria-expanded', hidden ? 'true' : 'false');
-        }
+        const hidden = grid.style.display==='none';
+        grid.style.display = hidden ? '' : 'none';
+        toggle.textContent = hidden ? 'Réduire' : 'Déplier';
+        sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
       }, false);
     }
 
@@ -538,7 +531,7 @@
     });
   </script>
 
-  <!-- Panier / tiroir + EmailJS + interactions carte -->
+  <!-- Panier / interactions carte + EmailJS -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const sheet = document.getElementById('cartSheet');
@@ -638,9 +631,7 @@
 
       btnOpenEl?.addEventListener('click', openSheet);
       sheetClose?.addEventListener('click', closeSheet);
-      btnBackClose?.addEventListener('click', ()=>{
-        if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); }
-      });
+      btnBackClose?.addEventListener('click', ()=>{ if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); } });
       document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
 
@@ -690,21 +681,9 @@ ${c}`;
         const notes = form.comments.value.trim();
         const items = itemsTextForEmail();
         const order_full = buildOrderText();
-        const base = {
-          from_name: 'YUMEKO SUSHIS',
-          items_text: items,
-          comments: notes || '—',
-          full_name: `${first} ${last}`.trim(),
-          order_full
-        };
-        const paramsCustomer = {
-          ...base, to_name: first || 'Client', to_email: email, reply_to: email,
-          subject: 'Votre récapitulatif de commande — YUMEKO SUSHIS'
-        };
-        const paramsAdmin = {
-          ...base, to_name: 'YUMEKO', to_email: YUMEKO_EMAIL, reply_to: email,
-          subject: `Nouvelle commande — ${first} ${last}`.trim()
-        };
+        const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes||'—', full_name:`${first} ${last}`.trim(), order_full };
+        const paramsCustomer = { ...base, to_name:first||'Client', to_email:email, reply_to:email, subject:'Votre récapitulatif de commande — YUMEKO SUSHIS' };
+        const paramsAdmin = { ...base, to_name:'YUMEKO', to_email:YUMEKO_EMAIL, reply_to:email, subject:`Nouvelle commande — ${first} ${last}`.trim() };
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
       }
@@ -723,43 +702,15 @@ ${c}`;
         window.location.href = 'merci.html';
       });
 
-      // Ajustements quantités dans le récap
-      document.getElementById('recapList').addEventListener('click', (e)=>{
-        const plus = e.target.closest('.recap-plus');
-        const minus = e.target.closest('.recap-minus');
-        const btn = plus || minus;
-        if(!btn) return;
-        const item = btn.dataset.item;
-        const span = document.querySelector(`.qty[data-item="${CSS.escape(item)}"]`);
-        if(!span) return;
-        const cur = parseInt(span.textContent)||0;
-        const inc = plus ? 1 : -1;
-        const v = Math.max(0, cur + inc);
-        span.textContent = v>0 ? String(v) : '';
-        bump(span);
-        updateSticky();
-        buildRecap();
-      });
+      /* === FIX MOBILE : clics sur + et sur carte/miniature === */
+      const menuRoot = document.getElementById('menu');
 
-      // Carte: clic => modale quantité (photo/carte) OU bouton +
-      document.addEventListener('click', (e)=>{
-        const plusBtn = e.target.closest('.card-plus');
-        const card = e.target.closest('.item-card');
-
-        if(plusBtn){
-          const itemKey = plusBtn.dataset.item;
-          openItemModalByKey(itemKey);
-          return;
-        }
-        if(card && !e.target.closest('.ctrls')){
-          const code=card.dataset.code;
-          const name=card.dataset.name;
-          openItemModal(code, name);
-          return;
-        }
-      }, false);
-
-      // Modale produit
+      function openItemModalByKey(itemKey){
+        const code = (String(itemKey).split('-')[0]||'').trim();
+        const name = String(itemKey).split('-').slice(1).join('-').trim();
+        if(!code || !name) return;
+        openItemModal(code, name);
+      }
       function openItemModal(code, name){
         const d=window.catalog[code]||{};
         const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
@@ -783,12 +734,26 @@ ${c}`;
         modal.style.display='flex';
         modal.setAttribute('aria-hidden','false');
       }
-      function openItemModalByKey(itemKey){
-        const code = (String(itemKey).split('-')[0]||'').trim();
-        const name = String(itemKey).split('-').slice(1).join('-').trim();
-        if(!code || !name) return;
-        openItemModal(code, name);
+
+      function onTapCard(ev){
+        const plusBtn = ev.target.closest('.card-plus');
+        if(plusBtn){
+          ev.stopPropagation();
+          ev.preventDefault();
+          openItemModalByKey(plusBtn.dataset.item);
+          return;
+        }
+        const card = ev.target.closest('.item-card');
+        if(card && !ev.target.closest('.ctrls')){
+          ev.stopPropagation();
+          ev.preventDefault();
+          openItemModal(card.dataset.code, card.dataset.name);
+        }
       }
+      menuRoot.addEventListener('pointerup', onTapCard, {passive:false});
+      menuRoot.addEventListener('click', onTapCard, {passive:false});
+
+      // Modale +/- quantité
       (function(){
         const modal=document.getElementById('itemModal');
         const closeBtn=document.getElementById('mClose');
@@ -810,7 +775,7 @@ ${c}`;
         document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.style.display==='flex'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
       })();
 
-      /* Persistance panier */
+      /* Persistance panier + bouton panier */
       const CART_KEY='yumeko_cart_v1';
       function saveCart(){
         const cart=[];
@@ -830,7 +795,6 @@ ${c}`;
           updateSticky();
         }catch(e){ console.warn('restoreCart error', e); }
       }
-      function updateMiniRecap(){}
       function updateSticky(){
         const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
         qtyNodes.forEach(q=>{
@@ -883,7 +847,7 @@ ${c}`;
     })();
   </script>
 
-  <!-- Modale produit -->
+  <!-- ===== Modale produit ===== -->
   <div id="itemModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;z-index:103" aria-hidden="true">
     <div style="background:#fff;border-radius:16px;border:1px solid var(--card-border);width:min(92%,560px);max-height:80vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.15)">
       <div style="display:flex;gap:14px;padding:14px;align-items:flex-start">
