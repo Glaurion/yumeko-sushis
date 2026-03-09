@@ -199,11 +199,11 @@
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
-      <button id="sheetClose" aria-label="Fermer" type="button">Ã—</button>
+      <button id="sheetClose" aria-label="Fermer" type="button">&times;</button>
     </header>
     <div class="body">
       <div id="stepCart" class="step active">
-        <p class="muted" id="sheetIntro">VÃ©rifie ton panier et ajuste les quantitÃ©s :</p>
+        <p class="muted" id="sheetIntro">Verifiez votre panier et ajustez les quantites :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
@@ -211,7 +211,7 @@
         <form id="orderForm" action="#" method="post" novalidate>
           <div class="form-grid">
             <div class="field">
-              <label for="first_name">PrÃ©nom</label>
+              <label for="first_name">Prenom</label>
               <input id="first_name" name="first_name" type="text" required autocomplete="given-name" />
             </div>
             <div class="field">
@@ -224,7 +224,7 @@
             </div>
             <div class="field full">
               <label for="comments">Commentaire (optionnel)</label>
-              <textarea id="comments" name="comments" rows="3" placeholder="Ex : Allergies, etcâ€¦"></textarea>
+              <textarea id="comments" name="comments" rows="3" placeholder="Ex : Allergies, etc."></textarea>
             </div>
           </div>
           <input type="hidden" id="hiddenOrder" name="order" value="" />
@@ -232,8 +232,8 @@
       </div>
     </div>
     <footer>
-      <button class="btn btn-ghost" id="closeSheetBtn" type="button">â† Retour</button>
-      <button class="btn btn-primary" id="goPrimary" type="button">Valider le panier â†’</button>
+      <button class="btn btn-ghost" id="closeSheetBtn" type="button">&larr; Retour</button>
+      <button class="btn btn-primary" id="goPrimary" type="button">Valider le panier &rarr;</button>
     </footer>
   </div>
 
@@ -474,7 +474,7 @@
           const isCart = which === 'cart';
           stepCart.style.display = isCart ? '' : 'none';
           stepDetails.style.display = isCart ? 'none' : '';
-          btnPrimary.textContent = isCart ? 'Valider le panier â†’' : 'Commander â†’';
+          btnPrimary.textContent = isCart ? 'Valider le panier ->' : 'Commander ->';
           if(!isCart){ form?.querySelector('#first_name')?.focus(); }
         }
 
