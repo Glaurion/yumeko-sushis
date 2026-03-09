@@ -246,6 +246,8 @@ body{
 }
 
 .carousel-item{
+  flex:0 0 260px;
+  width:260px;
   min-width:260px;
   background:var(--card);
   border:1px solid var(--card-border);
