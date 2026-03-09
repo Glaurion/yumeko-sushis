@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>YUMEKO SUSHIS — Menu</title>
+  <title>YUMEKO SUSHIS â€” Menu</title>
 
   <!-- Police Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css">
 
-  <!-- Favicon / thème -->
+  <!-- Favicon / thÃ¨me -->
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
   <meta name="theme-color" content="#ff4d6d" />
@@ -30,15 +30,23 @@
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        linear-gradient(180deg, rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-                               rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%, var(--bg-1) 100%), var(--bg-1);
+        linear-gradient(180deg,
+                               rgba(var(--sakura-rgb), calc(.02 * var(--sakuraAmt))) 0%,
+                               rgba(var(--sakura-rgb), calc(.08 * var(--sakuraAmt))) 25%,
+                               rgba(var(--sakura-rgb), calc(.16 * var(--sakuraAmt))) 55%,
+                               rgba(var(--sakura-rgb), calc(.26 * var(--sakuraAmt))) 80%,
+                               rgba(var(--sakura-rgb), calc(.34 * var(--sakuraAmt))) 100%), var(--bg-1);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; transition:background 80ms linear;
     }
     @media (max-width:768px){
       body{ background:
         radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
-        linear-gradient(180deg, rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
-                               rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%, var(--bg-1) 100%), var(--bg-1); }
+        linear-gradient(180deg,
+                               rgba(var(--sakura-rgb), calc(.02 * var(--sakuraAmt))) 0%,
+                               rgba(var(--sakura-rgb), calc(.08 * var(--sakuraAmt))) 22%,
+                               rgba(var(--sakura-rgb), calc(.15 * var(--sakuraAmt))) 50%,
+                               rgba(var(--sakura-rgb), calc(.24 * var(--sakuraAmt))) 78%,
+                               rgba(var(--sakura-rgb), calc(.30 * var(--sakuraAmt))) 100%), var(--bg-1); }
     }
 
     .site-header.jp{ background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65)); border-bottom:1px solid var(--card-border); position:static; }
@@ -47,9 +55,21 @@
     .logo{ width:160px; height:160px; border-radius:50%; object-fit:cover; background:#fff; box-shadow:0 8px 24px rgba(255,77,109,.15); border:3px solid rgba(255,77,109,.15); display:block; }
     @media (min-width:768px){ .logo{ width:200px; height:200px; } }
     .brand-text h1{ margin:0; letter-spacing:2px; font-weight:800; font-size:1.4rem; color:#1e1e1e; text-align:center; }
-    .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
+    .main-nav{ display:flex; align-items:center; gap:12px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
-    .main-nav a{ color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95; transition:filter .15s, transform .15s, background .15s; }
+    .main-nav a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:96px;
+      line-height:1;
+      color:#222;
+      text-decoration:none;
+      padding:8px 14px;
+      border-radius:10px;
+      opacity:.95;
+      transition:filter .15s, transform .15s, background .15s;
+    }
     .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(255,77,109,.12); color:#c2173b; }
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
 
@@ -74,8 +94,23 @@
     .btn-mini{ border:1px solid var(--card-border); background:#fff; color:#222; padding:6px 10px; border-radius:10px; font-weight:700; cursor:pointer; }
     .btn-mini:hover{ background:#f6f6f6; }
 
-    .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
-    .item-card{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .12s, box-shadow .12s, border-color .12s; display:flex; flex-direction:column; }
+    .menu-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(180px,220px));
+      gap:14px;
+      justify-content:center;
+    }
+    .item-card{
+      width:100%;
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:14px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:transform .12s, box-shadow .12s, border-color .12s;
+      display:flex;
+      flex-direction:column;
+    }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,77,109,.15); border-color:rgba(255,77,109,.25); }
     .thumb{
       width:100%;
@@ -170,7 +205,7 @@
   <div id="stickyBar" aria-live="polite">
     <div id="stickyInner">
       <span id="miniRecap"></span>
-      <button id="gotoOrder" type="button">Panier (0) • Valider</button>
+      <button id="gotoOrder" type="button">Panier (0) â€¢ Valider</button>
     </div>
   </div>
 
@@ -181,11 +216,11 @@
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
-      <button id="sheetClose" aria-label="Fermer" type="button">×</button>
+      <button id="sheetClose" aria-label="Fermer" type="button">Ã—</button>
     </header>
     <div class="body">
       <div id="stepCart" class="step active">
-        <p class="muted" id="sheetIntro">Vérifie ton panier et ajuste les quantités :</p>
+        <p class="muted" id="sheetIntro">VÃ©rifie ton panier et ajuste les quantitÃ©s :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
       </div>
@@ -193,7 +228,7 @@
         <form id="orderForm" action="#" method="post" novalidate>
           <div class="form-grid">
             <div class="field">
-              <label for="first_name">Prénom</label>
+              <label for="first_name">PrÃ©nom</label>
               <input id="first_name" name="first_name" type="text" required autocomplete="given-name" />
             </div>
             <div class="field">
@@ -206,7 +241,7 @@
             </div>
             <div class="field full">
               <label for="comments">Commentaire (optionnel)</label>
-              <textarea id="comments" name="comments" rows="3" placeholder="Ex : Allergies, etc…"></textarea>
+              <textarea id="comments" name="comments" rows="3" placeholder="Ex : Allergies, etcâ€¦"></textarea>
             </div>
           </div>
           <input type="hidden" id="hiddenOrder" name="order" value="" />
@@ -214,16 +249,16 @@
       </div>
     </div>
     <footer>
-      <button class="btn btn-ghost" id="closeSheetBtn" type="button">← Retour</button>
-      <button class="btn btn-primary" id="goPrimary" type="button">Valider le panier →</button>
+      <button class="btn btn-ghost" id="closeSheetBtn" type="button">â† Retour</button>
+      <button class="btn btn-primary" id="goPrimary" type="button">Valider le panier â†’</button>
     </footer>
   </div>
 
  <div id="footer"></div>
 
-  <!-- ===== Données + construction du menu (INIT ROBUSTE) ===== -->
+  <!-- ===== DonnÃ©es + construction du menu (INIT ROBUSTE) ===== -->
   <script>
-    /* --- Données --- */
+    /* --- DonnÃ©es --- */
     const categories = {
       'MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
       'CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
@@ -242,17 +277,17 @@
       M1:{name:'MAKI SAUMON', img:'m1.jpg', pieces:4, comp:'Riz, nori, saumon', allergens:'Poisson', desc:''},
       M2:{name:'MAKI SAUMON AVOCAT', img:'m2.jpg', pieces:4, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
       M3:{name:'MAKI SAUMON CHEESE', img:'m3.jpg', pieces:4, comp:'Riz, nori, saumon, fromage frais', allergens:'Poisson, Lait', desc:''},
-      M4:{name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:4, comp:'Riz, nori, concombre', allergens:'—', desc:''},
+      M4:{name:'MAKI CONCOMBRE', img:'m4.jpg', pieces:4, comp:'Riz, nori, concombre', allergens:'â€”', desc:''},
       M5:{name:'MAKI CONCOMBRE CHEESE', img:'m5.jpg', pieces:4, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
-      M6:{name:'MAKI AVOCAT', img:'m6.jpg', pieces:4, comp:'Riz, nori, avocat', allergens:'—', desc:''},
+      M6:{name:'MAKI AVOCAT', img:'m6.jpg', pieces:4, comp:'Riz, nori, avocat', allergens:'â€”', desc:''},
       M7:{name:'MAKI AVOCAT CHEESE', img:'m7.jpg', pieces:4, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
       M8:{name:'MAKI CHEESE', img:'m8.jpg', pieces:4, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
-      C1:{name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:4, comp:'Riz, nori, saumon, sésame', allergens:'Poisson, Sésame', desc:''},
+      C1:{name:'CALIFORNIA SAUMON', img:'c1.jpg', pieces:4, comp:'Riz, nori, saumon, sÃ©same', allergens:'Poisson, SÃ©same', desc:''},
       C2:{name:'CALIFORNIA SAUMON AVOCAT', img:'c2.jpg', pieces:4, comp:'Riz, nori, saumon, avocat', allergens:'Poisson', desc:''},
       C3:{name:'CALIFORNIA SAUMON CHEESE', img:'c3.jpg', pieces:4, comp:'Riz, nori, saumon, fromage', allergens:'Poisson, Lait', desc:''},
-      C4:{name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:4, comp:'Riz, nori, concombre', allergens:'—', desc:''},
+      C4:{name:'CALIFORNIA CONCOMBRE', img:'c4.jpg', pieces:4, comp:'Riz, nori, concombre', allergens:'â€”', desc:''},
       C5:{name:'CALIFORNIA CONCOMBRE CHEESE', img:'c5.jpg', pieces:4, comp:'Riz, nori, concombre, fromage', allergens:'Lait', desc:''},
-      C6:{name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:4, comp:'Riz, nori, avocat', allergens:'—', desc:''},
+      C6:{name:'CALIFORNIA AVOCAT', img:'c6.jpg', pieces:4, comp:'Riz, nori, avocat', allergens:'â€”', desc:''},
       C7:{name:'CALIFORNIA AVOCAT CHEESE', img:'c7.jpg', pieces:4, comp:'Riz, nori, avocat, fromage', allergens:'Lait', desc:''},
       C8:{name:'CALIFORNIA CHEESE', img:'c8.jpg', pieces:4, comp:'Riz, nori, fromage', allergens:'Lait', desc:''},
       C9:{name:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS', img:'c9.jpg', pieces:4, comp:'Riz, nori, saumon, fromage, oignons frits', allergens:'Poisson, Lait, Gluten', desc:''},
@@ -263,24 +298,24 @@
       R1:{name:'ROLLS SAUMON AVOCAT CHEESE', img:'r1.jpg', pieces:4, comp:'Riz, nori, saumon, avocat, fromage', allergens:'Poisson, Lait', desc:''},
       R2:{name:'ROLLS AVOCAT SAUMON CHEESE', img:'r2.jpg', pieces:4, comp:'Riz, nori, avocat, saumon, fromage', allergens:'Poisson, Lait', desc:''},
       N1:{name:'NIGIRI SAUMON', img:'n1.jpg', pieces:1, comp:'Riz, saumon', allergens:'Poisson', desc:''},
-      N2:{name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:1, comp:'Riz, avocat', allergens:'—', desc:''},
-      O1:{name:'ONIGIRI THON MAYO', img:'o1.jpg', pieces:1, comp:'Riz, nori, thon, mayo japonaise maison', allergens:'—', desc:''},
+      N2:{name:'NIGIRI AVOCAT', img:'n2.jpg', pieces:1, comp:'Riz, avocat', allergens:'â€”', desc:''},
+      O1:{name:'ONIGIRI THON MAYO', img:'o1.jpg', pieces:1, comp:'Riz, nori, thon, mayo japonaise maison', allergens:'â€”', desc:''},
       S1:{name:'SASHIMI SAUMON', img:'s1.jpg', pieces:1, comp:'Tranches de saumon', allergens:'Poisson', desc:''},
-      G1:{name:'GIOZA POULET LEGUMES', img:'g1.jpg', pieces:1, comp:'poulet, oignon, farine de blé, chou blanc', allergens:'—', desc:''},
-      G2:{name:'GIOZA BOEUF LEGUMES', img:'g2.jpg', pieces:1, comp:'boeuf, oignon, farine de blé, chou blanc', allergens:'—', desc:''},
-      G3:{name:'GIOZA LEGUMES', img:'g3.jpg', pieces:1, comp:'oignon, farine de blé, chou blanc, carotte, champion noir, petit pois', allergens:'—', desc:''},
-      BR1:{name:'YAKITORI BOEUF FROMAGE', img:'br1.jpg', pieces:1, comp:'carpaccio de boeuf, emmental', allergens:'—', desc:''},
-      SO1:{name:'SOUPE MISO', img:'so1.jpg', comp:'miso', allergens:'—', desc:''},
-      CO1:{name:'SAUCE SOJA SUCRE', img:'co1.jpg', comp:'soja sucré', allergens:'—', desc:''},
-      CO2:{name:'SAUCE SOJA SALEE', img:'co2.jpg', comp:'soja salée', allergens:'—', desc:''},
-      CO3:{name:'SAUCE MAYO JAPONAISE MAISON', img:'co3.jpg', comp:'', allergens:'—', desc:''},
-      CO4:{name:'SAUCE MAYO JAPONAISE EPICEE MAISON', img:'co4.jpg', comp:'', allergens:'—', desc:''},
-      CO5:{name:'GINGEMBRE', img:'co5.jpg', comp:'', allergens:'—', desc:''},
-      CO6:{name:'WASABI', img:'co6.jpg', comp:'', allergens:'—', desc:''},
-      CO7:{name:'WASABI CACAHUETE', img:'co7.jpg', comp:'', allergens:'—', desc:''},
-      CO8:{name:'WASABI PETIT POIS', img:'co8.jpg', comp:'', allergens:'—', desc:''},
-      CO9:{name:'OIGONS FRITS', img:'co9.jpg', comp:'', allergens:'—', desc:''},
-      CO10:{name:'SAUCE SRIRACHA', img:'co10.jpg', comp:'', allergens:'—', desc:''},
+      G1:{name:'GIOZA POULET LEGUMES', img:'g1.jpg', pieces:1, comp:'poulet, oignon, farine de blÃ©, chou blanc', allergens:'â€”', desc:''},
+      G2:{name:'GIOZA BOEUF LEGUMES', img:'g2.jpg', pieces:1, comp:'boeuf, oignon, farine de blÃ©, chou blanc', allergens:'â€”', desc:''},
+      G3:{name:'GIOZA LEGUMES', img:'g3.jpg', pieces:1, comp:'oignon, farine de blÃ©, chou blanc, carotte, champion noir, petit pois', allergens:'â€”', desc:''},
+      BR1:{name:'YAKITORI BOEUF FROMAGE', img:'br1.jpg', pieces:1, comp:'carpaccio de boeuf, emmental', allergens:'â€”', desc:''},
+      SO1:{name:'SOUPE MISO', img:'so1.jpg', comp:'miso', allergens:'â€”', desc:''},
+      CO1:{name:'SAUCE SOJA SUCRE', img:'co1.jpg', comp:'soja sucrÃ©', allergens:'â€”', desc:''},
+      CO2:{name:'SAUCE SOJA SALEE', img:'co2.jpg', comp:'soja salÃ©e', allergens:'â€”', desc:''},
+      CO3:{name:'SAUCE MAYO JAPONAISE MAISON', img:'co3.jpg', comp:'', allergens:'â€”', desc:''},
+      CO4:{name:'SAUCE MAYO JAPONAISE EPICEE MAISON', img:'co4.jpg', comp:'', allergens:'â€”', desc:''},
+      CO5:{name:'GINGEMBRE', img:'co5.jpg', comp:'', allergens:'â€”', desc:''},
+      CO6:{name:'WASABI', img:'co6.jpg', comp:'', allergens:'â€”', desc:''},
+      CO7:{name:'WASABI CACAHUETE', img:'co7.jpg', comp:'', allergens:'â€”', desc:''},
+      CO8:{name:'WASABI PETIT POIS', img:'co8.jpg', comp:'', allergens:'â€”', desc:''},
+      CO9:{name:'OIGONS FRITS', img:'co9.jpg', comp:'', allergens:'â€”', desc:''},
+      CO10:{name:'SAUCE SRIRACHA', img:'co10.jpg', comp:'', allergens:'â€”', desc:''},
       B1:{name:'BIERE TSINGTAO', img:'b1.jpg'},
       B2:{name:'BIERE ASAHI', img:'b2.jpg'},
       B3:{name:'COCA COLA ZERO', img:'b3.jpg'}
@@ -288,7 +323,7 @@
     const prices = {};
     const fmt = new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
 
-    /* 👉 Publication globale pour éviter l’erreur window.catalog undefined */
+    /* ðŸ‘‰ Publication globale pour Ã©viter lâ€™erreur window.catalog undefined */
     window.categories = categories;
     window.catalog    = catalog;
     window.prices     = prices;
@@ -316,7 +351,7 @@
             const target=document.getElementById(id);
             const grid=target?.querySelector('.menu-grid');
             const toggle=target?.querySelector('[data-action="collapse"]');
-            if(grid && grid.style.display==='none'){ grid.style.display=''; if(toggle) toggle.textContent='Réduire'; target.querySelector('.cat-header')?.setAttribute('aria-expanded','true'); }
+            if(grid && grid.style.display==='none'){ grid.style.display=''; if(toggle) toggle.textContent='RÃ©duire'; target.querySelector('.cat-header')?.setAttribute('aria-expanded','true'); }
             const y=target.getBoundingClientRect().top + window.scrollY - 80;
             window.scrollTo({top:y, behavior:'smooth'});
           }
@@ -335,7 +370,7 @@
         const header=document.createElement('div');
         header.className='cat-header'; header.setAttribute('role','button'); header.setAttribute('aria-expanded','false');
         header.innerHTML = `<h3 class="cat-title">${cat}</h3>
-          <div class="cat-tools"><button type="button" class="btn-mini" data-action="collapse">Déplier</button></div>`;
+          <div class="cat-tools"><button type="button" class="btn-mini" data-action="collapse">DÃ©plier</button></div>`;
 
         const grid=document.createElement('div'); grid.className='menu-grid';
 
@@ -345,7 +380,7 @@
           const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
           const pieces=d.pieces ?? '';
           const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
-          const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : '—';
+          const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : 'â€”';
 
           const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
           card.innerHTML=`
@@ -381,14 +416,14 @@
         if(btn && btn.dataset.action==='collapse'){
           const hidden = grid.style.display==='none';
           grid.style.display = hidden ? '' : 'none';
-          if(collapseBtn) collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
+          if(collapseBtn) collapseBtn.textContent = hidden ? 'RÃ©duire' : 'DÃ©plier';
           sec.querySelector('.cat-header')?.setAttribute('aria-expanded', hidden ? 'true' : 'false');
           return;
         }
         if(header && !btn){
           const hidden = grid.style.display==='none';
           grid.style.display = hidden ? '' : 'none';
-          if(collapseBtn) collapseBtn.textContent = hidden ? 'Réduire' : 'Déplier';
+          if(collapseBtn) collapseBtn.textContent = hidden ? 'RÃ©duire' : 'DÃ©plier';
           header.setAttribute('aria-expanded', hidden ? 'true' : 'false');
         }
       }, false);
@@ -462,7 +497,7 @@
                   <span class="it-label" style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>
                 </div>
                 <div class="it-ctrl" style="display:flex;align-items:center;gap:8px">
-                  <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">−</button>
+                  <button class="btn btn-ghost recap-minus" data-item="${code}- ${name}" aria-label="Retirer ${name}" type="button">âˆ’</button>
                   <span class="qty" aria-live="polite" style="min-width:20px;text-align:center;font-weight:800">${qty}</span>
                   <button class="btn btn-primary recap-plus" data-item="${code}- ${name}" aria-label="Ajouter ${name}" type="button">+</button>
                 </div>`;
@@ -478,7 +513,7 @@
           const isCart = which === 'cart';
           stepCart.style.display = isCart ? '' : 'none';
           stepDetails.style.display = isCart ? 'none' : '';
-          btnPrimary.textContent = isCart ? 'Valider le panier →' : 'Commander →';
+          btnPrimary.textContent = isCart ? 'Valider le panier â†’' : 'Commander â†’';
           if(!isCart){ form?.querySelector('#first_name')?.focus(); }
         }
 
@@ -514,10 +549,10 @@
         }
         function buildOrderText(){
           const itemsText=itemsTextForEmail();
-          const c=document.getElementById('comments')?.value?.trim() || '—';
-          const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '—';
-          const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '—';
-          const email=form?.querySelector('[name="email"]')?.value?.trim() || '—';
+          const c=document.getElementById('comments')?.value?.trim() || 'â€”';
+          const first=form?.querySelector('[name="first_name"]')?.value?.trim() || 'â€”';
+          const last =form?.querySelector('[name="last_name"]')?.value?.trim() || 'â€”';
+          const email=form?.querySelector('[name="email"]')?.value?.trim() || 'â€”';
           return `Commande YUMEKO
 Client : ${first} ${last}
 Email : ${email}
@@ -554,9 +589,9 @@ ${c}`;
           const notes = form.comments.value.trim();
           const items = itemsTextForEmail();
           const order_full = buildOrderText();
-          const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes || '—', full_name:`${first} ${last}`.trim(), order_full };
-          const paramsCustomer = { ...base, to_name:first || 'Client', to_email:email, reply_to:email, subject:'Votre récapitulatif de commande — YUMEKO SUSHIS' };
-          const paramsAdmin = { ...base, to_name:'YUMEKO', to_email:YUMEKO_EMAIL, reply_to:email, subject:`Nouvelle commande — ${first} ${last}`.trim() };
+          const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes || 'â€”', full_name:`${first} ${last}`.trim(), order_full };
+          const paramsCustomer = { ...base, to_name:first || 'Client', to_email:email, reply_to:email, subject:'Votre rÃ©capitulatif de commande â€” YUMEKO SUSHIS' };
+          const paramsAdmin = { ...base, to_name:'YUMEKO', to_email:YUMEKO_EMAIL, reply_to:email, subject:`Nouvelle commande â€” ${first} ${last}`.trim() };
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
         }
@@ -573,7 +608,7 @@ ${c}`;
           updateSticky(); closeSheet(); window.location.href='merci.html';
         });
 
-        // Ajustements quantités dans le récap
+        // Ajustements quantitÃ©s dans le rÃ©cap
         recapList.addEventListener('click', (e)=>{
           const plus = e.target.closest('.recap-plus');
           const minus = e.target.closest('.recap-minus');
@@ -598,7 +633,7 @@ ${c}`;
 
         // --- Modale produit ---
         function openItemModal(code, name){
-          /* Accès sécurisé au catalogue même si pas sur window */
+          /* AccÃ¨s sÃ©curisÃ© au catalogue mÃªme si pas sur window */
           const d = (window.catalog?.[code]) || (typeof catalog !== 'undefined' ? catalog[code] : undefined) || {};
           const img='images/'+(d.img || (String(code).toLowerCase()+'.jpg'));
           const mImg=document.getElementById('mImg'); const mTitle=document.getElementById('mTitle');
@@ -607,10 +642,10 @@ ${c}`;
 
           if(mImg){ mImg.src=img; mImg.alt=name; }
           if(mTitle) mTitle.textContent=name;
-          if(mPieces) mPieces.textContent=d.pieces ?? '—';
-          if(mAllergens) mAllergens.textContent=d.allergens || 'Non renseigné';
-          if(mComp) mComp.textContent=d.comp || 'Non renseigné';
-          if(mDesc) mDesc.textContent=d.desc || '—';
+          if(mPieces) mPieces.textContent=d.pieces ?? 'â€”';
+          if(mAllergens) mAllergens.textContent=d.allergens || 'Non renseignÃ©';
+          if(mComp) mComp.textContent=d.comp || 'Non renseignÃ©';
+          if(mDesc) mDesc.textContent=d.desc || 'â€”';
 
           const itemKey=`${code}- ${name}`;
           const qtySpan=document.querySelector(`.qty[data-item="${esc(itemKey)}"]`);
@@ -685,9 +720,9 @@ ${c}`;
           const btn=document.getElementById('gotoOrder'); if(!btn) return;
           if(totalPrice>0){
             const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
-            btn.textContent = `Panier (${totalQty}) • Total ${totalFmt} • Valider`;
+            btn.textContent = `Panier (${totalQty}) â€¢ Total ${totalFmt} â€¢ Valider`;
           }else{
-            btn.textContent = `Panier (${totalQty}) • Valider`;
+            btn.textContent = `Panier (${totalQty}) â€¢ Valider`;
           }
           saveCart();
         }
@@ -730,16 +765,16 @@ ${c}`;
         <div style="flex:1;min-width:0">
           <h4 id="mTitle" style="margin:6px 0 6px;font-size:1.15rem">Produit</h4>
           <p style="margin:0;color:var(--muted);font-size:.9rem">
-            <strong>Pièces:</strong> <span id="mPieces">—</span> ・
-            <strong>Allergènes:</strong> <span id="mAllergens">—</span>
+            <strong>PiÃ¨ces:</strong> <span id="mPieces">â€”</span> ãƒ»
+            <strong>AllergÃ¨nes:</strong> <span id="mAllergens">â€”</span>
           </p>
-          <p id="mComp" style="margin:8px 0;color:#2f2f2f;font-size:.95rem">—</p>
-          <p id="mDesc" style="margin:6px 0;color:#6b6b6b;font-size:.9rem">—</p>
+          <p id="mComp" style="margin:8px 0;color:#2f2f2f;font-size:.95rem">â€”</p>
+          <p id="mDesc" style="margin:6px 0;color:#6b6b6b;font-size:.9rem">â€”</p>
         </div>
-        <button id="mClose" aria-label="Fermer" type="button" style="background:transparent;border:none;font-size:1.4rem;line-height:1;padding:4px 6px">×</button>
+        <button id="mClose" aria-label="Fermer" type="button" style="background:transparent;border:none;font-size:1.4rem;line-height:1;padding:4px 6px">Ã—</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:14px;border-top:1px solid var(--card-border)">
-        <button id="mMinus" class="btn btn-ghost" type="button">−</button>
+        <button id="mMinus" class="btn btn-ghost" type="button">âˆ’</button>
         <span id="mQty" class="qty" style="min-width:20px;text-align:center;font-weight:800">0</span>
         <button id="mPlus" class="btn btn-primary" type="button">+</button>
       </div>
@@ -772,3 +807,4 @@ loadComponent("footer", "footer.html");
 </script>  
 </body>
 </html>
+
