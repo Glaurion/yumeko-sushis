@@ -419,6 +419,30 @@
         const form = document.getElementById('orderForm');
 
         let currentStep = 'cart';
+        const ORDERS_KEY = 'yumeko_orders_v1';
+        const SESSION_KEY = 'yumeko_session_v1';
+
+        function readOrders(){
+          try{ return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]'); }
+          catch(e){ return []; }
+        }
+        function saveOrders(list){
+          try{ localStorage.setItem(ORDERS_KEY, JSON.stringify(list)); }catch(e){}
+        }
+        function getSession(){
+          try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
+          catch(e){ return null; }
+        }
+        function prefillFromSession(){
+          const s = getSession();
+          if(!s || !form) return;
+          if(s.email && !form.email.value) form.email.value = s.email;
+          if(s.name){
+            const parts = String(s.name).trim().split(/\s+/);
+            if(parts[0] && !form.first_name.value) form.first_name.value = parts[0];
+            if(parts.length > 1 && !form.last_name.value) form.last_name.value = parts.slice(1).join(' ');
+          }
+        }
 
         function safeInt(el){ return Math.max(0, parseInt(el?.textContent ?? '0') || 0); }
         function bump(el){ el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),200); }
@@ -532,6 +556,29 @@ ${c}`;
             localStorage.setItem('yumeko_last_order', text);
           }catch(e){}
         }
+        function saveOrderToHistory(){
+          try{
+            const session = getSession() || {};
+            const first = form?.querySelector('[name="first_name"]')?.value?.trim() || '';
+            const last  = form?.querySelector('[name="last_name"]')?.value?.trim() || '';
+            const email = form?.querySelector('[name="email"]')?.value?.trim().toLowerCase() || '';
+            const comments = form?.querySelector('[name="comments"]')?.value?.trim() || '';
+            const items = getCartItems().map(({code, name, qty}) => ({ code, name, qty }));
+            const record = {
+              id: 'CMD-' + Date.now(),
+              created_at: new Date().toISOString(),
+              customer_name: `${first} ${last}`.trim() || 'Client',
+              email,
+              comments,
+              items,
+              account_email: session.email || email || '',
+              account_role: session.role || 'user'
+            };
+            const orders = readOrders();
+            orders.unshift(record);
+            saveOrders(orders);
+          }catch(e){}
+        }
         function validateForm(){
           if(!form) return false;
           const first = form.first_name.value.trim();
@@ -563,6 +610,7 @@ ${c}`;
             setStep('details'); return;
           }
           if(!validateForm()) return;
+          saveOrderToHistory();
           saveOrderToLocalStorage();
           try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
           document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
@@ -675,6 +723,7 @@ ${c}`;
           saveCart();
         }
         if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
+        prefillFromSession();
         restoreCart(); updateSticky();
       }
 

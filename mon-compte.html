@@ -34,15 +34,8 @@
       color:#c2173b;
     }
 
-    .auth-form{
-      display:grid;
-      gap:10px;
-    }
-
-    .auth-field{
-      display:grid;
-      gap:6px;
-    }
+    .auth-form{ display:grid; gap:10px; }
+    .auth-field{ display:grid; gap:6px; }
 
     .auth-field label{
       font-weight:700;
@@ -56,6 +49,12 @@
       font:inherit;
     }
 
+    .auth-row{
+      display:grid;
+      grid-template-columns:1fr 120px;
+      gap:8px;
+    }
+
     .auth-btn{
       border:none;
       border-radius:10px;
@@ -66,9 +65,7 @@
       color:#111;
     }
 
-    .auth-btn:hover{
-      background:var(--accent-2);
-    }
+    .auth-btn:hover{ background:var(--accent-2); }
 
     .account-state{
       margin-top:14px;
@@ -78,6 +75,8 @@
       background:#fff;
     }
 
+    .hidden{ display:none; }
+
     .status{
       margin-top:10px;
       font-weight:600;
@@ -86,8 +85,107 @@
     .status.ok{ color:#0e7a4f; }
     .status.err{ color:#c2173b; }
 
+    .orders-list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .order-card{
+      border:1px solid var(--card-border);
+      border-radius:12px;
+      padding:10px 12px;
+      background:#fff;
+    }
+
+    .order-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .order-items{
+      margin:8px 0 0;
+      padding-left:18px;
+    }
+
+    .admin-tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .tab-btn{
+      border:1px solid var(--card-border);
+      background:#fff;
+      color:#222;
+      border-radius:10px;
+      padding:8px 12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .tab-btn.active{
+      background:rgba(255,77,109,.12);
+      color:#c2173b;
+      border-color:rgba(255,77,109,.25);
+    }
+
+    .tab-pane{ margin-top:12px; }
+
+    .course-list{
+      list-style:none;
+      margin:10px 0 0;
+      padding:0;
+      display:grid;
+      gap:8px;
+    }
+
+    .course-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid var(--card-border);
+      border-radius:10px;
+      padding:8px 10px;
+      background:#fff;
+    }
+
+    .course-main{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .course-done{
+      text-decoration:line-through;
+      opacity:.65;
+    }
+
+    .mini-btn{
+      border:1px solid var(--card-border);
+      background:#fff;
+      border-radius:8px;
+      padding:6px 8px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .admin-note{
+      margin-top:8px;
+      font-size:.9rem;
+      color:#5c6870;
+    }
+
     @media (max-width:900px){
       .account-grid{ grid-template-columns:1fr; }
+      .auth-row{ grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -98,7 +196,7 @@
     <section class="section" aria-labelledby="titre-compte">
       <h2 id="titre-compte">Mon compte</h2>
       <div class="sep" aria-hidden="true"></div>
-      <p class="muted">Creez un compte ou connectez-vous pour retrouver vos informations.</p>
+      <p class="muted">Creez un compte, connectez-vous et retrouvez votre historique de commandes.</p>
 
       <div class="account-grid">
         <article class="auth-card">
@@ -139,23 +237,59 @@
             <button class="auth-btn" type="submit">Connexion</button>
           </form>
           <p id="loginStatus" class="status" aria-live="polite"></p>
+          <p class="admin-note">Compte admin cree: admin@yumeko.fr / Admin123!</p>
         </article>
       </div>
 
       <div id="accountState" class="account-state" aria-live="polite"></div>
+
+      <div id="userPanel" class="account-state hidden">
+        <h3>Mes commandes</h3>
+        <div id="userOrders" class="orders-list"></div>
+      </div>
+
+      <div id="adminPanel" class="account-state hidden">
+        <h3>Espace admin</h3>
+        <div class="admin-tabs">
+          <button id="tabOrdersBtn" class="tab-btn active" type="button" data-tab="orders">Toutes les commandes</button>
+          <button id="tabCoursesBtn" class="tab-btn" type="button" data-tab="courses">Courses</button>
+        </div>
+
+        <div id="adminOrdersTab" class="tab-pane">
+          <div id="adminOrders" class="orders-list"></div>
+        </div>
+
+        <div id="adminCoursesTab" class="tab-pane hidden">
+          <form id="courseForm" class="auth-form" novalidate>
+            <div class="auth-row">
+              <input id="courseName" type="text" placeholder="Produit a acheter" required />
+              <input id="courseQty" type="text" placeholder="Qt" />
+            </div>
+            <button class="auth-btn" type="submit">Ajouter a la liste</button>
+          </form>
+          <ul id="courseList" class="course-list"></ul>
+        </div>
+      </div>
     </section>
   </main>
 
   <div id="footer"></div>
 
   <script>
+    const ACCOUNTS_KEY = 'yumeko_accounts_v1';
+    const SESSION_KEY = 'yumeko_session_v1';
+    const ORDERS_KEY = 'yumeko_orders_v1';
+    const COURSES_KEY = 'yumeko_courses_v1';
+    const ADMIN_EMAIL = 'admin@yumeko.fr';
+    const ADMIN_PASSWORD = 'Admin123!';
+    const ADMIN_NAME = 'Admin Yumeko';
+    let activeAdminTab = 'orders';
+
     function setActiveNav() {
       const here = location.pathname.split('/').pop() || 'mon-compte.html';
       document.querySelectorAll('.main-nav a').forEach(a => {
         const href = a.getAttribute('href');
-        if (href && here === href) {
-          a.classList.add('active');
-        }
+        if (href && here === href) a.classList.add('active');
       });
     }
 
@@ -164,25 +298,53 @@
         .then(response => response.text())
         .then(data => {
           document.getElementById(id).innerHTML = data;
-          if (id === 'header') {
-            setActiveNav();
-          }
+          if (id === 'header') setActiveNav();
         });
     }
 
-    loadComponent('header', 'header.html');
-    loadComponent('footer', 'footer.html');
+    function readJSON(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch (e) { return fallback; }
+    }
 
-    const ACCOUNTS_KEY = 'yumeko_accounts_v1';
-    const SESSION_KEY = 'yumeko_session_v1';
+    function writeJSON(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
 
     function readAccounts() {
-      try { return JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]'); }
-      catch (e) { return []; }
+      return readJSON(ACCOUNTS_KEY, []);
     }
 
     function saveAccounts(accounts) {
-      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+      writeJSON(ACCOUNTS_KEY, accounts);
+    }
+
+    function readSession() {
+      return readJSON(SESSION_KEY, null);
+    }
+
+    function writeSession(account) {
+      writeJSON(SESSION_KEY, {
+        name: account.name,
+        email: account.email,
+        role: account.role || 'user'
+      });
+    }
+
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+    }
+
+    function readOrders() {
+      return readJSON(ORDERS_KEY, []);
+    }
+
+    function readCourses() {
+      return readJSON(COURSES_KEY, []);
+    }
+
+    function saveCourses(items) {
+      writeJSON(COURSES_KEY, items);
     }
 
     function setStatus(el, msg, ok) {
@@ -190,88 +352,265 @@
       el.className = 'status ' + (ok ? 'ok' : 'err');
     }
 
-    function renderSession() {
-      const box = document.getElementById('accountState');
-      let session = null;
-      try { session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
-      catch (e) {}
+    function ensureAdminAccount() {
+      const accounts = readAccounts();
+      const idx = accounts.findIndex(a => String(a.email).toLowerCase() === ADMIN_EMAIL);
+      if (idx === -1) {
+        accounts.push({ name: ADMIN_NAME, email: ADMIN_EMAIL, password: ADMIN_PASSWORD, role: 'admin' });
+      } else {
+        accounts[idx].role = 'admin';
+        if (!accounts[idx].name) accounts[idx].name = ADMIN_NAME;
+      }
+      saveAccounts(accounts);
+    }
 
-      if (!session) {
-        box.innerHTML = '<strong>Statut:</strong> Non connecte';
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return '-';
+      return d.toLocaleString('fr-FR');
+    }
+
+    function renderOrders(containerId, orders, showCustomer) {
+      const box = document.getElementById(containerId);
+      if (!box) return;
+
+      if (!orders.length) {
+        box.innerHTML = '<p class="muted">Aucune commande pour le moment.</p>';
         return;
       }
 
-      box.innerHTML = `
-        <strong>Statut:</strong> Connecte en tant que ${session.name} (${session.email})
+      box.innerHTML = orders.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const itemsHtml = items.length
+          ? `<ul class="order-items">${items.map(it => `<li>${escapeHtml(it.name)} x${Number(it.qty) || 1}</li>`).join('')}</ul>`
+          : '<p class="muted">Aucun article detaille.</p>';
+        const customerHtml = showCustomer
+          ? `<div><strong>Client:</strong> ${escapeHtml(order.customer_name || '-')} (${escapeHtml(order.email || '-')})</div>`
+          : '';
+        const comments = order.comments ? `<div><strong>Commentaire:</strong> ${escapeHtml(order.comments)}</div>` : '';
+
+        return `
+          <article class="order-card">
+            <div class="order-head">
+              <span>${escapeHtml(order.id || 'Commande')}</span>
+              <span>${formatDate(order.created_at)}</span>
+            </div>
+            ${customerHtml}
+            ${itemsHtml}
+            ${comments}
+          </article>`;
+      }).join('');
+    }
+
+    function renderCourses() {
+      const list = document.getElementById('courseList');
+      if (!list) return;
+      const items = readCourses();
+
+      if (!items.length) {
+        list.innerHTML = '<li class="muted">Aucun produit dans la liste de courses.</li>';
+        return;
+      }
+
+      list.innerHTML = items.map(item => `
+        <li class="course-item" data-id="${item.id}">
+          <div class="course-main">
+            <input type="checkbox" class="course-toggle" ${item.done ? 'checked' : ''} />
+            <span class="${item.done ? 'course-done' : ''}">${escapeHtml(item.name)}${item.qty ? ` (${escapeHtml(item.qty)})` : ''}</span>
+          </div>
+          <button class="mini-btn course-delete" type="button">Supprimer</button>
+        </li>
+      `).join('');
+    }
+
+    function setAdminTab(tab) {
+      activeAdminTab = tab;
+      const ordersBtn = document.getElementById('tabOrdersBtn');
+      const coursesBtn = document.getElementById('tabCoursesBtn');
+      const ordersTab = document.getElementById('adminOrdersTab');
+      const coursesTab = document.getElementById('adminCoursesTab');
+      if (!ordersBtn || !coursesBtn || !ordersTab || !coursesTab) return;
+
+      const showOrders = tab === 'orders';
+      ordersBtn.classList.toggle('active', showOrders);
+      coursesBtn.classList.toggle('active', !showOrders);
+      ordersTab.classList.toggle('hidden', !showOrders);
+      coursesTab.classList.toggle('hidden', showOrders);
+    }
+
+    function renderUI() {
+      const session = readSession();
+      const stateBox = document.getElementById('accountState');
+      const userPanel = document.getElementById('userPanel');
+      const adminPanel = document.getElementById('adminPanel');
+
+      if (!session) {
+        stateBox.innerHTML = '<strong>Statut:</strong> Non connecte';
+        userPanel.classList.add('hidden');
+        adminPanel.classList.add('hidden');
+        return;
+      }
+
+      const isAdmin = session.role === 'admin' || String(session.email).toLowerCase() === ADMIN_EMAIL;
+      stateBox.innerHTML = `
+        <strong>Statut:</strong> Connecte en tant que ${escapeHtml(session.name)} (${escapeHtml(session.email)})${isAdmin ? ' - Admin' : ''}
         <div style="margin-top:10px;">
           <button id="logoutBtn" class="auth-btn" type="button">Se deconnecter</button>
         </div>`;
 
       document.getElementById('logoutBtn')?.addEventListener('click', () => {
-        localStorage.removeItem(SESSION_KEY);
-        renderSession();
+        clearSession();
+        renderUI();
+      });
+
+      if (isAdmin) {
+        userPanel.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        const orders = readOrders().slice().sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+        renderOrders('adminOrders', orders, true);
+        renderCourses();
+        setAdminTab(activeAdminTab);
+      } else {
+        adminPanel.classList.add('hidden');
+        userPanel.classList.remove('hidden');
+        const email = String(session.email || '').toLowerCase();
+        const myOrders = readOrders().filter(o => {
+          const orderEmail = String(o.email || '').toLowerCase();
+          const accountEmail = String(o.account_email || '').toLowerCase();
+          return orderEmail === email || accountEmail === email;
+        }).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+        renderOrders('userOrders', myOrders, false);
+      }
+    }
+
+    function initAuth() {
+      document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const status = document.getElementById('registerStatus');
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regPasswordConfirm').value;
+
+        if (!name || !email || !password || !confirm) {
+          setStatus(status, 'Merci de remplir tous les champs.', false);
+          return;
+        }
+        if (password.length < 6) {
+          setStatus(status, 'Le mot de passe doit contenir au moins 6 caracteres.', false);
+          return;
+        }
+        if (password !== confirm) {
+          setStatus(status, 'Les mots de passe ne correspondent pas.', false);
+          return;
+        }
+
+        const accounts = readAccounts();
+        if (accounts.some(a => String(a.email).toLowerCase() === email)) {
+          setStatus(status, 'Un compte existe deja avec cet email.', false);
+          return;
+        }
+
+        const account = { name, email, password, role: 'user' };
+        accounts.push(account);
+        saveAccounts(accounts);
+        writeSession(account);
+        setStatus(status, 'Compte cree avec succes. Vous etes connecte.', true);
+        e.target.reset();
+        renderUI();
+      });
+
+      document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const status = document.getElementById('loginStatus');
+        const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+        const password = document.getElementById('loginPassword').value;
+
+        if (!email || !password) {
+          setStatus(status, 'Merci de remplir tous les champs.', false);
+          return;
+        }
+
+        const account = readAccounts().find(a =>
+          String(a.email).toLowerCase() === email && String(a.password) === String(password)
+        );
+        if (!account) {
+          setStatus(status, 'Email ou mot de passe incorrect.', false);
+          return;
+        }
+
+        writeSession(account);
+        setStatus(status, 'Connexion reussie.', true);
+        e.target.reset();
+        renderUI();
       });
     }
 
-    document.getElementById('registerForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const status = document.getElementById('registerStatus');
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim().toLowerCase();
-      const password = document.getElementById('regPassword').value;
-      const confirm = document.getElementById('regPasswordConfirm').value;
+    function initAdminTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => setAdminTab(btn.dataset.tab));
+      });
+    }
 
-      if (!name || !email || !password || !confirm) {
-        setStatus(status, 'Merci de remplir tous les champs.', false);
-        return;
-      }
-      if (password.length < 6) {
-        setStatus(status, 'Le mot de passe doit contenir au moins 6 caracteres.', false);
-        return;
-      }
-      if (password !== confirm) {
-        setStatus(status, 'Les mots de passe ne correspondent pas.', false);
-        return;
-      }
+    function initCoursesEvents() {
+      document.getElementById('courseForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById('courseName');
+        const qtyInput = document.getElementById('courseQty');
+        const name = nameInput.value.trim();
+        const qty = qtyInput.value.trim();
+        if (!name) return;
 
-      const accounts = readAccounts();
-      if (accounts.some(a => a.email === email)) {
-        setStatus(status, 'Un compte existe deja avec cet email.', false);
-        return;
-      }
+        const list = readCourses();
+        list.unshift({ id: 'C-' + Date.now(), name, qty, done: false });
+        saveCourses(list);
+        e.target.reset();
+        renderCourses();
+      });
 
-      accounts.push({ name, email, password });
-      saveAccounts(accounts);
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ name, email }));
-      setStatus(status, 'Compte cree avec succes. Vous etes connecte.', true);
-      e.target.reset();
-      renderSession();
-    });
+      document.getElementById('courseList')?.addEventListener('click', (e) => {
+        const row = e.target.closest('.course-item');
+        if (!row) return;
+        const id = row.dataset.id;
+        let list = readCourses();
 
-    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const status = document.getElementById('loginStatus');
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
+        if (e.target.classList.contains('course-delete')) {
+          list = list.filter(item => item.id !== id);
+          saveCourses(list);
+          renderCourses();
+        }
+      });
 
-      if (!email || !password) {
-        setStatus(status, 'Merci de remplir tous les champs.', false);
-        return;
-      }
+      document.getElementById('courseList')?.addEventListener('change', (e) => {
+        if (!e.target.classList.contains('course-toggle')) return;
+        const row = e.target.closest('.course-item');
+        if (!row) return;
+        const id = row.dataset.id;
+        const list = readCourses();
+        const item = list.find(x => x.id === id);
+        if (!item) return;
+        item.done = e.target.checked;
+        saveCourses(list);
+        renderCourses();
+      });
+    }
 
-      const account = readAccounts().find(a => a.email === email && a.password === password);
-      if (!account) {
-        setStatus(status, 'Email ou mot de passe incorrect.', false);
-        return;
-      }
-
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ name: account.name, email: account.email }));
-      setStatus(status, 'Connexion reussie.', true);
-      e.target.reset();
-      renderSession();
-    });
-
-    renderSession();
+    loadComponent('header', 'header.html');
+    loadComponent('footer', 'footer.html');
+    ensureAdminAccount();
+    initAuth();
+    initAdminTabs();
+    initCoursesEvents();
+    renderUI();
   </script>
 </body>
 </html>
