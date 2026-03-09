@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>YUMEKO SUSHIS - Mon compte</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="apple-touch-icon" href="images/favicon.png" />
+  <meta name="theme-color" content="#ff4d6d" />
+
+  <style>
+    .account-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .auth-card{
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .auth-card h3{
+      margin:0 0 12px;
+      font-size:1.2rem;
+      color:#c2173b;
+    }
+
+    .auth-form{
+      display:grid;
+      gap:10px;
+    }
+
+    .auth-field{
+      display:grid;
+      gap:6px;
+    }
+
+    .auth-field label{
+      font-weight:700;
+      font-size:.92rem;
+    }
+
+    .auth-field input{
+      border:1px solid var(--card-border);
+      border-radius:10px;
+      padding:10px 12px;
+      font:inherit;
+    }
+
+    .auth-btn{
+      border:none;
+      border-radius:10px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+      background:var(--accent);
+      color:#111;
+    }
+
+    .auth-btn:hover{
+      background:var(--accent-2);
+    }
+
+    .account-state{
+      margin-top:14px;
+      padding:12px 14px;
+      border:1px solid var(--card-border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .status{
+      margin-top:10px;
+      font-weight:600;
+    }
+
+    .status.ok{ color:#0e7a4f; }
+    .status.err{ color:#c2173b; }
+
+    @media (max-width:900px){
+      .account-grid{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <main class="container">
+    <section class="section" aria-labelledby="titre-compte">
+      <h2 id="titre-compte">Mon compte</h2>
+      <div class="sep" aria-hidden="true"></div>
+      <p class="muted">Creez un compte ou connectez-vous pour retrouver vos informations.</p>
+
+      <div class="account-grid">
+        <article class="auth-card">
+          <h3>Creer un compte</h3>
+          <form id="registerForm" class="auth-form" novalidate>
+            <div class="auth-field">
+              <label for="regName">Nom complet</label>
+              <input id="regName" name="name" type="text" required />
+            </div>
+            <div class="auth-field">
+              <label for="regEmail">Email</label>
+              <input id="regEmail" name="email" type="email" required />
+            </div>
+            <div class="auth-field">
+              <label for="regPassword">Mot de passe</label>
+              <input id="regPassword" name="password" type="password" minlength="6" required />
+            </div>
+            <div class="auth-field">
+              <label for="regPasswordConfirm">Confirmer le mot de passe</label>
+              <input id="regPasswordConfirm" name="password_confirm" type="password" minlength="6" required />
+            </div>
+            <button class="auth-btn" type="submit">Creer mon compte</button>
+          </form>
+          <p id="registerStatus" class="status" aria-live="polite"></p>
+        </article>
+
+        <article class="auth-card">
+          <h3>S'identifier</h3>
+          <form id="loginForm" class="auth-form" novalidate>
+            <div class="auth-field">
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" name="email" type="email" required />
+            </div>
+            <div class="auth-field">
+              <label for="loginPassword">Mot de passe</label>
+              <input id="loginPassword" name="password" type="password" required />
+            </div>
+            <button class="auth-btn" type="submit">Connexion</button>
+          </form>
+          <p id="loginStatus" class="status" aria-live="polite"></p>
+        </article>
+      </div>
+
+      <div id="accountState" class="account-state" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    function setActiveNav() {
+      const here = location.pathname.split('/').pop() || 'mon-compte.html';
+      document.querySelectorAll('.main-nav a').forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && here === href) {
+          a.classList.add('active');
+        }
+      });
+    }
+
+    function loadComponent(id, file) {
+      fetch(file)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById(id).innerHTML = data;
+          if (id === 'header') {
+            setActiveNav();
+          }
+        });
+    }
+
+    loadComponent('header', 'header.html');
+    loadComponent('footer', 'footer.html');
+
+    const ACCOUNTS_KEY = 'yumeko_accounts_v1';
+    const SESSION_KEY = 'yumeko_session_v1';
+
+    function readAccounts() {
+      try { return JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]'); }
+      catch (e) { return []; }
+    }
+
+    function saveAccounts(accounts) {
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    }
+
+    function setStatus(el, msg, ok) {
+      el.textContent = msg;
+      el.className = 'status ' + (ok ? 'ok' : 'err');
+    }
+
+    function renderSession() {
+      const box = document.getElementById('accountState');
+      let session = null;
+      try { session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
+      catch (e) {}
+
+      if (!session) {
+        box.innerHTML = '<strong>Statut:</strong> Non connecte';
+        return;
+      }
+
+      box.innerHTML = `
+        <strong>Statut:</strong> Connecte en tant que ${session.name} (${session.email})
+        <div style="margin-top:10px;">
+          <button id="logoutBtn" class="auth-btn" type="button">Se deconnecter</button>
+        </div>`;
+
+      document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem(SESSION_KEY);
+        renderSession();
+      });
+    }
+
+    document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const status = document.getElementById('registerStatus');
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const password = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regPasswordConfirm').value;
+
+      if (!name || !email || !password || !confirm) {
+        setStatus(status, 'Merci de remplir tous les champs.', false);
+        return;
+      }
+      if (password.length < 6) {
+        setStatus(status, 'Le mot de passe doit contenir au moins 6 caracteres.', false);
+        return;
+      }
+      if (password !== confirm) {
+        setStatus(status, 'Les mots de passe ne correspondent pas.', false);
+        return;
+      }
+
+      const accounts = readAccounts();
+      if (accounts.some(a => a.email === email)) {
+        setStatus(status, 'Un compte existe deja avec cet email.', false);
+        return;
+      }
+
+      accounts.push({ name, email, password });
+      saveAccounts(accounts);
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ name, email }));
+      setStatus(status, 'Compte cree avec succes. Vous etes connecte.', true);
+      e.target.reset();
+      renderSession();
+    });
+
+    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const status = document.getElementById('loginStatus');
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        setStatus(status, 'Merci de remplir tous les champs.', false);
+        return;
+      }
+
+      const account = readAccounts().find(a => a.email === email && a.password === password);
+      if (!account) {
+        setStatus(status, 'Email ou mot de passe incorrect.', false);
+        return;
+      }
+
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ name: account.name, email: account.email }));
+      setStatus(status, 'Connexion reussie.', true);
+      e.target.reset();
+      renderSession();
+    });
+
+    renderSession();
+  </script>
+</body>
+</html>
