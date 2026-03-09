@@ -129,7 +129,8 @@ body{
 
 .main-nav a:hover{
   transform:translateY(-1px);
-  background:rgba(0,0,0,.04);
+  background:rgba(255,77,109,.12);
+  color:#c2173b;
 }
 
 .main-nav a.active{
