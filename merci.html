@@ -108,6 +108,20 @@
     loadComponent("header", "header.html");
     loadComponent("footer", "footer.html");
     renderOrderRecap();
+
+    (function(){
+      const root = document.documentElement;
+      function updateSakura(){
+        const doc = document.documentElement;
+        const max = (doc.scrollHeight - window.innerHeight) || 1;
+        const p = Math.min(1, Math.max(0, window.scrollY / max));
+        const eased = 1 - Math.pow(1 - p, 1.6);
+        root.style.setProperty("--sakuraAmt", eased.toFixed(3));
+      }
+      updateSakura();
+      window.addEventListener("scroll", updateSakura, { passive:true });
+      window.addEventListener("resize", updateSakura);
+    })();
   </script>
 </body>
 </html>

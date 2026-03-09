@@ -9,6 +9,8 @@
   --card-border:rgba(0,0,0,.06);
   --accent:#ffd166;
   --accent-2:#ffc300;
+  --sakura-rgb:255,77,109;
+  --sakuraAmt:0;
 }
 
 *{ box-sizing:border-box; }
@@ -19,7 +21,30 @@ body{
   color:var(--text);
   background:
     radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-    linear-gradient(180deg, rgba(255,77,109,.08) 0%, var(--bg-1) 55%);
+    linear-gradient(
+      180deg,
+      rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+      rgba(var(--sakura-rgb), calc(.35 * var(--sakuraAmt))) 55%,
+      var(--bg-1) 100%
+    ),
+    var(--bg-1);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  transition:background 80ms linear;
+}
+
+@media (max-width:768px){
+  body{
+    background:
+      radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
+      linear-gradient(
+        180deg,
+        rgba(var(--sakura-rgb), calc(.00 * var(--sakuraAmt))) 0%,
+        rgba(var(--sakura-rgb), calc(.28 * var(--sakuraAmt))) 45%,
+        var(--bg-1) 100%
+      ),
+      var(--bg-1);
+  }
 }
 
 /* ===== HEADER ===== */
