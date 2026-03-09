@@ -14,7 +14,12 @@
     body{ font-family:'Poppins',sans-serif; margin:0; background:#fffaf3; color:#222; }
 
     /* HEADER */
-    <header class="site-header jp">
+    header{ text-align:center; padding:20px; background:#ffffffcc; backdrop-filter:blur(4px); border-bottom:1px solid #eee; }
+    header img{ width:160px; height:160px; border-radius:50%; }
+    nav a{ margin:0 10px; text-decoration:none; font-weight:600; color:#222; }
+    nav a.active{ color:#ff4d6d; }
+
+      <header class="site-header jp">
     <div class="header-inner">
       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" loading="eager" decoding="async" />
@@ -27,7 +32,6 @@
       </nav>
     </div>
   </header>
-
 
     /* HERO - Illustration + création du mois */
     .hero{
