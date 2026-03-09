@@ -116,11 +116,24 @@
 <div id="footer"></div>
 
 <script>
+function setActiveNav() {
+  const here = location.pathname.split('/').pop() || 'accueil.html';
+  document.querySelectorAll('.main-nav a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href && here === href) {
+      a.classList.add('active');
+    }
+  });
+}
+
 function loadComponent(id, file) {
   fetch(file)
     .then(response => response.text())
     .then(data => {
       document.getElementById(id).innerHTML = data;
+      if (id === "header") {
+        setActiveNav();
+      }
     });
 }
 
