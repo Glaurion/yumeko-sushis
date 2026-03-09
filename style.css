@@ -1,4 +1,4 @@
-/* ===== STYLE GLOBAL ===== */
+﻿/* ===== STYLE GLOBAL ===== */
 :root{
   --brand:#ff4d6d;
   --brand-2:#e63956;
@@ -83,6 +83,15 @@ body{
 .main-nav .sep{
   color:#7a7a7a;
   opacity:.6;
+}
+
+.main-nav .nav-sep{
+  display:inline-block;
+  width:42px;
+  height:2px;
+  border-radius:2px;
+  background:linear-gradient(90deg,var(--brand),#d8b26e);
+  opacity:.95;
 }
 
 .main-nav a{
@@ -288,3 +297,4 @@ footer{
   color:#666;
   font-size:.9rem;
 }
+
