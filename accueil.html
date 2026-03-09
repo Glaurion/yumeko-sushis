@@ -130,6 +130,47 @@ function loadComponent(id, file) {
 loadComponent("header", "header.html");
 loadComponent("footer", "footer.html");
 
+function initCarouselWheelScroll() {
+  document.querySelectorAll('.carousel').forEach((carousel) => {
+    carousel.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        carousel.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+  });
+}
+
+function initCarouselAutoScroll() {
+  document.querySelectorAll('.carousel').forEach((carousel) => {
+    let paused = false;
+
+    carousel.addEventListener('mouseenter', () => { paused = true; });
+    carousel.addEventListener('mouseleave', () => { paused = false; });
+
+    setInterval(() => {
+      if (paused) return;
+      if (carousel.scrollWidth <= carousel.clientWidth) return;
+
+      const firstCard = carousel.querySelector('.carousel-item');
+      if (!firstCard) return;
+
+      const styles = window.getComputedStyle(carousel);
+      const gap = parseFloat(styles.gap || styles.columnGap || '0') || 0;
+      const step = firstCard.getBoundingClientRect().width + gap;
+
+      const maxLeft = carousel.scrollWidth - carousel.clientWidth;
+      const nextLeft = carousel.scrollLeft + step;
+
+      if (nextLeft >= maxLeft - 2) {
+        carousel.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        carousel.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }, 3000);
+  });
+}
+
 (function(){
   const root = document.documentElement;
   function updateSakura(){
@@ -143,6 +184,9 @@ loadComponent("footer", "footer.html");
   window.addEventListener('scroll', updateSakura, { passive:true });
   window.addEventListener('resize', updateSakura);
 })();
+
+initCarouselWheelScroll();
+initCarouselAutoScroll();
 </script>
 
 </body>
