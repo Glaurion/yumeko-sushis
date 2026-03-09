@@ -50,7 +50,7 @@
     .main-nav{ display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:600; }
     .main-nav .sep{ color:#7a7a7a; opacity:.6; }
     .main-nav a{ color:#222; text-decoration:none; padding:6px 10px; border-radius:10px; opacity:.95; transition:filter .15s, transform .15s, background .15s; }
-    .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(0,0,0,.04); }
+    .main-nav a:hover{ opacity:1; transform:translateY(-1px); background:rgba(255,77,109,.12); color:#c2173b; }
     .main-nav a.active{ background:rgba(255,77,109,.12); color:#c2173b; }
 
     .container{ max-width:1100px; margin:0 auto; padding:22px; }
@@ -77,7 +77,7 @@
     .menu-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
     .item-card{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .12s, box-shadow .12s, border-color .12s; display:flex; flex-direction:column; }
     .item-card:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,77,109,.15); border-color:rgba(255,77,109,.25); }
-    .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#fff6ed; }
+    .thumb{ width:100%; height:180px; aspect-ratio:1/1; object-fit:cover; display:block; background:#fff6ed; }
     .item-name{ font-weight:800; font-size:1.02rem; padding:10px 12px 4px; color:#1f1f1f; }
     .card-body{ padding:0 12px 12px; margin-top:auto; }
     .card-footer{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding-top:10px; border-top:1px dashed rgba(0,0,0,.08); }
@@ -100,6 +100,7 @@
     @media (max-width:480px){
       .menu-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
       .item-card{ border-radius:12px; } .item-name{ font-size:.95rem; padding:8px 10px 2px; } .card-body{ padding:0 10px 10px; }
+      .thumb{ height:140px; }
       .circle{ width:34px; height:34px; }
     }
 
@@ -737,11 +738,24 @@ ${c}`;
     </div>
   </div>
 <script>
+function setActiveNav() {
+  const here = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.main-nav a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href && here === href) {
+      a.classList.add('active');
+    }
+  });
+}
+
 function loadComponent(id, file) {
   fetch(file)
     .then(response => response.text())
     .then(data => {
       document.getElementById(id).innerHTML = data;
+      if (id === "header") {
+        setActiveNav();
+      }
     });
 }
 
