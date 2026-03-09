@@ -28,25 +28,8 @@
     *{ box-sizing:border-box; } html,body{ height:100%; min-height:100%; scroll-behavior:smooth; }
     body{
       margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.6), transparent 60%),
-        linear-gradient(180deg,
-                               rgba(var(--sakura-rgb), calc(.02 * var(--sakuraAmt))) 0%,
-                               rgba(var(--sakura-rgb), calc(.08 * var(--sakuraAmt))) 25%,
-                               rgba(var(--sakura-rgb), calc(.16 * var(--sakuraAmt))) 55%,
-                               rgba(var(--sakura-rgb), calc(.26 * var(--sakuraAmt))) 80%,
-                               rgba(var(--sakura-rgb), calc(.34 * var(--sakuraAmt))) 100%), var(--bg-1);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; transition:background 80ms linear;
-    }
-    @media (max-width:768px){
-      body{ background:
-        radial-gradient(900px 450px at 10% -10%, rgba(255,255,255,.65), transparent 55%),
-        linear-gradient(180deg,
-                               rgba(var(--sakura-rgb), calc(.02 * var(--sakuraAmt))) 0%,
-                               rgba(var(--sakura-rgb), calc(.08 * var(--sakuraAmt))) 22%,
-                               rgba(var(--sakura-rgb), calc(.15 * var(--sakuraAmt))) 50%,
-                               rgba(var(--sakura-rgb), calc(.24 * var(--sakuraAmt))) 78%,
-                               rgba(var(--sakura-rgb), calc(.30 * var(--sakuraAmt))) 100%), var(--bg-1); }
+      background:#ffe5ec;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
     .site-header.jp{ background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65)); border-bottom:1px solid var(--card-border); position:static; }
@@ -379,9 +362,6 @@
           const name=d.name||code;
           const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
           const pieces=d.pieces ?? '';
-          const basePrice=(prices.hasOwnProperty(code)?prices[code]:(typeof d.price==='number'?d.price:undefined));
-          const priceStr=(typeof basePrice==='number')? fmt.format(basePrice) : 'â€”';
-
           const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
           card.innerHTML=`
             <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
@@ -390,7 +370,6 @@
               <div class="card-footer">
                 <div class="meta">
                   <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
-                  <span class="price">${priceStr}</span>
                 </div>
                 <div class="ctrls">
                   <span class="qty-badge qty" data-item="${code}- ${name}"></span>
@@ -705,25 +684,12 @@ ${c}`;
           }catch(e){ console.warn('restoreCart error', e); }
         }
         function updateSticky(){
-          const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0; let totalPrice=0;
+          const qtyNodes=document.querySelectorAll('.qty[data-item]'); let totalQty=0;
           qtyNodes.forEach(q=>{
             const n=parseInt(q.textContent)||0; totalQty+=n;
-            if(n>0){
-              const full=q.dataset.item; const code=(String(full).split('-')[0]||'').trim();
-              const d=window.catalog?.[code] || {};
-              const p=(window.prices && Object.prototype.hasOwnProperty.call(window.prices, code))
-                        ? window.prices[code]
-                        : (typeof d.price==='number'?d.price:undefined);
-              if(typeof p==='number') totalPrice += p*n;
-            }
           });
           const btn=document.getElementById('gotoOrder'); if(!btn) return;
-          if(totalPrice>0){
-            const totalFmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(totalPrice);
-            btn.textContent = `Panier (${totalQty}) â€¢ Total ${totalFmt} â€¢ Valider`;
-          }else{
-            btn.textContent = `Panier (${totalQty}) â€¢ Valider`;
-          }
+          btn.textContent = `Panier (${totalQty}) â€¢ Valider`;
           saveCart();
         }
         if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
