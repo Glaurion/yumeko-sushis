@@ -245,6 +245,16 @@ body{
   padding-bottom:10px;
 }
 
+#best-sellers .carousel{
+  justify-content:center;
+}
+
+@media (max-width:900px){
+  #best-sellers .carousel{
+    justify-content:flex-start;
+  }
+}
+
 .carousel-item{
   flex:0 0 260px;
   width:260px;

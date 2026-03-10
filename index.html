@@ -720,9 +720,52 @@ ${c}`;
 
         // Persistance + bouton sticky
         const CART_KEY='yumeko_cart_v1';
+        const REORDER_KEY='yumeko_reorder_cart_v1';
         function saveCart(){
           const cart=[]; document.querySelectorAll('.qty[data-item]').forEach(q=>{ const n=parseInt(q.textContent)||0; if(n>0) cart.push({key:q.dataset.item, qty:n}); });
           try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+        }
+        function clearAllQty(){
+          document.querySelectorAll('.qty[data-item]').forEach(q=>{ q.textContent=''; });
+        }
+        function findQtySpanByCode(code){
+          const wanted = String(code || '').trim().toUpperCase();
+          if(!wanted) return null;
+          let found = null;
+          document.querySelectorAll('.qty[data-item]').forEach((span)=>{
+            if(found) return;
+            const raw = String(span.dataset.item || '');
+            const left = raw.split('-')[0].trim().toUpperCase();
+            if(left === wanted) found = span;
+          });
+          return found;
+        }
+        function applyReorderCart(){
+          try{
+            const raw = localStorage.getItem(REORDER_KEY);
+            if(!raw) return false;
+            const items = JSON.parse(raw);
+            if(!Array.isArray(items) || items.length===0){
+              localStorage.removeItem(REORDER_KEY);
+              return false;
+            }
+
+            clearAllQty();
+            items.forEach((it)=>{
+              const code = String(it.code || '').trim();
+              const qty = Math.max(0, Number(it.qty) || 0);
+              if(!code || qty<=0) return;
+              const span = findQtySpanByCode(code);
+              if(span) span.textContent = String(qty);
+            });
+
+            localStorage.removeItem(REORDER_KEY);
+            return true;
+          }catch(e){
+            console.warn('applyReorderCart error', e);
+            localStorage.removeItem(REORDER_KEY);
+            return false;
+          }
         }
         function restoreCart(){
           try{
@@ -745,7 +788,9 @@ ${c}`;
         }
         if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
         prefillFromSession();
-        restoreCart(); updateSticky();
+        const reordered = applyReorderCart();
+        if(!reordered) restoreCart();
+        updateSticky();
       }
 
       if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }

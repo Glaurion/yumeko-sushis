@@ -15,47 +15,51 @@
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
-    .account-grid{
+    .account-wrap{
+      max-width:760px;
+      margin:0 auto;
       display:grid;
-      grid-template-columns:1fr 1fr;
       gap:14px;
     }
 
-    .auth-card{
+    .card{
       background:var(--card);
       border:1px solid var(--card-border);
       border-radius:16px;
       padding:16px;
+      box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04);
     }
 
-    .auth-card h3{
+    .card h3{
       margin:0 0 12px;
       font-size:1.2rem;
       color:#c2173b;
     }
 
-    .auth-form{ display:grid; gap:10px; }
-    .auth-field{ display:grid; gap:6px; }
+    .auth-form{
+      display:grid;
+      gap:10px;
+    }
 
-    .auth-field label{
+    .field{
+      display:grid;
+      gap:6px;
+    }
+
+    .field label{
       font-weight:700;
       font-size:.92rem;
     }
 
-    .auth-field input{
+    .field input{
       border:1px solid var(--card-border);
       border-radius:10px;
       padding:10px 12px;
       font:inherit;
+      background:#fff;
     }
 
-    .auth-row{
-      display:grid;
-      grid-template-columns:1fr 120px;
-      gap:8px;
-    }
-
-    .auth-btn{
+    .btn-main{
       border:none;
       border-radius:10px;
       padding:10px 12px;
@@ -65,17 +69,35 @@
       color:#111;
     }
 
-    .auth-btn:hover{ background:var(--accent-2); }
-
-    .account-state{
-      margin-top:14px;
-      padding:12px 14px;
-      border:1px solid var(--card-border);
-      border-radius:12px;
-      background:#fff;
+    .btn-main:hover{
+      background:var(--accent-2);
     }
 
-    .hidden{ display:none; }
+    .btn-light{
+      border:1px solid var(--card-border);
+      background:#fff;
+      border-radius:10px;
+      padding:10px 12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .small-note{
+      margin-top:10px;
+      font-size:.92rem;
+      color:#5c6870;
+    }
+
+    .link-btn{
+      background:transparent;
+      border:none;
+      color:#c2173b;
+      font-weight:700;
+      cursor:pointer;
+      padding:0;
+      text-decoration:underline;
+      font:inherit;
+    }
 
     .status{
       margin-top:10px;
@@ -84,6 +106,15 @@
 
     .status.ok{ color:#0e7a4f; }
     .status.err{ color:#c2173b; }
+
+    .hidden{ display:none; }
+
+    .profile-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
 
     .orders-list{
       display:grid;
@@ -96,6 +127,50 @@
       border-radius:12px;
       padding:10px 12px;
       background:#fff;
+    }
+
+    .order-summary{
+      width:100%;
+      border:1px solid var(--card-border);
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+      text-align:left;
+      cursor:pointer;
+      transition:box-shadow .15s, transform .15s, border-color .15s;
+      font:inherit;
+      color:inherit;
+    }
+
+    .order-summary:hover{
+      transform:translateY(-1px);
+      box-shadow:0 8px 20px rgba(255,77,109,.12);
+      border-color:rgba(255,77,109,.25);
+    }
+
+    .order-summary .order-head{
+      margin-bottom:4px;
+    }
+
+    .order-summary-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:6px;
+      font-size:.9rem;
+      color:#4f5b63;
+    }
+
+    .order-chip{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--card-border);
+      background:#fff8ef;
+      color:#3a3a3a;
+      font-size:.82rem;
+      font-weight:600;
     }
 
     .order-head{
@@ -112,80 +187,53 @@
       padding-left:18px;
     }
 
-    .admin-tabs{
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      z-index:1200;
+      background:rgba(0,0,0,.42);
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:10px;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
     }
 
-    .tab-btn{
-      border:1px solid var(--card-border);
+    .modal-card{
+      width:min(96%,620px);
+      max-height:86vh;
+      overflow:auto;
       background:#fff;
-      color:#222;
-      border-radius:10px;
-      padding:8px 12px;
-      font-weight:700;
-      cursor:pointer;
+      border:1px solid var(--card-border);
+      border-radius:16px;
+      box-shadow:0 24px 60px rgba(0,0,0,.2);
+      padding:16px;
     }
 
-    .tab-btn.active{
-      background:rgba(255,77,109,.12);
-      color:#c2173b;
-      border-color:rgba(255,77,109,.25);
-    }
-
-    .tab-pane{ margin-top:12px; }
-
-    .course-list{
-      list-style:none;
-      margin:10px 0 0;
-      padding:0;
-      display:grid;
-      gap:8px;
-    }
-
-    .course-item{
+    .modal-top{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      margin-bottom:10px;
+    }
+
+    .modal-close{
       border:1px solid var(--card-border);
+      background:#fff;
       border-radius:10px;
-      padding:8px 10px;
-      background:#fff;
-    }
-
-    .course-main{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      min-width:0;
-    }
-
-    .course-done{
-      text-decoration:line-through;
-      opacity:.65;
-    }
-
-    .mini-btn{
-      border:1px solid var(--card-border);
-      background:#fff;
-      border-radius:8px;
-      padding:6px 8px;
+      width:36px;
+      height:36px;
+      line-height:1;
+      font-size:1.3rem;
       cursor:pointer;
-      font-weight:700;
     }
 
-    .admin-note{
-      margin-top:8px;
-      font-size:.9rem;
-      color:#5c6870;
-    }
-
-    @media (max-width:900px){
-      .account-grid{ grid-template-columns:1fr; }
-      .auth-row{ grid-template-columns:1fr; }
+    .modal-meta{
+      font-size:.92rem;
+      color:#4f5b63;
+      display:grid;
+      gap:4px;
+      margin-bottom:8px;
     }
   </style>
 </head>
@@ -196,82 +244,109 @@
     <section class="section" aria-labelledby="titre-compte">
       <h2 id="titre-compte">Mon compte</h2>
       <div class="sep" aria-hidden="true"></div>
-      <p class="muted">Creez un compte, connectez-vous et retrouvez votre historique de commandes.</p>
 
-      <div class="account-grid">
-        <article class="auth-card">
-          <h3>Creer un compte</h3>
-          <form id="registerForm" class="auth-form" novalidate>
-            <div class="auth-field">
-              <label for="regName">Nom complet</label>
-              <input id="regName" name="name" type="text" required />
-            </div>
-            <div class="auth-field">
-              <label for="regEmail">Email</label>
-              <input id="regEmail" name="email" type="email" required />
-            </div>
-            <div class="auth-field">
-              <label for="regPassword">Mot de passe</label>
-              <input id="regPassword" name="password" type="password" minlength="6" required />
-            </div>
-            <div class="auth-field">
-              <label for="regPasswordConfirm">Confirmer le mot de passe</label>
-              <input id="regPasswordConfirm" name="password_confirm" type="password" minlength="6" required />
-            </div>
-            <button class="auth-btn" type="submit">Creer mon compte</button>
-          </form>
-          <p id="registerStatus" class="status" aria-live="polite"></p>
-        </article>
-
-        <article class="auth-card">
-          <h3>S'identifier</h3>
+      <div class="account-wrap">
+        <div id="authArea" class="card">
+          <h3>Connexion</h3>
           <form id="loginForm" class="auth-form" novalidate>
-            <div class="auth-field">
+            <div class="field">
               <label for="loginEmail">Email</label>
               <input id="loginEmail" name="email" type="email" required />
             </div>
-            <div class="auth-field">
+            <div class="field">
               <label for="loginPassword">Mot de passe</label>
               <input id="loginPassword" name="password" type="password" required />
             </div>
-            <button class="auth-btn" type="submit">Connexion</button>
+            <button class="btn-main" type="submit">Se connecter</button>
           </form>
           <p id="loginStatus" class="status" aria-live="polite"></p>
-          <p class="admin-note">Compte admin cree: admin@yumeko.fr / Admin123!</p>
-        </article>
-      </div>
 
-      <div id="accountState" class="account-state" aria-live="polite"></div>
+          <p class="small-note">
+            Pas encore de compte ?
+            <button id="showRegisterBtn" type="button" class="link-btn">Inscrivez-vous</button>
+          </p>
 
-      <div id="userPanel" class="account-state hidden">
-        <h3>Mes commandes</h3>
-        <div id="userOrders" class="orders-list"></div>
-      </div>
-
-      <div id="adminPanel" class="account-state hidden">
-        <h3>Espace admin</h3>
-        <div class="admin-tabs">
-          <button id="tabOrdersBtn" class="tab-btn active" type="button" data-tab="orders">Toutes les commandes</button>
-          <button id="tabCoursesBtn" class="tab-btn" type="button" data-tab="courses">Courses</button>
+          <div id="registerWrap" class="hidden">
+            <hr style="border:none;border-top:1px solid var(--card-border);margin:14px 0;" />
+            <h3 style="margin-top:0;">Inscription</h3>
+            <form id="registerForm" class="auth-form" novalidate>
+              <div class="field">
+                <label for="regName">Nom complet</label>
+                <input id="regName" name="name" type="text" required />
+              </div>
+              <div class="field">
+                <label for="regEmail">Email</label>
+                <input id="regEmail" name="email" type="email" required />
+              </div>
+              <div class="field">
+                <label for="regPassword">Mot de passe</label>
+                <input id="regPassword" name="password" type="password" minlength="6" required />
+              </div>
+              <div class="field">
+                <label for="regPasswordConfirm">Confirmer le mot de passe</label>
+                <input id="regPasswordConfirm" name="password_confirm" type="password" minlength="6" required />
+              </div>
+              <div class="profile-actions">
+                <button class="btn-main" type="submit">Creer mon compte</button>
+                <button id="hideRegisterBtn" class="btn-light" type="button">Annuler</button>
+              </div>
+            </form>
+            <p id="registerStatus" class="status" aria-live="polite"></p>
+          </div>
         </div>
 
-        <div id="adminOrdersTab" class="tab-pane">
-          <div id="adminOrders" class="orders-list"></div>
-        </div>
+        <div id="profileArea" class="hidden">
+          <div class="card">
+            <h3>Mes informations</h3>
+            <form id="profileForm" class="auth-form" novalidate>
+              <input id="currentEmail" type="hidden" />
+              <div class="field">
+                <label for="profileName">Nom complet</label>
+                <input id="profileName" name="name" type="text" required />
+              </div>
+              <div class="field">
+                <label for="profileEmail">Email</label>
+                <input id="profileEmail" name="email" type="email" required />
+              </div>
+              <div class="field">
+                <label for="profilePassword">Nouveau mot de passe (optionnel)</label>
+                <input id="profilePassword" name="password" type="password" minlength="6" />
+              </div>
+              <div class="field">
+                <label for="profilePasswordConfirm">Confirmer le nouveau mot de passe</label>
+                <input id="profilePasswordConfirm" name="password_confirm" type="password" minlength="6" />
+              </div>
+              <div class="profile-actions">
+                <button class="btn-main" type="submit">Enregistrer mes infos</button>
+                <button id="logoutBtn" class="btn-light" type="button">Se deconnecter</button>
+              </div>
+            </form>
+            <p id="profileStatus" class="status" aria-live="polite"></p>
+          </div>
 
-        <div id="adminCoursesTab" class="tab-pane hidden">
-          <form id="courseForm" class="auth-form" novalidate>
-            <div class="auth-row">
-              <input id="courseName" type="text" placeholder="Produit a acheter" required />
-              <input id="courseQty" type="text" placeholder="Qt" />
-            </div>
-            <button class="auth-btn" type="submit">Ajouter a la liste</button>
-          </form>
-          <ul id="courseList" class="course-list"></ul>
+          <div class="card">
+            <h3>Mes commandes passees</h3>
+            <div id="userOrders" class="orders-list"></div>
+          </div>
         </div>
       </div>
     </section>
   </main>
+
+  <div id="orderModal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
+      <div class="modal-top">
+        <h3 id="orderModalTitle" style="margin:0;color:#c2173b;">Detail de commande</h3>
+        <button id="orderModalClose" class="modal-close" type="button" aria-label="Fermer">&times;</button>
+      </div>
+      <div id="orderModalMeta" class="modal-meta"></div>
+      <div id="orderModalItems"></div>
+      <div id="orderModalComment" class="small-note" style="margin-top:10px;"></div>
+      <div class="profile-actions">
+        <button id="reorderBtn" class="btn-main" type="button">Commander a nouveau</button>
+      </div>
+    </div>
+  </div>
 
   <div id="footer"></div>
 
@@ -279,11 +354,12 @@
     const ACCOUNTS_KEY = 'yumeko_accounts_v1';
     const SESSION_KEY = 'yumeko_session_v1';
     const ORDERS_KEY = 'yumeko_orders_v1';
-    const COURSES_KEY = 'yumeko_courses_v1';
+    const REORDER_KEY = 'yumeko_reorder_cart_v1';
     const ADMIN_EMAIL = 'admin@yumeko.fr';
     const ADMIN_PASSWORD = 'Admin123!';
     const ADMIN_NAME = 'Admin Yumeko';
-    let activeAdminTab = 'orders';
+    let userOrdersCache = [];
+    let selectedOrder = null;
 
     function setActiveNav() {
       const here = location.pathname.split('/').pop() || 'mon-compte.html';
@@ -339,15 +415,8 @@
       return readJSON(ORDERS_KEY, []);
     }
 
-    function readCourses() {
-      return readJSON(COURSES_KEY, []);
-    }
-
-    function saveCourses(items) {
-      writeJSON(COURSES_KEY, items);
-    }
-
     function setStatus(el, msg, ok) {
+      if (!el) return;
       el.textContent = msg;
       el.className = 'status ' + (ok ? 'ok' : 'err');
     }
@@ -379,120 +448,144 @@
       return d.toLocaleString('fr-FR');
     }
 
-    function renderOrders(containerId, orders, showCustomer) {
-      const box = document.getElementById(containerId);
+    function getOrderItemsCount(order) {
+      const items = Array.isArray(order.items) ? order.items : [];
+      return items.reduce((sum, it) => sum + (Number(it.qty) || 1), 0);
+    }
+
+    function renderOrdersForUser(email) {
+      const box = document.getElementById('userOrders');
       if (!box) return;
+
+      const mail = String(email || '').toLowerCase();
+      const orders = readOrders()
+        .filter(o => {
+          const orderEmail = String(o.email || '').toLowerCase();
+          const accountEmail = String(o.account_email || '').toLowerCase();
+          return orderEmail === mail || accountEmail === mail;
+        })
+        .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+      userOrdersCache = orders;
 
       if (!orders.length) {
         box.innerHTML = '<p class="muted">Aucune commande pour le moment.</p>';
         return;
       }
 
-      box.innerHTML = orders.map(order => {
-        const items = Array.isArray(order.items) ? order.items : [];
-        const itemsHtml = items.length
-          ? `<ul class="order-items">${items.map(it => `<li>${escapeHtml(it.name)} x${Number(it.qty) || 1}</li>`).join('')}</ul>`
-          : '<p class="muted">Aucun article detaille.</p>';
-        const customerHtml = showCustomer
-          ? `<div><strong>Client:</strong> ${escapeHtml(order.customer_name || '-')} (${escapeHtml(order.email || '-')})</div>`
-          : '';
-        const comments = order.comments ? `<div><strong>Commentaire:</strong> ${escapeHtml(order.comments)}</div>` : '';
-
-        return `
-          <article class="order-card">
-            <div class="order-head">
-              <span>${escapeHtml(order.id || 'Commande')}</span>
-              <span>${formatDate(order.created_at)}</span>
-            </div>
-            ${customerHtml}
-            ${itemsHtml}
-            ${comments}
-          </article>`;
+      box.innerHTML = orders.map((order, idx) => {
+        const count = getOrderItemsCount(order);
+        const previewItems = (Array.isArray(order.items) ? order.items : []).slice(0, 2);
+        const previewText = previewItems.map(it => escapeHtml(it.name)).join(' / ');
+        const hasMore = (Array.isArray(order.items) ? order.items.length : 0) > 2;
+        return (
+          '<button type="button" class="order-summary" data-order-index="' + idx + '">' +
+            '<div class="order-head">' +
+              '<span>' + escapeHtml(order.id || 'Commande') + '</span>' +
+              '<span>' + formatDate(order.created_at) + '</span>' +
+            '</div>' +
+            '<div class="order-summary-meta">' +
+              '<span class="order-chip">' + count + ' article(s)</span>' +
+              (previewText ? '<span>' + previewText + (hasMore ? '...' : '') + '</span>' : '<span>Apercu indisponible</span>') +
+            '</div>' +
+          '</button>'
+        );
       }).join('');
     }
 
-    function renderCourses() {
-      const list = document.getElementById('courseList');
-      if (!list) return;
-      const items = readCourses();
+    function openOrderModal(order) {
+      const modal = document.getElementById('orderModal');
+      const meta = document.getElementById('orderModalMeta');
+      const itemsBox = document.getElementById('orderModalItems');
+      const comment = document.getElementById('orderModalComment');
+      if (!modal || !meta || !itemsBox || !comment) return;
 
+      selectedOrder = order;
+      const count = getOrderItemsCount(order);
+      meta.innerHTML =
+        '<div><strong>Commande:</strong> ' + escapeHtml(order.id || '-') + '</div>' +
+        '<div><strong>Date:</strong> ' + formatDate(order.created_at) + '</div>' +
+        '<div><strong>Total articles:</strong> ' + count + '</div>';
+
+      const items = Array.isArray(order.items) ? order.items : [];
       if (!items.length) {
-        list.innerHTML = '<li class="muted">Aucun produit dans la liste de courses.</li>';
-        return;
+        itemsBox.innerHTML = '<p class="muted">Aucun article detaille.</p>';
+      } else {
+        itemsBox.innerHTML = '<ul class="order-items">' +
+          items.map(it => '<li>' + escapeHtml(it.name) + ' x' + (Number(it.qty) || 1) + '</li>').join('') +
+          '</ul>';
       }
 
-      list.innerHTML = items.map(item => `
-        <li class="course-item" data-id="${item.id}">
-          <div class="course-main">
-            <input type="checkbox" class="course-toggle" ${item.done ? 'checked' : ''} />
-            <span class="${item.done ? 'course-done' : ''}">${escapeHtml(item.name)}${item.qty ? ` (${escapeHtml(item.qty)})` : ''}</span>
-          </div>
-          <button class="mini-btn course-delete" type="button">Supprimer</button>
-        </li>
-      `).join('');
+      comment.innerHTML = order.comments
+        ? '<strong>Commentaire:</strong> ' + escapeHtml(order.comments)
+        : '';
+
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
     }
 
-    function setAdminTab(tab) {
-      activeAdminTab = tab;
-      const ordersBtn = document.getElementById('tabOrdersBtn');
-      const coursesBtn = document.getElementById('tabCoursesBtn');
-      const ordersTab = document.getElementById('adminOrdersTab');
-      const coursesTab = document.getElementById('adminCoursesTab');
-      if (!ordersBtn || !coursesBtn || !ordersTab || !coursesTab) return;
+    function closeOrderModal() {
+      const modal = document.getElementById('orderModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+      selectedOrder = null;
+    }
 
-      const showOrders = tab === 'orders';
-      ordersBtn.classList.toggle('active', showOrders);
-      coursesBtn.classList.toggle('active', !showOrders);
-      ordersTab.classList.toggle('hidden', !showOrders);
-      coursesTab.classList.toggle('hidden', showOrders);
+    function reorderFromSelectedOrder() {
+      if (!selectedOrder) return;
+      const items = Array.isArray(selectedOrder.items) ? selectedOrder.items : [];
+      if (!items.length) return;
+
+      const payload = items
+        .map(it => ({
+          code: String(it.code || '').trim(),
+          name: String(it.name || '').trim(),
+          qty: Number(it.qty) || 1
+        }))
+        .filter(it => it.code && it.qty > 0);
+
+      if (!payload.length) return;
+      localStorage.setItem(REORDER_KEY, JSON.stringify(payload));
+      window.location.href = 'index.html?reorder=1';
+    }
+
+    function showRegister(show) {
+      const wrap = document.getElementById('registerWrap');
+      if (!wrap) return;
+      wrap.classList.toggle('hidden', !show);
     }
 
     function renderUI() {
       const session = readSession();
-      const stateBox = document.getElementById('accountState');
-      const userPanel = document.getElementById('userPanel');
-      const adminPanel = document.getElementById('adminPanel');
+      const authArea = document.getElementById('authArea');
+      const profileArea = document.getElementById('profileArea');
 
       if (!session) {
-        stateBox.innerHTML = '<strong>Statut:</strong> Non connecte';
-        userPanel.classList.add('hidden');
-        adminPanel.classList.add('hidden');
+        authArea.classList.remove('hidden');
+        profileArea.classList.add('hidden');
+        showRegister(false);
         return;
       }
 
-      const isAdmin = session.role === 'admin' || String(session.email).toLowerCase() === ADMIN_EMAIL;
-      stateBox.innerHTML = `
-        <strong>Statut:</strong> Connecte en tant que ${escapeHtml(session.name)} (${escapeHtml(session.email)})${isAdmin ? ' - Admin' : ''}
-        <div style="margin-top:10px;">
-          <button id="logoutBtn" class="auth-btn" type="button">Se deconnecter</button>
-        </div>`;
+      authArea.classList.add('hidden');
+      profileArea.classList.remove('hidden');
 
-      document.getElementById('logoutBtn')?.addEventListener('click', () => {
-        clearSession();
-        renderUI();
-      });
+      document.getElementById('profileName').value = session.name || '';
+      document.getElementById('profileEmail').value = session.email || '';
+      document.getElementById('currentEmail').value = session.email || '';
+      document.getElementById('profilePassword').value = '';
+      document.getElementById('profilePasswordConfirm').value = '';
 
-      if (isAdmin) {
-        userPanel.classList.add('hidden');
-        adminPanel.classList.remove('hidden');
-        const orders = readOrders().slice().sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
-        renderOrders('adminOrders', orders, true);
-        renderCourses();
-        setAdminTab(activeAdminTab);
-      } else {
-        adminPanel.classList.add('hidden');
-        userPanel.classList.remove('hidden');
-        const email = String(session.email || '').toLowerCase();
-        const myOrders = readOrders().filter(o => {
-          const orderEmail = String(o.email || '').toLowerCase();
-          const accountEmail = String(o.account_email || '').toLowerCase();
-          return orderEmail === email || accountEmail === email;
-        }).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
-        renderOrders('userOrders', myOrders, false);
-      }
+      renderOrdersForUser(session.email || '');
     }
 
     function initAuth() {
+      const showRegisterBtn = document.getElementById('showRegisterBtn');
+      const hideRegisterBtn = document.getElementById('hideRegisterBtn');
+
+      showRegisterBtn?.addEventListener('click', () => showRegister(true));
+      hideRegisterBtn?.addEventListener('click', () => showRegister(false));
+
       document.getElementById('registerForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const status = document.getElementById('registerStatus');
@@ -524,7 +617,7 @@
         accounts.push(account);
         saveAccounts(accounts);
         writeSession(account);
-        setStatus(status, 'Compte cree avec succes. Vous etes connecte.', true);
+        setStatus(status, 'Compte cree avec succes.', true);
         e.target.reset();
         renderUI();
       });
@@ -543,6 +636,7 @@
         const account = readAccounts().find(a =>
           String(a.email).toLowerCase() === email && String(a.password) === String(password)
         );
+
         if (!account) {
           setStatus(status, 'Email ou mot de passe incorrect.', false);
           return;
@@ -555,61 +649,86 @@
       });
     }
 
-    function initAdminTabs() {
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => setAdminTab(btn.dataset.tab));
+    function initProfile() {
+      document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        clearSession();
+        setStatus(document.getElementById('profileStatus'), '', false);
+        renderUI();
+      });
+
+      document.getElementById('profileForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const status = document.getElementById('profileStatus');
+        const currentEmail = document.getElementById('currentEmail').value.trim().toLowerCase();
+        const name = document.getElementById('profileName').value.trim();
+        const email = document.getElementById('profileEmail').value.trim().toLowerCase();
+        const password = document.getElementById('profilePassword').value;
+        const confirm = document.getElementById('profilePasswordConfirm').value;
+
+        if (!name || !email) {
+          setStatus(status, 'Nom et email sont obligatoires.', false);
+          return;
+        }
+
+        if (password || confirm) {
+          if (password.length < 6) {
+            setStatus(status, 'Le nouveau mot de passe doit contenir au moins 6 caracteres.', false);
+            return;
+          }
+          if (password !== confirm) {
+            setStatus(status, 'La confirmation du mot de passe ne correspond pas.', false);
+            return;
+          }
+        }
+
+        const accounts = readAccounts();
+        const idx = accounts.findIndex(a => String(a.email).toLowerCase() === currentEmail);
+        if (idx === -1) {
+          setStatus(status, 'Compte introuvable.', false);
+          return;
+        }
+
+        const duplicate = accounts.some((a, i) => i !== idx && String(a.email).toLowerCase() === email);
+        if (duplicate) {
+          setStatus(status, 'Cet email est deja utilise par un autre compte.', false);
+          return;
+        }
+
+        accounts[idx].name = name;
+        accounts[idx].email = email;
+        if (password) accounts[idx].password = password;
+        saveAccounts(accounts);
+        writeSession(accounts[idx]);
+        setStatus(status, 'Informations mises a jour.', true);
+        renderUI();
       });
     }
 
-    function initCoursesEvents() {
-      document.getElementById('courseForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const nameInput = document.getElementById('courseName');
-        const qtyInput = document.getElementById('courseQty');
-        const name = nameInput.value.trim();
-        const qty = qtyInput.value.trim();
-        if (!name) return;
-
-        const list = readCourses();
-        list.unshift({ id: 'C-' + Date.now(), name, qty, done: false });
-        saveCourses(list);
-        e.target.reset();
-        renderCourses();
+    function initOrdersSummary() {
+      document.getElementById('userOrders')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.order-summary');
+        if (!btn) return;
+        const idx = Number(btn.dataset.orderIndex);
+        if (!Number.isInteger(idx) || idx < 0 || idx >= userOrdersCache.length) return;
+        openOrderModal(userOrdersCache[idx]);
       });
 
-      document.getElementById('courseList')?.addEventListener('click', (e) => {
-        const row = e.target.closest('.course-item');
-        if (!row) return;
-        const id = row.dataset.id;
-        let list = readCourses();
-
-        if (e.target.classList.contains('course-delete')) {
-          list = list.filter(item => item.id !== id);
-          saveCourses(list);
-          renderCourses();
-        }
+      document.getElementById('orderModalClose')?.addEventListener('click', closeOrderModal);
+      document.getElementById('orderModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'orderModal') closeOrderModal();
       });
-
-      document.getElementById('courseList')?.addEventListener('change', (e) => {
-        if (!e.target.classList.contains('course-toggle')) return;
-        const row = e.target.closest('.course-item');
-        if (!row) return;
-        const id = row.dataset.id;
-        const list = readCourses();
-        const item = list.find(x => x.id === id);
-        if (!item) return;
-        item.done = e.target.checked;
-        saveCourses(list);
-        renderCourses();
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeOrderModal();
       });
+      document.getElementById('reorderBtn')?.addEventListener('click', reorderFromSelectedOrder);
     }
 
     loadComponent('header', 'header.html');
     loadComponent('footer', 'footer.html');
     ensureAdminAccount();
     initAuth();
-    initAdminTabs();
-    initCoursesEvents();
+    initProfile();
+    initOrdersSummary();
     renderUI();
   </script>
 </body>
