@@ -271,6 +271,10 @@
         <p class="muted" id="sheetIntro">Verifiez votre panier :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
+        <div id="quickCommentBlock" class="field full hidden" style="margin-top:10px;">
+          <label for="quickComments">Commentaire (optionnel)</label>
+          <textarea id="quickComments" rows="3" placeholder="Ex : Allergies, etc."></textarea>
+        </div>
       </div>
       <div id="stepDetails" class="step" style="display:none">
         <form id="orderForm" action="#" method="post" novalidate>
@@ -603,6 +607,9 @@
 
         const recapList = document.getElementById('recapList');
         const recapCom = document.getElementById('recapComment');
+        const sheetIntro = document.getElementById('sheetIntro');
+        const quickCommentBlock = document.getElementById('quickCommentBlock');
+        const quickComments = document.getElementById('quickComments');
 
         const stepCart = document.getElementById('stepCart');
         const stepDetails = document.getElementById('stepDetails');
@@ -623,6 +630,10 @@
           try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
           catch(e){ return null; }
         }
+        function isConnectedSession(){
+          const s = getSession();
+          return !!(s && String(s.email || '').trim());
+        }
         function prefillFromSession(){
           const s = getSession();
           if(!s || !form) return;
@@ -631,6 +642,34 @@
             const parts = String(s.name).trim().split(/\s+/);
             if(parts[0] && !form.first_name.value) form.first_name.value = parts[0];
             if(parts.length > 1 && !form.last_name.value) form.last_name.value = parts.slice(1).join(' ');
+          }
+        }
+        function syncCommentFields(){
+          if(!form) return;
+          const formComments = form.querySelector('[name="comments"]');
+          if(!formComments) return;
+          if(isConnectedSession()){
+            formComments.value = quickComments?.value || '';
+          }else if(quickComments && formComments.value){
+            quickComments.value = formComments.value;
+          }
+        }
+        function getCurrentComment(){
+          if(isConnectedSession()){
+            return String(quickComments?.value || '').trim();
+          }
+          return String(form?.querySelector('[name="comments"]')?.value || '').trim();
+        }
+        function updateCheckoutMode(){
+          const connected = isConnectedSession();
+          if(quickCommentBlock) quickCommentBlock.classList.toggle('hidden', !connected);
+          if(sheetIntro){
+            sheetIntro.textContent = connected
+              ? 'Verifiez votre panier puis ajoutez un commentaire si besoin :'
+              : 'Verifiez votre panier :';
+          }
+          if(connected && currentStep === 'details'){
+            setStep('cart');
           }
         }
 
@@ -657,6 +696,7 @@
         }
 
         function buildRecap(){
+          syncCommentFields();
           const items=getCartItems();
           recapList.innerHTML='';
           if(items.length===0){
@@ -679,7 +719,7 @@
               recapList.appendChild(li);
             });
           }
-          const c=document.getElementById('comments')?.value?.trim()||'';
+          const c=getCurrentComment();
           recapCom.textContent = c ? `Allergies / autres : ${c}` : '';
         }
 
@@ -688,7 +728,7 @@
           const isCart = which === 'cart';
           stepCart.style.display = isCart ? '' : 'none';
           stepDetails.style.display = isCart ? 'none' : '';
-          btnPrimary.textContent = isCart ? 'Valider le panier ->' : 'Commander ->';
+          btnPrimary.textContent = (isCart && !isConnectedSession()) ? 'Valider le panier ->' : 'Commander ->';
           if(!isCart){ form?.querySelector('#first_name')?.focus(); }
         }
 
@@ -697,7 +737,10 @@
           if(!sheet.contains(e.target)){ e.preventDefault(); }
         };
         function openSheet(){
-          buildRecap(); setStep('cart');
+          prefillFromSession();
+          updateCheckoutMode();
+          buildRecap();
+          setStep('cart');
           sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false');
           overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
           document.body.classList.add('modal-open');
@@ -717,6 +760,14 @@
         btnBackClose?.addEventListener('click', ()=>{ if(currentStep === 'details'){ setStep('cart'); } else{ closeSheet(); } });
         document.getElementById('sheetOverlay')?.addEventListener('click', closeSheet);
         document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sheet.classList.contains('open')) closeSheet(); });
+        quickComments?.addEventListener('input', ()=>{
+          syncCommentFields();
+          buildRecap();
+        });
+        document.getElementById('comments')?.addEventListener('input', ()=>{
+          syncCommentFields();
+          buildRecap();
+        });
 
         function itemsTextForEmail(){
           const items = getCartItems();
@@ -724,7 +775,7 @@
         }
         function buildOrderText(){
           const itemsText=itemsTextForEmail();
-          const c=document.getElementById('comments')?.value?.trim() || '-';
+          const c=getCurrentComment() || '-';
           const first=form?.querySelector('[name="first_name"]')?.value?.trim() || '-';
           const last =form?.querySelector('[name="last_name"]')?.value?.trim() || '-';
           const email=form?.querySelector('[name="email"]')?.value?.trim() || '-';
@@ -749,10 +800,14 @@ ${c}`;
         function saveOrderToHistory(){
           try{
             const session = getSession() || {};
-            const first = form?.querySelector('[name="first_name"]')?.value?.trim() || '';
-            const last  = form?.querySelector('[name="last_name"]')?.value?.trim() || '';
-            const email = form?.querySelector('[name="email"]')?.value?.trim().toLowerCase() || '';
-            const comments = form?.querySelector('[name="comments"]')?.value?.trim() || '';
+            const firstFromForm = form?.querySelector('[name="first_name"]')?.value?.trim() || '';
+            const lastFromForm  = form?.querySelector('[name="last_name"]')?.value?.trim() || '';
+            const fullSessionName = String(session.name || '').trim();
+            const sessionParts = fullSessionName.split(/\s+/).filter(Boolean);
+            const first = firstFromForm || sessionParts[0] || '';
+            const last  = lastFromForm || (sessionParts.length > 1 ? sessionParts.slice(1).join(' ') : '');
+            const email = (form?.querySelector('[name="email"]')?.value?.trim().toLowerCase() || String(session.email || '').trim().toLowerCase());
+            const comments = getCurrentComment();
             const items = getCartItems().map(({code, name, qty}) => ({ code, name, qty }));
             const record = {
               id: 'CMD-' + Date.now(),
@@ -784,10 +839,15 @@ ${c}`;
 
         async function sendEmails(){
           if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return;
-          const first = form.first_name.value.trim();
-          const last  = form.last_name.value.trim();
-          const email = form.email.value.trim();
-          const notes = form.comments.value.trim();
+          syncCommentFields();
+          prefillFromSession();
+          const session = getSession() || {};
+          const sessionName = String(session.name || '').trim();
+          const sessionParts = sessionName.split(/\s+/).filter(Boolean);
+          const first = form.first_name.value.trim() || sessionParts[0] || 'Client';
+          const last  = form.last_name.value.trim() || (sessionParts.length > 1 ? sessionParts.slice(1).join(' ') : '');
+          const email = form.email.value.trim() || String(session.email || '').trim();
+          const notes = getCurrentComment();
           const items = itemsTextForEmail();
           const order_full = buildOrderText();
           const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes || '-', full_name:`${first} ${last}`.trim(), order_full };
@@ -797,17 +857,30 @@ ${c}`;
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
         }
 
-        btnPrimary?.addEventListener('click', async ()=>{
-          if(currentStep === 'cart'){
-            if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
-            setStep('details'); return;
-          }
-          if(!validateForm()) return;
+        async function submitCurrentOrder(){
+          syncCommentFields();
+          prefillFromSession();
           saveOrderToHistory();
           saveOrderToLocalStorage();
           try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
           document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
-          updateSticky(); closeSheet(); window.location.href='merci.html';
+          updateSticky();
+          closeSheet();
+          window.location.href='merci.html';
+        }
+
+        btnPrimary?.addEventListener('click', async ()=>{
+          if(getCartItems().length === 0){ alert('Votre panier est vide.'); return; }
+          if(currentStep === 'cart'){
+            if(isConnectedSession()){
+              await submitCurrentOrder();
+              return;
+            }
+            setStep('details');
+            return;
+          }
+          if(!validateForm()) return;
+          await submitCurrentOrder();
         });
 
         // Ajustements quantites dans le recap
@@ -960,6 +1033,8 @@ ${c}`;
         }
         if(location.hash==='#panier' || location.hash==='#cart') { setTimeout(()=>btnOpenEl?.click(),0); }
         prefillFromSession();
+        updateCheckoutMode();
+        syncCommentFields();
         const reordered = applyReorderCart();
         if(!reordered) restoreCart();
         updateSticky();

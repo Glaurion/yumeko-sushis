@@ -172,6 +172,16 @@
       margin-top:10px;
     }
 
+    .profile-actions-right{
+      justify-content:flex-end;
+    }
+
+    .logout-area{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:4px;
+    }
+
     .orders-list{
       display:grid;
       gap:10px;
@@ -464,7 +474,6 @@
 
           <div id="registerWrap" class="hidden">
             <hr style="border:none;border-top:1px solid var(--card-border);margin:14px 0;" />
-            <h3 style="margin-top:0;">Inscription</h3>
             <form id="registerForm" class="auth-form" novalidate>
               <div class="field">
                 <label for="regName">Nom complet</label>
@@ -516,9 +525,8 @@
                   <label for="profilePasswordConfirm">Confirmer le nouveau mot de passe</label>
                   <input id="profilePasswordConfirm" name="password_confirm" type="password" minlength="6" />
                 </div>
-                <div class="profile-actions">
-                  <button class="btn-main" type="submit">Enregistrer mes infos</button>
-                  <button id="logoutBtn" class="btn-light" type="button">Se deconnecter</button>
+                <div id="profileSaveActions" class="profile-actions profile-actions-right hidden">
+                  <button id="saveProfileBtn" class="btn-main" type="submit">Enregistrer mes infos</button>
                 </div>
               </form>
               <p id="profileStatus" class="status" aria-live="polite"></p>
@@ -563,6 +571,10 @@
             </div>
           </div>
         </div>
+
+        <div id="logoutArea" class="logout-area hidden">
+          <button id="logoutBtnOutside" class="btn-light" type="button">Se deconnecter</button>
+        </div>
       </div>
     </section>
   </main>
@@ -606,6 +618,7 @@
     let adminOrdersCache = [];
     let selectedOrder = null;
     let lastConnectedEmail = '';
+    let profileInitialState = null;
 
     function setActiveNav() {
       const here = location.pathname.split('/').pop() || 'mon-compte.html';
@@ -714,6 +727,31 @@
       if (!el) return;
       el.textContent = msg;
       el.className = 'status ' + (ok ? 'ok' : 'err');
+    }
+
+    function getProfileCurrentState() {
+      return {
+        name: String(document.getElementById('profileName')?.value || '').trim(),
+        email: String(document.getElementById('profileEmail')?.value || '').trim().toLowerCase(),
+        password: String(document.getElementById('profilePassword')?.value || ''),
+        confirm: String(document.getElementById('profilePasswordConfirm')?.value || '')
+      };
+    }
+
+    function updateProfileSaveButtonVisibility() {
+      const saveWrap = document.getElementById('profileSaveActions');
+      if (!saveWrap) return;
+      if (!profileInitialState) {
+        saveWrap.classList.add('hidden');
+        return;
+      }
+      const current = getProfileCurrentState();
+      const hasChanges =
+        current.name !== profileInitialState.name ||
+        current.email !== profileInitialState.email ||
+        current.password.length > 0 ||
+        current.confirm.length > 0;
+      saveWrap.classList.toggle('hidden', !hasChanges);
     }
 
     function isAdminSession(session) {
@@ -1110,24 +1148,34 @@
       const authArea = document.getElementById('authArea');
       const profileArea = document.getElementById('profileArea');
       const adminArea = document.getElementById('adminArea');
+      const logoutArea = document.getElementById('logoutArea');
 
       if (!session) {
         authArea.classList.remove('hidden');
         profileArea.classList.add('hidden');
         if (adminArea) adminArea.classList.add('hidden');
+        if (logoutArea) logoutArea.classList.add('hidden');
         showRegister(false);
         lastConnectedEmail = '';
+        profileInitialState = null;
+        updateProfileSaveButtonVisibility();
         return;
       }
 
       authArea.classList.add('hidden');
       profileArea.classList.remove('hidden');
+      if (logoutArea) logoutArea.classList.remove('hidden');
 
       document.getElementById('profileName').value = session.name || '';
       document.getElementById('profileEmail').value = session.email || '';
       document.getElementById('currentEmail').value = session.email || '';
       document.getElementById('profilePassword').value = '';
       document.getElementById('profilePasswordConfirm').value = '';
+      profileInitialState = {
+        name: String(session.name || '').trim(),
+        email: String(session.email || '').trim().toLowerCase()
+      };
+      updateProfileSaveButtonVisibility();
 
       renderOrdersForUser(session.email || '');
       if (isAdminSession(session)) {
@@ -1226,10 +1274,16 @@
     }
 
     function initProfile() {
-      document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      const handleLogout = () => {
         clearSession();
         setStatus(document.getElementById('profileStatus'), '', false);
         renderUI();
+      };
+
+      document.getElementById('logoutBtnOutside')?.addEventListener('click', handleLogout);
+
+      ['profileName', 'profileEmail', 'profilePassword', 'profilePasswordConfirm'].forEach((id) => {
+        document.getElementById(id)?.addEventListener('input', updateProfileSaveButtonVisibility);
       });
 
       document.getElementById('profileForm')?.addEventListener('submit', (e) => {

@@ -292,6 +292,11 @@ p{ margin:0; }
   scroll-snap-align:start;
 }
 
+#best-sellers .carousel-item{
+  display:flex;
+  flex-direction:column;
+}
+
 .carousel-item-link{
   display:block;
   text-decoration:none;
@@ -312,6 +317,18 @@ p{ margin:0; }
   background:linear-gradient(180deg,#fff,#fff9f2);
   border:1px solid var(--card-border);
   padding:6px;
+}
+
+#best-sellers .carousel-item h3{
+  margin-top:10px;
+  min-height:2.6em;
+  max-height:2.6em;
+  line-height:1.3;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .carousel-sub{
