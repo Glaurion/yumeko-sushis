@@ -317,6 +317,27 @@
       return 'cat-' + label.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
     }
 
+    function normalizeCategoryName(value){
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ');
+    }
+
+    function getInitialCategory(){
+      const fallback = 'MAKI';
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get('cat');
+      if(!raw) return fallback;
+
+      const wanted = normalizeCategoryName(raw);
+      const found = Object.keys(categories).find((cat) => normalizeCategoryName(cat) === wanted);
+      return found || fallback;
+    }
+
+    const initialCategory = getInitialCategory();
+
     function showOnlyCategory(cat, shouldScroll){
       const id = slugifyCat(cat);
       document.querySelectorAll('.pill').forEach(p=>{
@@ -340,7 +361,7 @@
       Object.keys(categories).forEach((cat)=>{
         const btn=document.createElement('button');
         btn.className='pill'; btn.type='button'; btn.textContent=cat;
-        if(cat==='MAKI') btn.classList.add('active');
+        if(cat===initialCategory) btn.classList.add('active');
         btn.addEventListener('click', ()=>{
           showOnlyCategory(cat, true);
         });
@@ -385,16 +406,16 @@
         });
 
         grid.style.display='';
-        sec.style.display = (cat==='MAKI') ? '' : 'none';
+        sec.style.display = (cat===initialCategory) ? '' : 'none';
         sec.appendChild(header); sec.appendChild(grid); menu.appendChild(sec);
       }
     }
 
     // INIT ROBUSTE (menu)
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', ()=>{ buildCategoryNav(); buildMenu(); showOnlyCategory('MAKI', false); });
+      document.addEventListener('DOMContentLoaded', ()=>{ buildCategoryNav(); buildMenu(); showOnlyCategory(initialCategory, false); });
     } else {
-      buildCategoryNav(); buildMenu(); showOnlyCategory('MAKI', false);
+      buildCategoryNav(); buildMenu(); showOnlyCategory(initialCategory, false);
     }
   </script>
 

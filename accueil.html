@@ -21,7 +21,7 @@
   <div>
     <h1>Bienvenue chez YUMEKO SUSHIS</h1>
     <p>Des saveurs japonaises preparees avec passion.</p>
-    <a href="#best-sellers" class="btn">Commande ici des maintenant</a>
+    <a href="index.html" class="btn">Commande ici des maintenant</a>
   </div>
 </section>
 
@@ -50,55 +50,75 @@
 
   <div class="carousel">
 
-    <div class="carousel-item">
-      <img src="images/m1.jpg">
-      <h3>MAKI</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=MAKI">
+      <div class="carousel-item">
+        <img src="images/m1.jpg" alt="Maki">
+        <h3>MAKI</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/c1.jpg">
-      <h3>CALIFORNIA</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=CALIFORNIA">
+      <div class="carousel-item">
+        <img src="images/c1.jpg" alt="California">
+        <h3>CALIFORNIA</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/p1.jpg">
-      <h3>MAKI PRINTEMPS</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=MAKI%20PRINTEMPS">
+      <div class="carousel-item">
+        <img src="images/p1.jpg" alt="Maki printemps">
+        <h3>MAKI PRINTEMPS</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/r1.jpg">
-      <h3>ROLLS</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=ROLLS">
+      <div class="carousel-item">
+        <img src="images/r1.jpg" alt="Rolls">
+        <h3>ROLLS</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/n1.jpg">
-      <h3>NIGIRI</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=NIGIRI">
+      <div class="carousel-item">
+        <img src="images/n1.jpg" alt="Nigiri">
+        <h3>NIGIRI</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/o1.jpg">
-      <h3>ONIGIRI</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=ONIGIRI">
+      <div class="carousel-item">
+        <img src="images/o1.jpg" alt="Onigiri">
+        <h3>ONIGIRI</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/s1.jpg">
-      <h3>SASHIMI</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=SASHIMI">
+      <div class="carousel-item">
+        <img src="images/s1.jpg" alt="Sashimi">
+        <h3>SASHIMI</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/g1.jpg">
-      <h3>GYOZA</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=GYOZA">
+      <div class="carousel-item">
+        <img src="images/g1.jpg" alt="Gyoza">
+        <h3>GYOZA</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/br1.jpg">
-      <h3>BROCHETTES</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=BROCHETTE">
+      <div class="carousel-item">
+        <img src="images/br1.jpg" alt="Brochettes">
+        <h3>BROCHETTES</h3>
+      </div>
+    </a>
 
-    <div class="carousel-item">
-      <img src="images/so1.jpg">
-      <h3>SOUPES</h3>
-    </div>
+    <a class="carousel-item-link" href="index.html?cat=SOUPE">
+      <div class="carousel-item">
+        <img src="images/so1.jpg" alt="Soupes">
+        <h3>SOUPES</h3>
+      </div>
+    </a>
 
   </div>
 </section>
@@ -141,36 +161,6 @@ function initCarouselWheelScroll() {
   });
 }
 
-function initCarouselAutoScroll() {
-  document.querySelectorAll('.carousel').forEach((carousel) => {
-    let paused = false;
-
-    carousel.addEventListener('mouseenter', () => { paused = true; });
-    carousel.addEventListener('mouseleave', () => { paused = false; });
-
-    setInterval(() => {
-      if (paused) return;
-      if (carousel.scrollWidth <= carousel.clientWidth) return;
-
-      const firstCard = carousel.querySelector('.carousel-item');
-      if (!firstCard) return;
-
-      const styles = window.getComputedStyle(carousel);
-      const gap = parseFloat(styles.gap || styles.columnGap || '0') || 0;
-      const step = firstCard.getBoundingClientRect().width + gap;
-
-      const maxLeft = carousel.scrollWidth - carousel.clientWidth;
-      const nextLeft = carousel.scrollLeft + step;
-
-      if (nextLeft >= maxLeft - 2) {
-        carousel.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        carousel.scrollBy({ left: step, behavior: 'smooth' });
-      }
-    }, 3000);
-  });
-}
-
 (function(){
   const root = document.documentElement;
   function updateSakura(){
@@ -186,7 +176,6 @@ function initCarouselAutoScroll() {
 })();
 
 initCarouselWheelScroll();
-initCarouselAutoScroll();
 </script>
 
 </body>
