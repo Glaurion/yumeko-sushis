@@ -131,23 +131,38 @@
 
 <section class="reviews-wrapper" aria-labelledby="reviews-title">
   <h2 id="reviews-title" class="carousel-title">Avis de nos clients</h2>
-  <div class="reviews-grid">
-    <article class="review-card">
-      <div class="review-stars" aria-label="5 etoiles">★★★★★</div>
-      <p class="review-text">Les makis sont super frais et bien equilibres. Service rapide et toujours tres propre.</p>
-      <p class="review-name">Camille R.</p>
-    </article>
-    <article class="review-card">
-      <div class="review-stars" aria-label="5 etoiles">★★★★★</div>
-      <p class="review-text">On commande souvent en famille. Les rolls et les gyozas sont excellents.</p>
-      <p class="review-name">Mathis D.</p>
-    </article>
-    <article class="review-card">
-      <div class="review-stars" aria-label="5 etoiles">★★★★★</div>
-      <p class="review-text">Tres bon rapport qualite prix, mention speciale pour les sauces maison.</p>
-      <p class="review-name">Sofia L.</p>
+  <div id="reviewsList" class="reviews-grid">
+    <article class="review-card reviews-empty">
+      <p class="review-text">Aucun avis pour le moment. Soyez le premier a donner votre retour.</p>
     </article>
   </div>
+
+  <form id="reviewForm" class="review-form" novalidate>
+    <div class="review-form-grid">
+      <div class="review-field">
+        <label for="reviewName">Votre prenom (optionnel)</label>
+        <input id="reviewName" name="name" type="text" maxlength="40" placeholder="Ex : Lea" />
+      </div>
+      <div class="review-field">
+        <label for="reviewRating">Note</label>
+        <select id="reviewRating" name="rating">
+          <option value="5">5 / 5</option>
+          <option value="4">4 / 5</option>
+          <option value="3">3 / 5</option>
+          <option value="2">2 / 5</option>
+          <option value="1">1 / 5</option>
+        </select>
+      </div>
+      <div class="review-field full">
+        <label for="reviewText">Votre avis</label>
+        <textarea id="reviewText" name="text" minlength="8" maxlength="400" required placeholder="Dites-nous ce que vous avez aime, ou ce que nous pouvons ameliorer."></textarea>
+      </div>
+    </div>
+    <div class="review-form-actions">
+      <button type="submit" class="btn">Envoyer mon avis</button>
+    </div>
+    <p id="reviewStatus" class="status" aria-live="polite"></p>
+  </form>
 </section>
 
 <div id="footer"></div>
@@ -262,6 +277,109 @@ function getProductImageFromCode(code, fallbackImg) {
   return upper ? (upper.toLowerCase() + '.jpg') : 'm1.jpg';
 }
 
+const REVIEWS_KEY = 'yumeko_reviews_v1';
+
+function readReviews() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(REVIEWS_KEY) || '[]');
+    return Array.isArray(raw) ? raw : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveReviews(list) {
+  try {
+    localStorage.setItem(REVIEWS_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function normalizeReview(review) {
+  const rawName = String(review && review.name || '').trim();
+  const name = rawName ? rawName.slice(0, 40) : 'Client';
+  const text = String(review && review.text || '').trim().slice(0, 400);
+  const ratingNumber = Number(review && review.rating || 5);
+  const rating = Math.max(1, Math.min(5, Number.isFinite(ratingNumber) ? ratingNumber : 5));
+  const createdAt = String(review && review.created_at || new Date().toISOString());
+  return { name, text, rating, created_at: createdAt };
+}
+
+function formatReviewDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('fr-FR');
+}
+
+function renderReviews() {
+  const box = document.getElementById('reviewsList');
+  if (!box) return;
+
+  const reviews = readReviews()
+    .map(normalizeReview)
+    .filter((r) => r.text.length > 0)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 6);
+
+  if (!reviews.length) {
+    box.innerHTML = `
+      <article class="review-card reviews-empty">
+        <p class="review-text">Aucun avis pour le moment. Soyez le premier a donner votre retour.</p>
+      </article>`;
+    return;
+  }
+
+  box.innerHTML = reviews.map((r) => {
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const safeName = escapeHtml(r.name);
+    const safeText = escapeHtml(r.text);
+    const safeDate = escapeHtml(formatReviewDate(r.created_at));
+    return `
+      <article class="review-card">
+        <div class="review-stars" aria-label="${r.rating} etoiles sur 5">${stars}</div>
+        <p class="review-text">${safeText}</p>
+        <p class="review-name">${safeName}</p>
+        <p class="review-meta">${safeDate}</p>
+      </article>`;
+  }).join('');
+}
+
+function initReviewForm() {
+  const form = document.getElementById('reviewForm');
+  const status = document.getElementById('reviewStatus');
+  if (!form || !status) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('reviewName');
+    const ratingInput = document.getElementById('reviewRating');
+    const textInput = document.getElementById('reviewText');
+    const text = String(textInput && textInput.value || '').trim();
+    if (text.length < 8) {
+      status.textContent = 'Votre avis doit contenir au moins 8 caracteres.';
+      status.className = 'status err';
+      return;
+    }
+
+    const review = normalizeReview({
+      name: String(nameInput && nameInput.value || '').trim() || 'Client',
+      rating: Number(ratingInput && ratingInput.value || 5),
+      text,
+      created_at: new Date().toISOString(),
+      source: 'accueil'
+    });
+
+    const list = readReviews();
+    list.unshift(review);
+    saveReviews(list.slice(0, 120));
+
+    form.reset();
+    if (ratingInput) ratingInput.value = '5';
+    status.textContent = 'Merci, votre avis a bien ete enregistre.';
+    status.className = 'status ok';
+    renderReviews();
+  });
+}
+
 function readBestSellerCounts() {
   try {
     return JSON.parse(localStorage.getItem('yumeko_bestseller_counts_v1') || '{}');
@@ -369,6 +487,8 @@ function initCarouselWheelScroll() {
 
 initCarouselWheelScroll();
 renderBestSellers();
+renderReviews();
+initReviewForm();
 </script>
 
 </body>

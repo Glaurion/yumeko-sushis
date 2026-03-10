@@ -51,6 +51,41 @@
         <a class="btn" href="index.html#menu">Nouvelle commande</a>
       </div>
     </section>
+
+    <section class="section review-cta" aria-labelledby="review-after-order-title">
+      <h3 id="review-after-order-title">Un petit avis ?</h3>
+      <p class="muted">Votre retour nous aide a ameliorer votre prochaine commande.</p>
+      <div class="merci-actions" style="justify-content:flex-start;">
+        <button id="openReviewFromMerci" type="button" class="btn">Laisser un avis maintenant</button>
+      </div>
+
+      <form id="merciReviewForm" class="review-form hidden" novalidate>
+        <div class="review-form-grid">
+          <div class="review-field">
+            <label for="merciReviewName">Votre prenom (optionnel)</label>
+            <input id="merciReviewName" name="name" type="text" maxlength="40" placeholder="Ex : Lea" />
+          </div>
+          <div class="review-field">
+            <label for="merciReviewRating">Note</label>
+            <select id="merciReviewRating" name="rating">
+              <option value="5">5 / 5</option>
+              <option value="4">4 / 5</option>
+              <option value="3">3 / 5</option>
+              <option value="2">2 / 5</option>
+              <option value="1">1 / 5</option>
+            </select>
+          </div>
+          <div class="review-field full">
+            <label for="merciReviewText">Votre avis</label>
+            <textarea id="merciReviewText" name="text" minlength="8" maxlength="400" required placeholder="Partagez votre experience YUMEKO SUSHIS."></textarea>
+          </div>
+        </div>
+        <div class="review-form-actions">
+          <button type="submit" class="btn">Envoyer mon avis</button>
+        </div>
+      </form>
+      <p id="merciReviewStatus" class="status" aria-live="polite"></p>
+    </section>
   </main>
 
   <div id="footer"></div>
@@ -105,9 +140,98 @@
       recapEl.textContent = transformed;
     }
 
+    const REVIEWS_KEY = "yumeko_reviews_v1";
+
+    function readReviews() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(REVIEWS_KEY) || "[]");
+        return Array.isArray(raw) ? raw : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveReviews(list) {
+      try {
+        localStorage.setItem(REVIEWS_KEY, JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    function getCustomerNameFromLastOrder() {
+      try {
+        const text = localStorage.getItem("yumeko_last_order") || "";
+        const match = text.match(/Client\s*:\s*(.+)/i);
+        return match ? String(match[1]).trim() : "";
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function normalizeReview(review) {
+      const name = String(review && review.name || "").trim().slice(0, 40) || "Client";
+      const text = String(review && review.text || "").trim().slice(0, 400);
+      const ratingNumber = Number(review && review.rating || 5);
+      const rating = Math.max(1, Math.min(5, Number.isFinite(ratingNumber) ? ratingNumber : 5));
+      return {
+        name,
+        text,
+        rating,
+        created_at: String(review && review.created_at || new Date().toISOString()),
+        source: String(review && review.source || "merci")
+      };
+    }
+
+    function initReviewPrompt() {
+      const btn = document.getElementById("openReviewFromMerci");
+      const form = document.getElementById("merciReviewForm");
+      const status = document.getElementById("merciReviewStatus");
+      const nameInput = document.getElementById("merciReviewName");
+      const ratingInput = document.getElementById("merciReviewRating");
+      const textInput = document.getElementById("merciReviewText");
+      if (!btn || !form || !status || !nameInput || !ratingInput || !textInput) return;
+
+      const defaultName = getCustomerNameFromLastOrder();
+      if (defaultName) nameInput.value = defaultName;
+
+      btn.addEventListener("click", () => {
+        form.classList.remove("hidden");
+        textInput.focus();
+        btn.classList.add("hidden");
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const text = String(textInput.value || "").trim();
+        if (text.length < 8) {
+          status.textContent = "Votre avis doit contenir au moins 8 caracteres.";
+          status.className = "status err";
+          return;
+        }
+
+        const review = normalizeReview({
+          name: String(nameInput.value || "").trim(),
+          rating: Number(ratingInput.value || 5),
+          text,
+          created_at: new Date().toISOString(),
+          source: "merci"
+        });
+
+        const list = readReviews();
+        list.unshift(review);
+        saveReviews(list.slice(0, 120));
+
+        form.reset();
+        if (defaultName) nameInput.value = defaultName;
+        ratingInput.value = "5";
+        status.textContent = "Merci pour votre avis, il a bien ete enregistre.";
+        status.className = "status ok";
+      });
+    }
+
     loadComponent("header", "header.html");
     loadComponent("footer", "footer.html");
     renderOrderRecap();
+    initReviewPrompt();
 
     (function(){
       const root = document.documentElement;
