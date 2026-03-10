@@ -304,21 +304,51 @@ function getProductImageFromCode(code, fallbackImg) {
   return upper ? (upper.toLowerCase() + '.jpg') : 'm1.jpg';
 }
 
-const REVIEWS_KEY = 'yumeko_reviews_v1';
+const SUPABASE_URL = 'https://rlyouiuobnhsvxtecriu.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RBQC4-HKQ8L1bncB_4VJAA_G_xXqg_-';
+const REVIEWS_TABLE = 'reviews';
 
-function readReviews() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(REVIEWS_KEY) || '[]');
-    return Array.isArray(raw) ? raw : [];
-  } catch (e) {
-    return [];
-  }
+function getSupabaseHeaders(includeJson) {
+  const headers = {
+    apikey: SUPABASE_PUBLISHABLE_KEY,
+    Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+  };
+  if (includeJson) headers['Content-Type'] = 'application/json';
+  return headers;
 }
 
-function saveReviews(list) {
-  try {
-    localStorage.setItem(REVIEWS_KEY, JSON.stringify(list));
-  } catch (e) {}
+async function readReviewsOnline() {
+  const query = '?select=name,text,rating,created_at,approved&approved=eq.true&order=created_at.desc&limit=6';
+  const url = `${SUPABASE_URL}/rest/v1/${REVIEWS_TABLE}${query}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: getSupabaseHeaders(false)
+  });
+  if (!response.ok) {
+    throw new Error(`Erreur Supabase lecture (${response.status})`);
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
+async function saveReviewOnline(review) {
+  const payload = {
+    name: review.name,
+    rating: review.rating,
+    text: review.text
+  };
+  const url = `${SUPABASE_URL}/rest/v1/${REVIEWS_TABLE}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      ...getSupabaseHeaders(true),
+      Prefer: 'return=minimal'
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) {
+    throw new Error(`Erreur Supabase ecriture (${response.status})`);
+  }
 }
 
 function normalizeReview(review) {
@@ -337,15 +367,24 @@ function formatReviewDate(iso) {
   return d.toLocaleDateString('fr-FR');
 }
 
-function renderReviews() {
+async function renderReviews() {
   const box = document.getElementById('reviewsList');
   if (!box) return;
 
-  const reviews = readReviews()
-    .map(normalizeReview)
-    .filter((r) => r.text.length > 0)
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 6);
+  let reviews = [];
+  try {
+    reviews = (await readReviewsOnline())
+      .map(normalizeReview)
+      .filter((r) => r.text.length > 0)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 6);
+  } catch (e) {
+    box.innerHTML = `
+      <article class="review-card reviews-empty">
+        <p class="review-text">Impossible de charger les avis pour le moment.</p>
+      </article>`;
+    return;
+  }
 
   if (!reviews.length) {
     box.innerHTML = `
@@ -375,7 +414,7 @@ function initReviewForm() {
   const status = document.getElementById('reviewStatus');
   if (!form || !status) return;
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nameInput = document.getElementById('reviewName');
     const ratingInput = document.getElementById('reviewRating');
@@ -395,15 +434,19 @@ function initReviewForm() {
       source: 'accueil'
     });
 
-    const list = readReviews();
-    list.unshift(review);
-    saveReviews(list.slice(0, 120));
+    try {
+      await saveReviewOnline(review);
+    } catch (error) {
+      status.textContent = 'Erreur lors de lenvoi de lavis. Reessayez dans quelques instants.';
+      status.className = 'status err';
+      return;
+    }
 
     form.reset();
     if (ratingInput) ratingInput.value = '5';
-    status.textContent = 'Merci, votre avis a bien ete enregistre.';
+    status.textContent = 'Merci, votre avis a bien ete envoye. Il sera visible apres validation.';
     status.className = 'status ok';
-    renderReviews();
+    await renderReviews();
   });
 }
 

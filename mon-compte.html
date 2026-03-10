@@ -369,6 +369,57 @@
       white-space:nowrap;
     }
 
+    .admin-subtitle{
+      margin:14px 2px 8px;
+      font-size:1rem;
+      color:#c2173b;
+    }
+
+    .admin-review-card{
+      display:grid;
+      gap:8px;
+      padding:12px;
+    }
+
+    .admin-review-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      color:#4f5b63;
+      font-size:.88rem;
+    }
+
+    .admin-review-stars{
+      color:#ffb703;
+      letter-spacing:.08em;
+      font-size:.95rem;
+      font-weight:800;
+    }
+
+    .admin-review-text{
+      margin:0;
+      color:#2c3338;
+      line-height:1.45;
+    }
+
+    .review-status-chip{
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.25px;
+    }
+
+    .review-status-pending{
+      background:#fff3e8;
+      color:#a05a00;
+      border-color:rgba(160,90,0,.25);
+    }
+
+    .review-status-approved{
+      background:#e8f7ef;
+      color:#176c42;
+      border-color:rgba(14,122,79,.28);
+    }
+
     .modal-overlay{
       position:fixed;
       inset:0;
@@ -553,6 +604,7 @@
                 <div class="admin-tabs">
                   <button id="adminTabOrders" class="admin-tab active" type="button">Toutes les commandes</button>
                   <button id="adminTabCourses" class="admin-tab" type="button">Courses</button>
+                  <button id="adminTabReviews" class="admin-tab" type="button">Avis</button>
                 </div>
 
                 <div id="adminPanelOrders">
@@ -566,6 +618,20 @@
                     <button id="resetCoursesBtn" class="btn-light" type="button">Reinitialiser les coches</button>
                   </div>
                   <div id="adminCourses" class="course-list"></div>
+                </div>
+
+                <div id="adminPanelReviews" class="hidden">
+                  <p class="muted">Moderation des avis clients (validation avant affichage public).</p>
+                  <div class="profile-actions">
+                    <button id="refreshReviewsBtn" class="btn-light" type="button">Rafraichir les avis</button>
+                  </div>
+                  <p id="adminReviewsStatus" class="status" aria-live="polite"></p>
+
+                  <h4 class="admin-subtitle">En attente</h4>
+                  <div id="adminReviewsPending" class="orders-list"></div>
+
+                  <h4 class="admin-subtitle">Publies</h4>
+                  <div id="adminReviewsApproved" class="orders-list"></div>
                 </div>
               </div>
             </div>
@@ -611,11 +677,15 @@
     const ADMIN_EMAIL = 'admin@yumeko.fr';
     const ADMIN_PASSWORD = 'Admin123!';
     const ADMIN_NAME = 'Admin Yumeko';
+    const SUPABASE_URL = 'https://rlyouiuobnhsvxtecriu.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RBQC4-HKQ8L1bncB_4VJAA_G_xXqg_-';
+    const REVIEWS_TABLE = 'reviews';
     const STATUS_NEW = 'nouveau';
     const STATUS_IN_PROGRESS = 'en_cours';
     const STATUS_DONE = 'termine';
     let userOrdersCache = [];
     let adminOrdersCache = [];
+    let adminReviewsCache = [];
     let selectedOrder = null;
     let lastConnectedEmail = '';
     let profileInitialState = null;
@@ -923,17 +993,157 @@
       }).join('');
     }
 
+    function getSupabaseHeaders(includeJson) {
+      const headers = {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: 'Bearer ' + SUPABASE_PUBLISHABLE_KEY
+      };
+      if (includeJson) headers['Content-Type'] = 'application/json';
+      return headers;
+    }
+
+    function normalizeAdminReview(review) {
+      const id = Number(review && review.id || 0);
+      const rawName = String(review && review.name || '').trim();
+      const name = rawName ? rawName.slice(0, 40) : 'Client';
+      const rawText = String(review && review.text || '').trim();
+      const text = rawText ? rawText.slice(0, 400) : '';
+      const ratingNum = Number(review && review.rating || 5);
+      const rating = Math.max(1, Math.min(5, Number.isFinite(ratingNum) ? ratingNum : 5));
+      const createdAt = String(review && review.created_at || new Date().toISOString());
+      const approved = !!(review && review.approved);
+      return { id, name, text, rating, created_at: createdAt, approved };
+    }
+
+    function renderReviewStars(rating) {
+      const n = Math.max(1, Math.min(5, Number(rating) || 5));
+      return '&#9733;'.repeat(n) + '&#9734;'.repeat(5 - n);
+    }
+
+    async function fetchReviewsForAdmin() {
+      const query = '?select=id,name,text,rating,created_at,approved&order=created_at.desc&limit=200';
+      const url = SUPABASE_URL + '/rest/v1/' + REVIEWS_TABLE + query;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getSupabaseHeaders(false)
+      });
+      if (!response.ok) {
+        throw new Error('Erreur lecture avis (' + response.status + ')');
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    }
+
+    async function setReviewApproval(reviewId, isApproved) {
+      const id = Number(reviewId);
+      if (!Number.isFinite(id) || id <= 0) return;
+      const url = SUPABASE_URL + '/rest/v1/' + REVIEWS_TABLE + '?id=eq.' + encodeURIComponent(String(id));
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          ...getSupabaseHeaders(true),
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({ approved: !!isApproved })
+      });
+      if (!response.ok) {
+        throw new Error('Erreur mise a jour avis (' + response.status + ')');
+      }
+    }
+
+    async function deleteReviewById(reviewId) {
+      const id = Number(reviewId);
+      if (!Number.isFinite(id) || id <= 0) return;
+      const url = SUPABASE_URL + '/rest/v1/' + REVIEWS_TABLE + '?id=eq.' + encodeURIComponent(String(id));
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          ...getSupabaseHeaders(false),
+          Prefer: 'return=minimal'
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Erreur suppression avis (' + response.status + ')');
+      }
+    }
+
+    function buildAdminReviewCard(review) {
+      const id = Number(review.id);
+      const statusClass = review.approved ? 'review-status-approved' : 'review-status-pending';
+      const statusLabel = review.approved ? 'Publie' : 'En attente';
+      const mainAction = review.approved
+        ? '<button type="button" class="btn-light admin-review-unapprove-btn" data-review-id="' + id + '">Retirer</button>'
+        : '<button type="button" class="btn-main admin-review-approve-btn" data-review-id="' + id + '">Approuver</button>';
+
+      return (
+        '<div class="order-card admin-review-card">' +
+          '<div class="order-head">' +
+            '<span>' + escapeHtml(review.name) + '</span>' +
+            '<span class="order-chip review-status-chip ' + statusClass + '">' + statusLabel + '</span>' +
+          '</div>' +
+          '<div class="admin-review-meta">' +
+            '<span>' + formatDate(review.created_at) + '</span>' +
+            '<span class="admin-review-stars" aria-label="' + review.rating + ' etoiles sur 5">' + renderReviewStars(review.rating) + '</span>' +
+          '</div>' +
+          '<p class="admin-review-text">' + escapeHtml(review.text || '-') + '</p>' +
+          '<div class="profile-actions profile-actions-right">' +
+            mainAction +
+            '<button type="button" class="btn-light admin-review-delete-btn" data-review-id="' + id + '">Supprimer</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    async function renderReviewsForAdmin() {
+      const pendingBox = document.getElementById('adminReviewsPending');
+      const approvedBox = document.getElementById('adminReviewsApproved');
+      const status = document.getElementById('adminReviewsStatus');
+      if (!pendingBox || !approvedBox) return;
+
+      if (status) {
+        status.textContent = '';
+        status.className = 'status';
+      }
+
+      try {
+        const reviews = await fetchReviewsForAdmin();
+        adminReviewsCache = reviews.map(normalizeAdminReview);
+
+        const pending = adminReviewsCache.filter((r) => !r.approved);
+        const approved = adminReviewsCache.filter((r) => r.approved);
+
+        pendingBox.innerHTML = pending.length
+          ? pending.map(buildAdminReviewCard).join('')
+          : '<p class="muted">Aucun avis en attente.</p>';
+
+        approvedBox.innerHTML = approved.length
+          ? approved.map(buildAdminReviewCard).join('')
+          : '<p class="muted">Aucun avis publie pour le moment.</p>';
+      } catch (error) {
+        pendingBox.innerHTML = '<p class="muted">Chargement impossible.</p>';
+        approvedBox.innerHTML = '<p class="muted">Chargement impossible.</p>';
+        if (status) {
+          status.textContent = 'Impossible de charger les avis depuis Supabase. Verifiez les policies.';
+          status.className = 'status err';
+        }
+      }
+    }
+
     function setAdminTab(tab) {
       const ordersTab = document.getElementById('adminTabOrders');
       const coursesTab = document.getElementById('adminTabCourses');
+      const reviewsTab = document.getElementById('adminTabReviews');
       const ordersPanel = document.getElementById('adminPanelOrders');
       const coursesPanel = document.getElementById('adminPanelCourses');
-      const showOrders = tab !== 'courses';
+      const reviewsPanel = document.getElementById('adminPanelReviews');
+      const active = String(tab || 'orders');
 
-      if (ordersTab) ordersTab.classList.toggle('active', showOrders);
-      if (coursesTab) coursesTab.classList.toggle('active', !showOrders);
-      if (ordersPanel) ordersPanel.classList.toggle('hidden', !showOrders);
-      if (coursesPanel) coursesPanel.classList.toggle('hidden', showOrders);
+      if (ordersTab) ordersTab.classList.toggle('active', active === 'orders');
+      if (coursesTab) coursesTab.classList.toggle('active', active === 'courses');
+      if (reviewsTab) reviewsTab.classList.toggle('active', active === 'reviews');
+      if (ordersPanel) ordersPanel.classList.toggle('hidden', active !== 'orders');
+      if (coursesPanel) coursesPanel.classList.toggle('hidden', active !== 'courses');
+      if (reviewsPanel) reviewsPanel.classList.toggle('hidden', active !== 'reviews');
     }
 
     function renderAdminModalStatus(order) {
@@ -1182,6 +1392,7 @@
         if (adminArea) adminArea.classList.remove('hidden');
         renderOrdersForAdmin();
         renderCoursesForAdmin();
+        renderReviewsForAdmin();
         setAdminTab('orders');
       } else {
         if (adminArea) adminArea.classList.add('hidden');
@@ -1382,9 +1593,17 @@
     function initAdminArea() {
       document.getElementById('adminTabOrders')?.addEventListener('click', () => setAdminTab('orders'));
       document.getElementById('adminTabCourses')?.addEventListener('click', () => setAdminTab('courses'));
+      document.getElementById('adminTabReviews')?.addEventListener('click', () => {
+        setAdminTab('reviews');
+        renderReviewsForAdmin();
+      });
 
       document.getElementById('refreshCoursesBtn')?.addEventListener('click', () => {
         renderCoursesForAdmin();
+      });
+
+      document.getElementById('refreshReviewsBtn')?.addEventListener('click', () => {
+        renderReviewsForAdmin();
       });
 
       document.getElementById('resetCoursesBtn')?.addEventListener('click', () => {
@@ -1400,6 +1619,70 @@
         const checks = readCoursesChecks();
         checks[code] = !!input.checked;
         saveCoursesChecks(checks);
+      });
+
+      document.getElementById('adminPanelReviews')?.addEventListener('click', async (e) => {
+        const status = document.getElementById('adminReviewsStatus');
+
+        const approveBtn = e.target.closest('.admin-review-approve-btn');
+        if (approveBtn) {
+          const id = Number(approveBtn.dataset.reviewId);
+          if (!Number.isFinite(id) || id <= 0) return;
+          try {
+            await setReviewApproval(id, true);
+            if (status) {
+              status.textContent = 'Avis approuve.';
+              status.className = 'status ok';
+            }
+            await renderReviewsForAdmin();
+          } catch (error) {
+            if (status) {
+              status.textContent = 'Impossible dapprouver cet avis.';
+              status.className = 'status err';
+            }
+          }
+          return;
+        }
+
+        const unapproveBtn = e.target.closest('.admin-review-unapprove-btn');
+        if (unapproveBtn) {
+          const id = Number(unapproveBtn.dataset.reviewId);
+          if (!Number.isFinite(id) || id <= 0) return;
+          try {
+            await setReviewApproval(id, false);
+            if (status) {
+              status.textContent = 'Avis retire des avis publics.';
+              status.className = 'status ok';
+            }
+            await renderReviewsForAdmin();
+          } catch (error) {
+            if (status) {
+              status.textContent = 'Impossible de retirer cet avis.';
+              status.className = 'status err';
+            }
+          }
+          return;
+        }
+
+        const deleteBtn = e.target.closest('.admin-review-delete-btn');
+        if (deleteBtn) {
+          const id = Number(deleteBtn.dataset.reviewId);
+          if (!Number.isFinite(id) || id <= 0) return;
+          if (!confirm('Supprimer definitivement cet avis ?')) return;
+          try {
+            await deleteReviewById(id);
+            if (status) {
+              status.textContent = 'Avis supprime.';
+              status.className = 'status ok';
+            }
+            await renderReviewsForAdmin();
+          } catch (error) {
+            if (status) {
+              status.textContent = 'Impossible de supprimer cet avis.';
+              status.className = 'status err';
+            }
+          }
+        }
       });
     }
 
@@ -1427,3 +1710,4 @@
   </script>
 </body>
 </html>
+
