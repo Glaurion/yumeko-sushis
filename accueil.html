@@ -1,11 +1,11 @@
-<!-- Nouvelle version améliorée de la page d'accueil YUMEKO SUSHIS -->
+﻿<!-- Version amelioree de la page d'accueil YUMEKO SUSHIS -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>YUMEKO SUSHIS — Accueil</title>
+<title>YUMEKO SUSHIS - Accueil</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -28,25 +28,34 @@
 <!-- BEST-SELLERS -->
 <section class="carousel-wrapper" id="best-sellers">
   <h2 class="carousel-title">Nos best-sellers</h2>
-  <div class="carousel">
-    <div class="carousel-item">
-      <img src="images/c9.jpg" alt="California saumon cheese oignons frits">
-      <h3>CALIFORNIA C9</h3>
-    </div>
-    <div class="carousel-item">
-      <img src="images/r1.jpg" alt="Rolls saumon avocat cheese">
-      <h3>ROLLS R1</h3>
-    </div>
-    <div class="carousel-item">
-      <img src="images/m1.jpg" alt="Maki saumon">
-      <h3>MAKI M1</h3>
-    </div>
+  <div class="carousel" id="bestSellersCarousel">
+    <a class="carousel-item-link" href="index.html?cat=CALIFORNIA">
+      <div class="carousel-item">
+        <img src="images/c9.jpg" alt="California C9">
+        <h3>CALIFORNIA C9</h3>
+        <p class="carousel-sub">Commande(s): 0</p>
+      </div>
+    </a>
+    <a class="carousel-item-link" href="index.html?cat=ROLLS">
+      <div class="carousel-item">
+        <img src="images/r1.jpg" alt="Rolls R1">
+        <h3>ROLLS R1</h3>
+        <p class="carousel-sub">Commande(s): 0</p>
+      </div>
+    </a>
+    <a class="carousel-item-link" href="index.html?cat=MAKI">
+      <div class="carousel-item">
+        <img src="images/m1.jpg" alt="Maki M1">
+        <h3>MAKI M1</h3>
+        <p class="carousel-sub">Commande(s): 0</p>
+      </div>
+    </a>
   </div>
 </section>
 
 <!-- CARROUSEL -->
 <section class="carousel-wrapper">
-  <h2 class="carousel-title">Aperçu de nos variétés</h2>
+  <h2 class="carousel-title">Apercu de nos varietes</h2>
 
   <div class="carousel">
 
@@ -150,6 +159,114 @@ function loadComponent(id, file) {
 loadComponent("header", "header.html");
 loadComponent("footer", "footer.html");
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function getCategoryFromCode(code) {
+  const upper = String(code || '').toUpperCase();
+  if (upper.startsWith('BR')) return 'BROCHETTE';
+  if (upper.startsWith('SO')) return 'SOUPE';
+  if (upper.startsWith('CO')) return 'CONDIMENTS';
+  if (upper.startsWith('B')) return 'BOISSONS';
+  if (upper.startsWith('M')) return 'MAKI';
+  if (upper.startsWith('C')) return 'CALIFORNIA';
+  if (upper.startsWith('P')) return 'MAKI PRINTEMPS';
+  if (upper.startsWith('R')) return 'ROLLS';
+  if (upper.startsWith('N')) return 'NIGIRI';
+  if (upper.startsWith('O')) return 'ONIGIRI';
+  if (upper.startsWith('S')) return 'SASHIMI';
+  if (upper.startsWith('G')) return 'GYOZA';
+  return 'MAKI';
+}
+
+function readBestSellerCounts() {
+  try {
+    return JSON.parse(localStorage.getItem('yumeko_bestseller_counts_v1') || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
+function rebuildBestSellerCountsFromOrdersIfNeeded() {
+  const counts = readBestSellerCounts();
+  if (Object.keys(counts).length) return counts;
+
+  let orders = [];
+  try {
+    orders = JSON.parse(localStorage.getItem('yumeko_orders_v1') || '[]');
+  } catch (e) {
+    orders = [];
+  }
+
+  const rebuilt = {};
+  orders.forEach((order) => {
+    const items = Array.isArray(order && order.items) ? order.items : [];
+    items.forEach((it) => {
+      const code = String(it && it.code || '').trim().toUpperCase();
+      if (!code) return;
+      if (!rebuilt[code]) {
+        rebuilt[code] = { code, name: '', img: '', category: '', count: 0 };
+      }
+      rebuilt[code].name = String(it && it.name || code);
+      rebuilt[code].img = code.toLowerCase() + '.jpg';
+      rebuilt[code].category = getCategoryFromCode(code);
+      rebuilt[code].count += Number(it && it.qty || 1);
+    });
+  });
+
+  if (Object.keys(rebuilt).length) {
+    localStorage.setItem('yumeko_bestseller_counts_v1', JSON.stringify(rebuilt));
+    return rebuilt;
+  }
+
+  return counts;
+}
+
+function getTopBestSellers(limit) {
+  const counts = rebuildBestSellerCountsFromOrdersIfNeeded();
+  const list = Object.values(counts)
+    .filter((item) => item && Number(item.count) > 0)
+    .sort((a, b) => Number(b.count) - Number(a.count));
+  return list.slice(0, limit);
+}
+
+function renderBestSellers() {
+  const box = document.getElementById('bestSellersCarousel');
+  if (!box) return;
+
+  const fallback = [
+    { code: 'C9', name: 'CALIFORNIA C9', img: 'c9.jpg', category: 'CALIFORNIA', count: 0 },
+    { code: 'R1', name: 'ROLLS R1', img: 'r1.jpg', category: 'ROLLS', count: 0 },
+    { code: 'M1', name: 'MAKI M1', img: 'm1.jpg', category: 'MAKI', count: 0 }
+  ];
+
+  let best = getTopBestSellers(3);
+  if (!best.length) best = fallback;
+
+  box.innerHTML = best.map((item) => {
+    const code = String(item.code || '').toUpperCase();
+    const name = escapeHtml(item.name || code || 'ITEM');
+    const img = escapeHtml(item.img || (code.toLowerCase() + '.jpg'));
+    const count = Number(item.count) || 0;
+    const category = item.category || getCategoryFromCode(code);
+    const href = 'index.html?cat=' + encodeURIComponent(category);
+    return `
+      <a class="carousel-item-link" href="${href}">
+        <div class="carousel-item">
+          <img src="images/${img}" alt="${name}">
+          <h3>${name}</h3>
+          <p class="carousel-sub">Commande(s): ${count}</p>
+        </div>
+      </a>`;
+  }).join('');
+}
+
 function initCarouselWheelScroll() {
   document.querySelectorAll('.carousel').forEach((carousel) => {
     carousel.addEventListener('wheel', (e) => {
@@ -176,7 +293,9 @@ function initCarouselWheelScroll() {
 })();
 
 initCarouselWheelScroll();
+renderBestSellers();
 </script>
 
 </body>
 </html>
+

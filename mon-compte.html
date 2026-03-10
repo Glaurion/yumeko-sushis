@@ -25,9 +25,9 @@
     .card{
       background:var(--card);
       border:1px solid var(--card-border);
-      border-radius:16px;
+      border-radius:var(--radius-lg);
       padding:16px;
-      box-shadow:0 10px 26px rgba(255,77,109,.09), 0 3px 10px rgba(0,0,0,.04);
+      box-shadow:var(--shadow-soft);
     }
 
     .card h3{
@@ -53,7 +53,7 @@
 
     .field input{
       border:1px solid var(--card-border);
-      border-radius:10px;
+      border-radius:var(--radius-sm);
       padding:10px 12px;
       font:inherit;
       background:#fff;
@@ -61,25 +61,35 @@
 
     .btn-main{
       border:none;
-      border-radius:10px;
+      border-radius:var(--radius-md);
       padding:10px 12px;
       font-weight:800;
       cursor:pointer;
       background:var(--accent);
       color:#111;
+      transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
     }
 
     .btn-main:hover{
-      background:var(--accent-2);
+      background:var(--accent-strong);
+      transform:translateY(-1px);
+      box-shadow:0 8px 16px rgba(255,195,0,.22);
     }
 
     .btn-light{
       border:1px solid var(--card-border);
       background:#fff;
-      border-radius:10px;
+      border-radius:var(--radius-sm);
       padding:10px 12px;
       font-weight:700;
       cursor:pointer;
+      transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .btn-light:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,77,109,.35);
+      box-shadow:0 6px 12px rgba(0,0,0,.06);
     }
 
     .small-note{
@@ -98,14 +108,6 @@
       text-decoration:underline;
       font:inherit;
     }
-
-    .status{
-      margin-top:10px;
-      font-weight:600;
-    }
-
-    .status.ok{ color:#0e7a4f; }
-    .status.err{ color:#c2173b; }
 
     .hidden{ display:none; }
 
@@ -132,7 +134,7 @@
     .order-summary{
       width:100%;
       border:1px solid var(--card-border);
-      border-radius:12px;
+      border-radius:var(--radius-md);
       padding:12px;
       background:#fff;
       text-align:left;
@@ -144,7 +146,7 @@
 
     .order-summary:hover{
       transform:translateY(-1px);
-      box-shadow:0 8px 20px rgba(255,77,109,.12);
+      box-shadow:var(--shadow-hover);
       border-color:rgba(255,77,109,.25);
     }
 
@@ -187,6 +189,83 @@
       padding-left:18px;
     }
 
+    .admin-area{
+      display:grid;
+      gap:12px;
+    }
+
+    .admin-tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .admin-tab{
+      border:1px solid var(--card-border);
+      background:#fff;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .15s, box-shadow .15s, border-color .15s, background .15s;
+    }
+
+    .admin-tab:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 12px rgba(0,0,0,.06);
+      border-color:rgba(255,77,109,.3);
+    }
+
+    .admin-tab.active{
+      background:var(--accent);
+      color:#111;
+      border-color:rgba(0,0,0,.08);
+    }
+
+    .course-list{
+      display:grid;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .course-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .course-row label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      font-weight:600;
+      min-width:0;
+    }
+
+    .course-row input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      accent-color:#ff4d6d;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+
+    .course-qty{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--card-border);
+      background:#fff8ef;
+      font-size:.82rem;
+      font-weight:700;
+      color:#3a3a3a;
+      white-space:nowrap;
+    }
+
     .modal-overlay{
       position:fixed;
       inset:0;
@@ -204,8 +283,8 @@
       overflow:auto;
       background:#fff;
       border:1px solid var(--card-border);
-      border-radius:16px;
-      box-shadow:0 24px 60px rgba(0,0,0,.2);
+      border-radius:var(--radius-lg);
+      box-shadow:0 20px 46px rgba(0,0,0,.18);
       padding:16px;
     }
 
@@ -220,7 +299,7 @@
     .modal-close{
       border:1px solid var(--card-border);
       background:#fff;
-      border-radius:10px;
+      border-radius:var(--radius-sm);
       width:36px;
       height:36px;
       line-height:1;
@@ -328,6 +407,30 @@
             <h3>Mes commandes passees</h3>
             <div id="userOrders" class="orders-list"></div>
           </div>
+
+          <div id="adminArea" class="hidden admin-area">
+            <div class="card">
+              <h3>Administration</h3>
+
+              <div class="admin-tabs">
+                <button id="adminTabOrders" class="admin-tab active" type="button">Toutes les commandes</button>
+                <button id="adminTabCourses" class="admin-tab" type="button">Courses</button>
+              </div>
+
+              <div id="adminPanelOrders">
+                <div id="adminOrders" class="orders-list"></div>
+              </div>
+
+              <div id="adminPanelCourses" class="hidden">
+                <p class="muted">Liste de courses basee sur les articles les plus commandes.</p>
+                <div class="profile-actions">
+                  <button id="refreshCoursesBtn" class="btn-light" type="button">Mettre a jour</button>
+                  <button id="resetCoursesBtn" class="btn-light" type="button">Reinitialiser les coches</button>
+                </div>
+                <div id="adminCourses" class="course-list"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -355,10 +458,12 @@
     const SESSION_KEY = 'yumeko_session_v1';
     const ORDERS_KEY = 'yumeko_orders_v1';
     const REORDER_KEY = 'yumeko_reorder_cart_v1';
+    const COURSES_CHECK_KEY = 'yumeko_admin_courses_checks_v1';
     const ADMIN_EMAIL = 'admin@yumeko.fr';
     const ADMIN_PASSWORD = 'Admin123!';
     const ADMIN_NAME = 'Admin Yumeko';
     let userOrdersCache = [];
+    let adminOrdersCache = [];
     let selectedOrder = null;
 
     function setActiveNav() {
@@ -421,6 +526,10 @@
       el.className = 'status ' + (ok ? 'ok' : 'err');
     }
 
+    function isAdminSession(session) {
+      return !!session && String(session.role || '').toLowerCase() === 'admin';
+    }
+
     function ensureAdminAccount() {
       const accounts = readAccounts();
       const idx = accounts.findIndex(a => String(a.email).toLowerCase() === ADMIN_EMAIL);
@@ -451,6 +560,14 @@
     function getOrderItemsCount(order) {
       const items = Array.isArray(order.items) ? order.items : [];
       return items.reduce((sum, it) => sum + (Number(it.qty) || 1), 0);
+    }
+
+    function readCoursesChecks() {
+      return readJSON(COURSES_CHECK_KEY, {});
+    }
+
+    function saveCoursesChecks(value) {
+      writeJSON(COURSES_CHECK_KEY, value || {});
     }
 
     function renderOrdersForUser(email) {
@@ -490,6 +607,95 @@
           '</button>'
         );
       }).join('');
+    }
+
+    function renderOrdersForAdmin() {
+      const box = document.getElementById('adminOrders');
+      if (!box) return;
+
+      const orders = readOrders()
+        .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+      adminOrdersCache = orders;
+
+      if (!orders.length) {
+        box.innerHTML = '<p class="muted">Aucune commande enregistree.</p>';
+        return;
+      }
+
+      box.innerHTML = orders.map((order, idx) => {
+        const count = getOrderItemsCount(order);
+        const customer = escapeHtml(order.customer_name || 'Client');
+        const email = escapeHtml(order.email || order.account_email || '-');
+        return (
+          '<button type="button" class="order-summary admin-order-summary" data-admin-order-index="' + idx + '">' +
+            '<div class="order-head">' +
+              '<span>' + escapeHtml(order.id || 'Commande') + '</span>' +
+              '<span>' + formatDate(order.created_at) + '</span>' +
+            '</div>' +
+            '<div class="order-summary-meta">' +
+              '<span class="order-chip">' + count + ' article(s)</span>' +
+              '<span><strong>' + customer + '</strong> - ' + email + '</span>' +
+            '</div>' +
+          '</button>'
+        );
+      }).join('');
+    }
+
+    function renderCoursesForAdmin() {
+      const box = document.getElementById('adminCourses');
+      if (!box) return;
+
+      const checks = readCoursesChecks();
+      const totals = {};
+      const orders = readOrders();
+
+      orders.forEach((order) => {
+        const items = Array.isArray(order && order.items) ? order.items : [];
+        items.forEach((it) => {
+          const code = String(it && it.code || '').trim().toUpperCase();
+          const name = String(it && it.name || code || 'Article').trim();
+          if (!code) return;
+          if (!totals[code]) totals[code] = { code, name, qty: 0 };
+          totals[code].qty += Number(it && it.qty || 1);
+        });
+      });
+
+      const list = Object.values(totals)
+        .filter((it) => it.qty > 0)
+        .sort((a, b) => b.qty - a.qty);
+
+      if (!list.length) {
+        box.innerHTML = '<p class="muted">Pas encore de donnees de commande pour generer les courses.</p>';
+        return;
+      }
+
+      box.innerHTML = list.map((it) => {
+        const code = escapeHtml(it.code);
+        const name = escapeHtml(it.name);
+        const checked = checks[it.code] ? 'checked' : '';
+        return (
+          '<div class="order-card course-row">' +
+            '<label>' +
+              '<input class="course-check" type="checkbox" data-course-code="' + code + '" ' + checked + ' />' +
+              '<span>' + name + ' (' + code + ')</span>' +
+            '</label>' +
+            '<span class="course-qty">' + it.qty + ' commande(s)</span>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function setAdminTab(tab) {
+      const ordersTab = document.getElementById('adminTabOrders');
+      const coursesTab = document.getElementById('adminTabCourses');
+      const ordersPanel = document.getElementById('adminPanelOrders');
+      const coursesPanel = document.getElementById('adminPanelCourses');
+      const showOrders = tab !== 'courses';
+
+      if (ordersTab) ordersTab.classList.toggle('active', showOrders);
+      if (coursesTab) coursesTab.classList.toggle('active', !showOrders);
+      if (ordersPanel) ordersPanel.classList.toggle('hidden', !showOrders);
+      if (coursesPanel) coursesPanel.classList.toggle('hidden', showOrders);
     }
 
     function openOrderModal(order) {
@@ -546,7 +752,7 @@
 
       if (!payload.length) return;
       localStorage.setItem(REORDER_KEY, JSON.stringify(payload));
-      window.location.href = 'index.html?reorder=1';
+      window.location.href = 'index.html?reorder=1#panier';
     }
 
     function showRegister(show) {
@@ -559,10 +765,12 @@
       const session = readSession();
       const authArea = document.getElementById('authArea');
       const profileArea = document.getElementById('profileArea');
+      const adminArea = document.getElementById('adminArea');
 
       if (!session) {
         authArea.classList.remove('hidden');
         profileArea.classList.add('hidden');
+        if (adminArea) adminArea.classList.add('hidden');
         showRegister(false);
         return;
       }
@@ -577,6 +785,14 @@
       document.getElementById('profilePasswordConfirm').value = '';
 
       renderOrdersForUser(session.email || '');
+      if (isAdminSession(session)) {
+        if (adminArea) adminArea.classList.remove('hidden');
+        renderOrdersForAdmin();
+        renderCoursesForAdmin();
+        setAdminTab('orders');
+      } else {
+        if (adminArea) adminArea.classList.add('hidden');
+      }
     }
 
     function initAuth() {
@@ -713,6 +929,14 @@
         openOrderModal(userOrdersCache[idx]);
       });
 
+      document.getElementById('adminOrders')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.admin-order-summary');
+        if (!btn) return;
+        const idx = Number(btn.dataset.adminOrderIndex);
+        if (!Number.isInteger(idx) || idx < 0 || idx >= adminOrdersCache.length) return;
+        openOrderModal(adminOrdersCache[idx]);
+      });
+
       document.getElementById('orderModalClose')?.addEventListener('click', closeOrderModal);
       document.getElementById('orderModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'orderModal') closeOrderModal();
@@ -723,12 +947,37 @@
       document.getElementById('reorderBtn')?.addEventListener('click', reorderFromSelectedOrder);
     }
 
+    function initAdminArea() {
+      document.getElementById('adminTabOrders')?.addEventListener('click', () => setAdminTab('orders'));
+      document.getElementById('adminTabCourses')?.addEventListener('click', () => setAdminTab('courses'));
+
+      document.getElementById('refreshCoursesBtn')?.addEventListener('click', () => {
+        renderCoursesForAdmin();
+      });
+
+      document.getElementById('resetCoursesBtn')?.addEventListener('click', () => {
+        saveCoursesChecks({});
+        renderCoursesForAdmin();
+      });
+
+      document.getElementById('adminCourses')?.addEventListener('change', (e) => {
+        const input = e.target.closest('.course-check');
+        if (!input) return;
+        const code = String(input.dataset.courseCode || '').trim().toUpperCase();
+        if (!code) return;
+        const checks = readCoursesChecks();
+        checks[code] = !!input.checked;
+        saveCoursesChecks(checks);
+      });
+    }
+
     loadComponent('header', 'header.html');
     loadComponent('footer', 'footer.html');
     ensureAdminAccount();
     initAuth();
     initProfile();
     initOrdersSummary();
+    initAdminArea();
     renderUI();
   </script>
 </body>
