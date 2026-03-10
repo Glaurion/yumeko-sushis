@@ -12,6 +12,9 @@
 
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
+  <link rel="preload" href="images/logo-yumeko.png" as="image" />
+  <link rel="prefetch" href="accueil.html" />
+  <link rel="prefetch" href="index.html" />
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
@@ -34,6 +37,49 @@
       margin:0 0 12px;
       font-size:1.2rem;
       color:#c2173b;
+    }
+
+    .panel-toggle{
+      width:100%;
+      border:1px solid var(--card-border);
+      border-radius:12px;
+      background:#fff8ef;
+      padding:10px 12px;
+      font:inherit;
+      font-weight:800;
+      color:#c2173b;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      text-align:left;
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+    }
+
+    .panel-toggle:hover{
+      transform:translateY(-1px);
+      box-shadow:var(--shadow-soft);
+      border-color:rgba(255,77,109,.3);
+    }
+
+    .panel-toggle[aria-expanded="true"]{
+      background:#fff0f4;
+      border-color:rgba(255,77,109,.35);
+    }
+
+    .panel-icon{
+      font-size:1rem;
+      line-height:1;
+      transition:transform .2s ease;
+    }
+
+    .panel-toggle[aria-expanded="true"] .panel-icon{
+      transform:rotate(180deg);
+    }
+
+    .panel-body{
+      padding-top:12px;
     }
 
     .auth-form{
@@ -90,6 +136,14 @@
       transform:translateY(-1px);
       border-color:rgba(255,77,109,.35);
       box-shadow:0 6px 12px rgba(0,0,0,.06);
+    }
+
+    .btn-light:disabled,
+    .btn-main:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none !important;
+      box-shadow:none !important;
     }
 
     .small-note{
@@ -173,6 +227,45 @@
       color:#3a3a3a;
       font-size:.82rem;
       font-weight:600;
+    }
+
+    .order-status-chip{
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.2px;
+    }
+
+    .status-nouveau{
+      background:#ffeef3;
+      color:#bf1f45;
+      border-color:rgba(194,23,59,.25);
+    }
+
+    .status-en_cours{
+      background:#fff8e4;
+      color:#8a5b00;
+      border-color:rgba(255,195,0,.35);
+    }
+
+    .status-termine{
+      background:#e9f8ef;
+      color:#176c42;
+      border-color:rgba(14,122,79,.28);
+    }
+
+    .admin-order-card{
+      display:grid;
+      gap:8px;
+      padding:10px;
+    }
+
+    .admin-order-actions{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:0 2px 2px;
     }
 
     .order-head{
@@ -321,7 +414,25 @@
   </style>
 </head>
 <body>
-  <div id="header"></div>
+  <div id="header">
+    <header class="site-header jp">
+      <div class="header-inner">
+        <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
+          <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" width="200" height="200" decoding="async" fetchpriority="high">
+          <div class="brand-text">
+            <h1>YUMEKO SUSHIS</h1>
+          </div>
+        </a>
+        <nav class="main-nav">
+          <a href="accueil.html">Accueil</a>
+          <span class="nav-sep" aria-hidden="true"></span>
+          <a href="index.html">Menu</a>
+          <span class="nav-sep" aria-hidden="true"></span>
+          <a href="mon-compte.html">Mon compte</a>
+        </nav>
+      </div>
+    </header>
+  </div>
 
   <main class="container">
     <section class="section" aria-labelledby="titre-compte">
@@ -330,24 +441,26 @@
 
       <div class="account-wrap">
         <div id="authArea" class="card">
-          <h3>Connexion</h3>
-          <form id="loginForm" class="auth-form" novalidate>
-            <div class="field">
-              <label for="loginEmail">Email</label>
-              <input id="loginEmail" name="email" type="email" required />
-            </div>
-            <div class="field">
-              <label for="loginPassword">Mot de passe</label>
-              <input id="loginPassword" name="password" type="password" required />
-            </div>
-            <button class="btn-main" type="submit">Se connecter</button>
-          </form>
-          <p id="loginStatus" class="status" aria-live="polite"></p>
+          <h3 id="authTitle">Connexion</h3>
+          <div id="loginWrap">
+            <form id="loginForm" class="auth-form" novalidate>
+              <div class="field">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" name="email" type="email" required />
+              </div>
+              <div class="field">
+                <label for="loginPassword">Mot de passe</label>
+                <input id="loginPassword" name="password" type="password" required />
+              </div>
+              <button class="btn-main" type="submit">Se connecter</button>
+            </form>
+            <p id="loginStatus" class="status" aria-live="polite"></p>
 
-          <p class="small-note">
-            Pas encore de compte ?
-            <button id="showRegisterBtn" type="button" class="link-btn">Inscrivez-vous</button>
-          </p>
+            <p class="small-note">
+              Pas encore de compte ?
+              <button id="showRegisterBtn" type="button" class="link-btn">Inscrivez-vous</button>
+            </p>
+          </div>
 
           <div id="registerWrap" class="hidden">
             <hr style="border:none;border-top:1px solid var(--card-border);margin:14px 0;" />
@@ -380,58 +493,72 @@
 
         <div id="profileArea" class="hidden">
           <div class="card">
-            <h3>Mes informations</h3>
-            <form id="profileForm" class="auth-form" novalidate>
-              <input id="currentEmail" type="hidden" />
-              <div class="field">
-                <label for="profileName">Nom complet</label>
-                <input id="profileName" name="name" type="text" required />
-              </div>
-              <div class="field">
-                <label for="profileEmail">Email</label>
-                <input id="profileEmail" name="email" type="email" required />
-              </div>
-              <div class="field">
-                <label for="profilePassword">Nouveau mot de passe (optionnel)</label>
-                <input id="profilePassword" name="password" type="password" minlength="6" />
-              </div>
-              <div class="field">
-                <label for="profilePasswordConfirm">Confirmer le nouveau mot de passe</label>
-                <input id="profilePasswordConfirm" name="password_confirm" type="password" minlength="6" />
-              </div>
-              <div class="profile-actions">
-                <button class="btn-main" type="submit">Enregistrer mes infos</button>
-                <button id="logoutBtn" class="btn-light" type="button">Se deconnecter</button>
-              </div>
-            </form>
-            <p id="profileStatus" class="status" aria-live="polite"></p>
+            <button class="panel-toggle" type="button" data-target="panelProfileBody" aria-expanded="false">
+              <span>Mes informations</span>
+              <span class="panel-icon" aria-hidden="true">v</span>
+            </button>
+            <div id="panelProfileBody" class="panel-body hidden">
+              <form id="profileForm" class="auth-form" novalidate>
+                <input id="currentEmail" type="hidden" />
+                <div class="field">
+                  <label for="profileName">Nom complet</label>
+                  <input id="profileName" name="name" type="text" required />
+                </div>
+                <div class="field">
+                  <label for="profileEmail">Email</label>
+                  <input id="profileEmail" name="email" type="email" required />
+                </div>
+                <div class="field">
+                  <label for="profilePassword">Nouveau mot de passe (optionnel)</label>
+                  <input id="profilePassword" name="password" type="password" minlength="6" />
+                </div>
+                <div class="field">
+                  <label for="profilePasswordConfirm">Confirmer le nouveau mot de passe</label>
+                  <input id="profilePasswordConfirm" name="password_confirm" type="password" minlength="6" />
+                </div>
+                <div class="profile-actions">
+                  <button class="btn-main" type="submit">Enregistrer mes infos</button>
+                  <button id="logoutBtn" class="btn-light" type="button">Se deconnecter</button>
+                </div>
+              </form>
+              <p id="profileStatus" class="status" aria-live="polite"></p>
+            </div>
           </div>
 
           <div class="card">
-            <h3>Mes commandes passees</h3>
-            <div id="userOrders" class="orders-list"></div>
+            <button class="panel-toggle" type="button" data-target="panelOrdersBody" aria-expanded="false">
+              <span>Mes commandes passees</span>
+              <span class="panel-icon" aria-hidden="true">v</span>
+            </button>
+            <div id="panelOrdersBody" class="panel-body hidden">
+              <div id="userOrders" class="orders-list"></div>
+            </div>
           </div>
 
           <div id="adminArea" class="hidden admin-area">
             <div class="card">
-              <h3>Administration</h3>
-
-              <div class="admin-tabs">
-                <button id="adminTabOrders" class="admin-tab active" type="button">Toutes les commandes</button>
-                <button id="adminTabCourses" class="admin-tab" type="button">Courses</button>
-              </div>
-
-              <div id="adminPanelOrders">
-                <div id="adminOrders" class="orders-list"></div>
-              </div>
-
-              <div id="adminPanelCourses" class="hidden">
-                <p class="muted">Liste de courses basee sur les articles les plus commandes.</p>
-                <div class="profile-actions">
-                  <button id="refreshCoursesBtn" class="btn-light" type="button">Mettre a jour</button>
-                  <button id="resetCoursesBtn" class="btn-light" type="button">Reinitialiser les coches</button>
+              <button class="panel-toggle" type="button" data-target="panelAdminBody" aria-expanded="false">
+                <span>Administration</span>
+                <span class="panel-icon" aria-hidden="true">v</span>
+              </button>
+              <div id="panelAdminBody" class="panel-body hidden">
+                <div class="admin-tabs">
+                  <button id="adminTabOrders" class="admin-tab active" type="button">Toutes les commandes</button>
+                  <button id="adminTabCourses" class="admin-tab" type="button">Courses</button>
                 </div>
-                <div id="adminCourses" class="course-list"></div>
+
+                <div id="adminPanelOrders">
+                  <div id="adminOrders" class="orders-list"></div>
+                </div>
+
+                <div id="adminPanelCourses" class="hidden">
+                  <p class="muted">Liste de courses basee sur les articles les plus commandes.</p>
+                  <div class="profile-actions">
+                    <button id="refreshCoursesBtn" class="btn-light" type="button">Mettre a jour</button>
+                    <button id="resetCoursesBtn" class="btn-light" type="button">Reinitialiser les coches</button>
+                  </div>
+                  <div id="adminCourses" class="course-list"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -452,6 +579,12 @@
       <div class="profile-actions">
         <button id="reorderBtn" class="btn-main" type="button">Commander a nouveau</button>
       </div>
+      <div id="adminOrderActions" class="profile-actions hidden">
+        <button id="printLabelBtn" class="btn-light" type="button">Imprimer etiquette</button>
+        <button id="printPdfBtn" class="btn-light" type="button">Imprimer PDF</button>
+        <button id="markDoneBtn" class="btn-main" type="button">Marquer terminee</button>
+      </div>
+      <p id="adminOrderStatusHint" class="small-note hidden" style="margin-top:8px;"></p>
     </div>
   </div>
 
@@ -466,9 +599,13 @@
     const ADMIN_EMAIL = 'admin@yumeko.fr';
     const ADMIN_PASSWORD = 'Admin123!';
     const ADMIN_NAME = 'Admin Yumeko';
+    const STATUS_NEW = 'nouveau';
+    const STATUS_IN_PROGRESS = 'en_cours';
+    const STATUS_DONE = 'termine';
     let userOrdersCache = [];
     let adminOrdersCache = [];
     let selectedOrder = null;
+    let lastConnectedEmail = '';
 
     function setActiveNav() {
       const here = location.pathname.split('/').pop() || 'mon-compte.html';
@@ -479,10 +616,16 @@
     }
 
     function loadComponent(id, file) {
+      const host = document.getElementById(id);
+      if (!host) return;
+      if (host.innerHTML.trim().length) {
+        if (id === 'header') setActiveNav();
+        return;
+      }
       fetch(file)
         .then(response => response.text())
         .then(data => {
-          document.getElementById(id).innerHTML = data;
+          host.innerHTML = data;
           if (id === 'header') setActiveNav();
         });
     }
@@ -520,8 +663,51 @@
       localStorage.removeItem(SESSION_KEY);
     }
 
+    function normalizeOrderStatus(value) {
+      const raw = String(value || '').trim().toLowerCase();
+      if (raw === STATUS_DONE || raw === 'terminee') return STATUS_DONE;
+      if (raw === STATUS_IN_PROGRESS || raw === 'encours' || raw === 'en-cours') return STATUS_IN_PROGRESS;
+      return STATUS_NEW;
+    }
+
+    function getOrderStatusLabel(status) {
+      if (status === STATUS_DONE) return 'Terminee';
+      if (status === STATUS_IN_PROGRESS) return 'En cours';
+      return 'Nouveau';
+    }
+
+    function getOrderStatusClass(status) {
+      return 'status-' + normalizeOrderStatus(status);
+    }
+
     function readOrders() {
-      return readJSON(ORDERS_KEY, []);
+      const raw = readJSON(ORDERS_KEY, []);
+      const list = Array.isArray(raw) ? raw.filter(o => o && typeof o === 'object') : [];
+      let changed = list.length !== raw.length;
+      list.forEach((order) => {
+        const normalized = normalizeOrderStatus(order.admin_status);
+        if (order.admin_status !== normalized) {
+          order.admin_status = normalized;
+          changed = true;
+        }
+      });
+      if (changed) writeJSON(ORDERS_KEY, list);
+      return list;
+    }
+
+    function saveOrders(orders) {
+      writeJSON(ORDERS_KEY, Array.isArray(orders) ? orders : []);
+    }
+
+    function updateOrderStatusById(orderId, nextStatus) {
+      const id = String(orderId || '').trim();
+      if (!id) return null;
+      const orders = readOrders();
+      const idx = orders.findIndex((o) => String(o.id || '').trim() === id);
+      if (idx === -1) return null;
+      orders[idx].admin_status = normalizeOrderStatus(nextStatus);
+      saveOrders(orders);
+      return orders[idx];
     }
 
     function setStatus(el, msg, ok) {
@@ -630,17 +816,27 @@
         const count = getOrderItemsCount(order);
         const customer = escapeHtml(order.customer_name || 'Client');
         const email = escapeHtml(order.email || order.account_email || '-');
+        const status = normalizeOrderStatus(order.admin_status);
+        const statusClass = getOrderStatusClass(status);
+        const statusLabel = getOrderStatusLabel(status);
+        const doneDisabled = status === STATUS_DONE ? 'disabled' : '';
         return (
-          '<button type="button" class="order-summary admin-order-summary" data-admin-order-index="' + idx + '">' +
-            '<div class="order-head">' +
-              '<span>' + escapeHtml(order.id || 'Commande') + '</span>' +
-              '<span>' + formatDate(order.created_at) + '</span>' +
+          '<div class="order-card admin-order-card">' +
+            '<button type="button" class="order-summary admin-order-summary" data-admin-order-index="' + idx + '">' +
+              '<div class="order-head">' +
+                '<span>' + escapeHtml(order.id || 'Commande') + '</span>' +
+                '<span>' + formatDate(order.created_at) + '</span>' +
+              '</div>' +
+              '<div class="order-summary-meta">' +
+                '<span class="order-chip">' + count + ' article(s)</span>' +
+                '<span><strong>' + customer + '</strong> - ' + email + '</span>' +
+              '</div>' +
+            '</button>' +
+            '<div class="admin-order-actions">' +
+              '<span class="order-chip order-status-chip ' + statusClass + '">' + statusLabel + '</span>' +
+              '<button type="button" class="btn-light admin-mark-done-btn" data-admin-order-index="' + idx + '" ' + doneDisabled + '>Marquer terminee</button>' +
             '</div>' +
-            '<div class="order-summary-meta">' +
-              '<span class="order-chip">' + count + ' article(s)</span>' +
-              '<span><strong>' + customer + '</strong> - ' + email + '</span>' +
-            '</div>' +
-          '</button>'
+          '</div>'
         );
       }).join('');
     }
@@ -702,6 +898,118 @@
       if (coursesPanel) coursesPanel.classList.toggle('hidden', showOrders);
     }
 
+    function renderAdminModalStatus(order) {
+      const statusBox = document.getElementById('adminOrderStatusHint');
+      const doneBtn = document.getElementById('markDoneBtn');
+      if (!statusBox || !doneBtn) return;
+      const status = normalizeOrderStatus(order && order.admin_status);
+      statusBox.innerHTML = '<strong>Statut:</strong> <span class="order-chip order-status-chip ' +
+        getOrderStatusClass(status) + '">' + getOrderStatusLabel(status) + '</span>';
+      doneBtn.disabled = status === STATUS_DONE;
+    }
+
+    function syncOrderModalByRole(order) {
+      const isAdmin = isAdminSession(readSession());
+      const reorderBtn = document.getElementById('reorderBtn');
+      const adminActions = document.getElementById('adminOrderActions');
+      const adminStatus = document.getElementById('adminOrderStatusHint');
+
+      if (reorderBtn) reorderBtn.classList.toggle('hidden', !!isAdmin);
+      if (adminActions) adminActions.classList.toggle('hidden', !isAdmin);
+      if (adminStatus) adminStatus.classList.toggle('hidden', !isAdmin);
+      if (isAdmin) renderAdminModalStatus(order);
+    }
+
+    function buildOrderPrintDocument(order, mode) {
+      const orderId = escapeHtml(order.id || '-');
+      const customer = escapeHtml(order.customer_name || 'Client');
+      const email = escapeHtml(order.email || order.account_email || '-');
+      const date = escapeHtml(formatDate(order.created_at));
+      const status = getOrderStatusLabel(normalizeOrderStatus(order.admin_status));
+      const comments = String(order.comments || '').trim();
+      const safeComments = comments ? escapeHtml(comments) : 'Aucun commentaire';
+      const count = getOrderItemsCount(order);
+      const items = Array.isArray(order.items) ? order.items : [];
+      const itemsHtml = items.length
+        ? '<ul>' + items.map((it) => {
+          const name = escapeHtml(it.name || 'Article');
+          const qty = Number(it.qty) || 1;
+          return '<li><strong>' + qty + 'x</strong> ' + name + '</li>';
+        }).join('') + '</ul>'
+        : '<p>Aucun article detaille.</p>';
+
+      const isLabel = mode === 'label';
+      const pageStyle = isLabel
+        ? '@page{size:100mm 70mm; margin:6mm;}'
+        : '@page{size:A4; margin:12mm;}';
+      const title = isLabel ? 'Etiquette de commande' : 'Commande YUMEKO';
+
+      return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>' + title + ' - ' + orderId + '</title>' +
+        '<style>' +
+          pageStyle +
+          'body{font-family:Poppins,Arial,sans-serif;color:#121212;margin:0;}' +
+          '.sheet{border:1px solid #ddd;border-radius:12px;padding:' + (isLabel ? '8px' : '14px') + ';}' +
+          'h1{margin:0 0 8px;font-size:' + (isLabel ? '16px' : '20px') + ';color:#c2173b;}' +
+          '.meta{display:grid;gap:4px;font-size:' + (isLabel ? '12px' : '14px') + ';}' +
+          '.status{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;border:1px solid #e4d7bb;background:#fff8e4;font-weight:700;}' +
+          'h2{font-size:' + (isLabel ? '13px' : '16px') + ';margin:10px 0 6px;}' +
+          'ul{margin:0;padding-left:18px;font-size:' + (isLabel ? '12px' : '14px') + ';}' +
+          'li{margin:2px 0;}' +
+          '.comments{margin-top:8px;font-size:' + (isLabel ? '11px' : '13px') + ';color:#37434a;}' +
+        '</style></head><body>' +
+        '<div class="sheet">' +
+          '<h1>' + title + '</h1>' +
+          '<div class="meta">' +
+            '<div><strong>Commande:</strong> ' + orderId + '</div>' +
+            '<div><strong>Date:</strong> ' + date + '</div>' +
+            '<div><strong>Client:</strong> ' + customer + '</div>' +
+            '<div><strong>Email:</strong> ' + email + '</div>' +
+            '<div><strong>Total articles:</strong> ' + count + '</div>' +
+            '<span class="status">Statut: ' + escapeHtml(status) + '</span>' +
+          '</div>' +
+          '<h2>Articles</h2>' +
+          itemsHtml +
+          '<div class="comments"><strong>Commentaire:</strong> ' + safeComments + '</div>' +
+        '</div>' +
+      '</body></html>';
+    }
+
+    function printSelectedOrder(mode) {
+      if (!selectedOrder) return;
+      const win = window.open('', '_blank', 'width=900,height=900');
+      if (!win) {
+        alert('Autorisez les pop-ups pour imprimer la commande.');
+        return;
+      }
+
+      const isAdmin = isAdminSession(readSession());
+      if (isAdmin && normalizeOrderStatus(selectedOrder.admin_status) !== STATUS_DONE) {
+        const updated = updateOrderStatusById(selectedOrder.id, STATUS_IN_PROGRESS);
+        if (updated) {
+          selectedOrder = updated;
+          renderOrdersForAdmin();
+          renderAdminModalStatus(selectedOrder);
+        }
+      }
+
+      win.document.open();
+      win.document.write(buildOrderPrintDocument(selectedOrder, mode));
+      win.document.close();
+      win.focus();
+      setTimeout(() => {
+        try { win.print(); } catch (e) {}
+      }, 150);
+    }
+
+    function markSelectedOrderDone() {
+      if (!selectedOrder) return;
+      const updated = updateOrderStatusById(selectedOrder.id, STATUS_DONE);
+      if (!updated) return;
+      selectedOrder = updated;
+      renderOrdersForAdmin();
+      renderAdminModalStatus(selectedOrder);
+    }
+
     function openOrderModal(order) {
       const modal = document.getElementById('orderModal');
       const meta = document.getElementById('orderModalMeta');
@@ -729,6 +1037,7 @@
         ? '<strong>Commentaire:</strong> ' + escapeHtml(order.comments)
         : '';
 
+      syncOrderModalByRole(order);
       modal.classList.remove('hidden');
       modal.setAttribute('aria-hidden', 'false');
     }
@@ -761,8 +1070,39 @@
 
     function showRegister(show) {
       const wrap = document.getElementById('registerWrap');
+      const loginWrap = document.getElementById('loginWrap');
+      const authTitle = document.getElementById('authTitle');
+      const loginStatus = document.getElementById('loginStatus');
+      const registerStatus = document.getElementById('registerStatus');
       if (!wrap) return;
       wrap.classList.toggle('hidden', !show);
+      if (loginWrap) loginWrap.classList.toggle('hidden', !!show);
+      if (authTitle) authTitle.textContent = show ? 'Inscription' : 'Connexion';
+      if (show && loginStatus) {
+        loginStatus.textContent = '';
+        loginStatus.className = 'status';
+      }
+      if (!show && registerStatus) {
+        registerStatus.textContent = '';
+        registerStatus.className = 'status';
+      }
+    }
+
+    function setPanelOpen(targetId, open) {
+      if (!targetId) return;
+      const body = document.getElementById(targetId);
+      if (!body) return;
+      body.classList.toggle('hidden', !open);
+      const toggle = document.querySelector('.panel-toggle[data-target="' + targetId + '"]');
+      if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function collapseAllAccountPanels() {
+      document.querySelectorAll('.panel-toggle[data-target]').forEach((toggle) => {
+        const targetId = String(toggle.dataset.target || '').trim();
+        if (!targetId) return;
+        setPanelOpen(targetId, false);
+      });
     }
 
     function renderUI() {
@@ -776,6 +1116,7 @@
         profileArea.classList.add('hidden');
         if (adminArea) adminArea.classList.add('hidden');
         showRegister(false);
+        lastConnectedEmail = '';
         return;
       }
 
@@ -797,6 +1138,12 @@
       } else {
         if (adminArea) adminArea.classList.add('hidden');
       }
+
+      const sessionEmail = String(session.email || '').toLowerCase();
+      if (lastConnectedEmail !== sessionEmail) {
+        collapseAllAccountPanels();
+      }
+      lastConnectedEmail = sessionEmail;
     }
 
     function initAuth() {
@@ -836,10 +1183,19 @@
         const account = { name, email, password, role: 'user' };
         accounts.push(account);
         saveAccounts(accounts);
-        writeSession(account);
         setStatus(status, 'Compte cree avec succes.', true);
+        alert('Compte cree avec succes. Vous pouvez maintenant vous connecter.');
         e.target.reset();
-        renderUI();
+        showRegister(false);
+
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        if (loginEmail) loginEmail.value = email;
+        if (loginPassword) {
+          loginPassword.value = '';
+          loginPassword.focus();
+        }
+        setStatus(document.getElementById('loginStatus'), 'Compte cree. Connectez-vous.', true);
       });
 
       document.getElementById('loginForm')?.addEventListener('submit', (e) => {
@@ -934,6 +1290,21 @@
       });
 
       document.getElementById('adminOrders')?.addEventListener('click', (e) => {
+        const doneBtn = e.target.closest('.admin-mark-done-btn');
+        if (doneBtn) {
+          const idx = Number(doneBtn.dataset.adminOrderIndex);
+          if (!Number.isInteger(idx) || idx < 0 || idx >= adminOrdersCache.length) return;
+          const order = adminOrdersCache[idx];
+          if (!order) return;
+          const updated = updateOrderStatusById(order.id, STATUS_DONE);
+          renderOrdersForAdmin();
+          if (updated && selectedOrder && String(selectedOrder.id || '') === String(order.id || '')) {
+            selectedOrder = updated;
+            renderAdminModalStatus(selectedOrder);
+          }
+          return;
+        }
+
         const btn = e.target.closest('.admin-order-summary');
         if (!btn) return;
         const idx = Number(btn.dataset.adminOrderIndex);
@@ -949,6 +1320,9 @@
         if (e.key === 'Escape') closeOrderModal();
       });
       document.getElementById('reorderBtn')?.addEventListener('click', reorderFromSelectedOrder);
+      document.getElementById('printLabelBtn')?.addEventListener('click', () => printSelectedOrder('label'));
+      document.getElementById('printPdfBtn')?.addEventListener('click', () => printSelectedOrder('pdf'));
+      document.getElementById('markDoneBtn')?.addEventListener('click', markSelectedOrderDone);
     }
 
     function initAdminArea() {
@@ -975,6 +1349,18 @@
       });
     }
 
+    function initAccountPanels() {
+      document.querySelectorAll('.panel-toggle[data-target]').forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+          const targetId = String(toggle.dataset.target || '').trim();
+          if (!targetId) return;
+          const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+          setPanelOpen(targetId, !isOpen);
+        });
+      });
+      collapseAllAccountPanels();
+    }
+
     loadComponent('header', 'header.html');
     loadComponent('footer', 'footer.html');
     ensureAdminAccount();
@@ -982,6 +1368,7 @@
     initProfile();
     initOrdersSummary();
     initAdminArea();
+    initAccountPanels();
     renderUI();
   </script>
 </body>

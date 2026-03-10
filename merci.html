@@ -12,6 +12,9 @@
 
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
+  <link rel="preload" href="images/logo-yumeko.png" as="image" />
+  <link rel="prefetch" href="accueil.html" />
+  <link rel="prefetch" href="index.html" />
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
@@ -36,7 +39,25 @@
   </style>
 </head>
 <body>
-  <div id="header"></div>
+  <div id="header">
+    <header class="site-header jp">
+      <div class="header-inner">
+        <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
+          <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" width="200" height="200" decoding="async" fetchpriority="high">
+          <div class="brand-text">
+            <h1>YUMEKO SUSHIS</h1>
+          </div>
+        </a>
+        <nav class="main-nav">
+          <a href="accueil.html">Accueil</a>
+          <span class="nav-sep" aria-hidden="true"></span>
+          <a href="index.html">Menu</a>
+          <span class="nav-sep" aria-hidden="true"></span>
+          <a href="mon-compte.html">Mon compte</a>
+        </nav>
+      </div>
+    </header>
+  </div>
 
   <main class="container">
     <section class="section" aria-labelledby="titre-merci">
@@ -102,10 +123,16 @@
     }
 
     function loadComponent(id, file) {
+      const host = document.getElementById(id);
+      if (!host) return;
+      if (host.innerHTML.trim().length) {
+        if (id === "header") setActiveNav();
+        return;
+      }
       fetch(file)
         .then(response => response.text())
         .then(data => {
-          document.getElementById(id).innerHTML = data;
+          host.innerHTML = data;
           if (id === "header") {
             setActiveNav();
           }

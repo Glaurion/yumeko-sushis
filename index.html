@@ -14,6 +14,9 @@
   <!-- Favicon / theme -->
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="apple-touch-icon" href="images/favicon.png" />
+  <link rel="preload" href="images/logo-yumeko.png" as="image" />
+  <link rel="prefetch" href="accueil.html" />
+  <link rel="prefetch" href="mon-compte.html" />
   <meta name="theme-color" content="#ff4d6d" />
 
   <style>
@@ -187,7 +190,7 @@
     #cartSheet{ position:fixed; left:50%; transform:translateX(-50%); bottom:-100%; width:min(96%,1100px); background:#ffffff; color:#131313; border:1px solid var(--card-border); border-radius:16px 16px 0 0; box-shadow:0 22px 60px rgba(0,0,0,.15); max-height:70vh; display:flex; flex-direction:column; transition:bottom .28s ease; z-index:102; overscroll-behavior:contain; }
     #cartSheet.open{ bottom:0; }
     #cartSheet header, #cartSheet footer{ padding:8px 12px; display:flex; align-items:center; justify-content:space-between; }
-    #cartSheet header{ border-bottom:1px solid var(--card-border); } #cartSheet footer{ border-top:1px solid var(--card-border); gap:10px; }
+    #cartSheet header{ border-bottom:1px solid var(--card-border); justify-content:flex-start; } #cartSheet footer{ border-top:1px solid var(--card-border); gap:10px; }
     #cartSheet .body{ padding:8px 10px; overflow:auto; -webkit-overflow-scrolling:touch; max-height:calc(70vh - 100px); overscroll-behavior:contain; }
 
     .recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
@@ -218,7 +221,25 @@
 <body>
 
   <!-- Header -->
- <div id="header"></div>
+ <div id="header">
+   <header class="site-header jp">
+     <div class="header-inner">
+       <a href="accueil.html" class="brand" aria-label="Accueil - YUMEKO SUSHIS">
+         <img src="images/logo-yumeko.png" alt="YUMEKO SUSHIS" class="logo" width="200" height="200" decoding="async" fetchpriority="high">
+         <div class="brand-text">
+           <h1>YUMEKO SUSHIS</h1>
+         </div>
+       </a>
+       <nav class="main-nav">
+         <a href="accueil.html">Accueil</a>
+         <span class="nav-sep" aria-hidden="true"></span>
+         <a href="index.html">Menu</a>
+         <span class="nav-sep" aria-hidden="true"></span>
+         <a href="mon-compte.html">Mon compte</a>
+       </nav>
+     </div>
+   </header>
+ </div>
 
   <main class="container">
     <section class="section" id="menuSection" aria-labelledby="titre-menu">
@@ -244,7 +265,6 @@
   <div id="cartSheet" aria-hidden="true">
     <header>
       <h3>Valider votre commande</h3>
-      <button id="sheetClose" aria-label="Fermer" type="button">&times;</button>
     </header>
     <div class="body">
       <div id="stepCart" class="step active">
@@ -475,6 +495,13 @@
 
     const initialCategory = getInitialCategory();
 
+    function getCategoryScrollOffset(){
+      const navWrap = document.querySelector('.cat-nav-wrap');
+      if(!navWrap) return 92;
+      const navHeight = navWrap.getBoundingClientRect().height || 0;
+      return Math.max(72, Math.ceil(navHeight + 10));
+    }
+
     function showOnlyCategory(cat, shouldScroll){
       const id = slugifyCat(cat);
       document.querySelectorAll('.pill').forEach(p=>{
@@ -486,8 +513,11 @@
       if(shouldScroll){
         const target=document.getElementById(id);
         if(target){
-          const y=target.getBoundingClientRect().top + window.scrollY - 80;
-          window.scrollTo({top:y, behavior:'smooth'});
+          requestAnimationFrame(()=>{
+            const offset = getCategoryScrollOffset();
+            const y = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({top:Math.max(0, y), behavior:'smooth'});
+          });
         }
       }
     }
@@ -731,6 +761,7 @@ ${c}`;
               email,
               comments,
               items,
+              admin_status: 'nouveau',
               account_email: session.email || email || '',
               account_role: session.role || 'user'
             };
@@ -996,10 +1027,16 @@ function setActiveNav() {
 }
 
 function loadComponent(id, file) {
+  const host = document.getElementById(id);
+  if (!host) return;
+  if (host.innerHTML.trim().length) {
+    if (id === "header") setActiveNav();
+    return;
+  }
   fetch(file)
     .then(response => response.text())
     .then(data => {
-      document.getElementById(id).innerHTML = data;
+      host.innerHTML = data;
       if (id === "header") {
         setActiveNav();
       }
