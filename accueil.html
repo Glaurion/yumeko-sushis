@@ -486,10 +486,9 @@ async function renderBestSellers() {
 function initCarouselWheelScroll() {
   document.querySelectorAll('.carousel').forEach((carousel) => {
     let isDown = false;
+    let dragPointerId = null;
     let startX = 0;
     let startLeft = 0;
-    let moved = false;
-    let suppressClickUntil = 0;
 
     carousel.addEventListener('wheel', (e) => {
       if (carousel.scrollWidth <= carousel.clientWidth) return;
@@ -500,9 +499,10 @@ function initCarouselWheelScroll() {
     }, { passive: false });
 
     carousel.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      // Desktop: on garde le clic souris normal sur les liens.
+      if (e.pointerType === 'mouse') return;
       isDown = true;
-      moved = false;
+      dragPointerId = e.pointerId;
       startX = e.clientX;
       startLeft = carousel.scrollLeft;
       carousel.classList.add('dragging');
@@ -510,34 +510,23 @@ function initCarouselWheelScroll() {
     });
 
     carousel.addEventListener('pointermove', (e) => {
-      if (!isDown) return;
+      if (!isDown || e.pointerId !== dragPointerId) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 10) moved = true;
       carousel.scrollLeft = startLeft - dx;
     });
 
     function stopDrag(e) {
-      if (!isDown) return;
+      if (!isDown || e.pointerId !== dragPointerId) return;
       isDown = false;
+      dragPointerId = null;
       carousel.classList.remove('dragging');
       carousel.releasePointerCapture?.(e.pointerId);
-      if (moved) {
-        // Bloque uniquement le clic fantome juste apres un glisser.
-        suppressClickUntil = Date.now() + 280;
-      }
     }
 
     carousel.addEventListener('pointerup', stopDrag);
     carousel.addEventListener('pointercancel', stopDrag);
     carousel.addEventListener('pointerleave', stopDrag);
 
-    carousel.addEventListener('click', (e) => {
-      if (Date.now() > suppressClickUntil) return;
-      const link = e.target.closest('a');
-      if (!link) return;
-      e.preventDefault();
-      e.stopPropagation();
-    }, true);
   });
 }
 
