@@ -290,11 +290,7 @@ p{ margin:0; }
   padding:2px 2px 10px;
 }
 
-#best-sellers .carousel{ justify-content:center; }
-
-@media (max-width:900px){
-  #best-sellers .carousel{ justify-content:flex-start; }
-}
+#best-sellers .carousel{ justify-content:flex-start; }
 
 .carousel-item{
   flex:0 0 260px;
