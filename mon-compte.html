@@ -651,6 +651,7 @@
         <h3 id="orderModalTitle" style="margin:0;color:#c2173b;">Detail de commande</h3>
         <button id="orderModalClose" class="modal-close" type="button" aria-label="Fermer">&times;</button>
       </div>
+      <p id="adminOrderStatusHint" class="small-note hidden" style="margin-top:8px;"></p>
       <div id="orderModalMeta" class="modal-meta"></div>
       <div id="orderModalItems"></div>
       <div id="orderModalComment" class="small-note" style="margin-top:10px;"></div>
@@ -662,7 +663,6 @@
         <button id="printPdfBtn" class="btn-light" type="button">Imprimer PDF</button>
         <button id="markDoneBtn" class="btn-main" type="button">Marquer terminee</button>
       </div>
-      <p id="adminOrderStatusHint" class="small-note hidden" style="margin-top:8px;"></p>
     </div>
   </div>
 
@@ -763,6 +763,17 @@
       return 'status-' + normalizeOrderStatus(status);
     }
 
+    function parseOrderNumber(order) {
+      const n = Number(order && order.order_no);
+      return Number.isInteger(n) && n > 0 ? n : 0;
+    }
+
+    function getOrderDisplayId(order) {
+      const no = parseOrderNumber(order);
+      if (no > 0) return 'YUMEKO #' + no;
+      return String(order && order.id || 'Commande');
+    }
+
     function readOrders() {
       const raw = readJSON(ORDERS_KEY, []);
       const list = Array.isArray(raw) ? raw.filter(o => o && typeof o === 'object') : [];
@@ -774,6 +785,25 @@
           changed = true;
         }
       });
+
+      const usedNumbers = new Set();
+      list.forEach((order) => {
+        const n = parseOrderNumber(order);
+        if (n > 0) usedNumbers.add(n);
+      });
+
+      const missing = list
+        .filter((order) => parseOrderNumber(order) === 0)
+        .sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
+
+      let nextNo = 1;
+      missing.forEach((order) => {
+        while (usedNumbers.has(nextNo)) nextNo += 1;
+        order.order_no = nextNo;
+        usedNumbers.add(nextNo);
+        changed = true;
+      });
+
       if (changed) writeJSON(ORDERS_KEY, list);
       return list;
     }
@@ -892,10 +922,11 @@
         const previewItems = (Array.isArray(order.items) ? order.items : []).slice(0, 2);
         const previewText = previewItems.map(it => escapeHtml(it.name)).join(' / ');
         const hasMore = (Array.isArray(order.items) ? order.items.length : 0) > 2;
+        const displayId = escapeHtml(getOrderDisplayId(order));
         return (
           '<button type="button" class="order-summary" data-order-index="' + idx + '">' +
             '<div class="order-head">' +
-              '<span>' + escapeHtml(order.id || 'Commande') + '</span>' +
+              '<span>' + displayId + '</span>' +
               '<span>' + formatDate(order.created_at) + '</span>' +
             '</div>' +
             '<div class="order-summary-meta">' +
@@ -924,6 +955,7 @@
         const count = getOrderItemsCount(order);
         const customer = escapeHtml(order.customer_name || 'Client');
         const email = escapeHtml(order.email || order.account_email || '-');
+        const displayId = escapeHtml(getOrderDisplayId(order));
         const status = normalizeOrderStatus(order.admin_status);
         const statusClass = getOrderStatusClass(status);
         const statusLabel = getOrderStatusLabel(status);
@@ -932,7 +964,7 @@
           '<div class="order-card admin-order-card">' +
             '<button type="button" class="order-summary admin-order-summary" data-admin-order-index="' + idx + '">' +
               '<div class="order-head">' +
-                '<span>' + escapeHtml(order.id || 'Commande') + '</span>' +
+                '<span>' + displayId + '</span>' +
                 '<span>' + formatDate(order.created_at) + '</span>' +
               '</div>' +
               '<div class="order-summary-meta">' +
@@ -1169,7 +1201,7 @@
     }
 
     function buildOrderPrintDocument(order, mode) {
-      const orderId = escapeHtml(order.id || '-');
+      const orderId = escapeHtml(getOrderDisplayId(order));
       const customer = escapeHtml(order.customer_name || 'Client');
       const email = escapeHtml(order.email || order.account_email || '-');
       const date = escapeHtml(formatDate(order.created_at));
@@ -1268,7 +1300,7 @@
       selectedOrder = order;
       const count = getOrderItemsCount(order);
       meta.innerHTML =
-        '<div><strong>Commande:</strong> ' + escapeHtml(order.id || '-') + '</div>' +
+        '<div><strong>Commande:</strong> ' + escapeHtml(getOrderDisplayId(order)) + '</div>' +
         '<div><strong>Date:</strong> ' + formatDate(order.created_at) + '</div>' +
         '<div><strong>Total articles:</strong> ' + count + '</div>';
 

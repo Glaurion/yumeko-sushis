@@ -312,6 +312,7 @@
   <script>
     /* --- Donnees --- */
     const categories = {
+      'BEST SELLER':[],
       'MAKI':['M1','M2','M3','M4','M5','M6','M7','M8'],
       'CALIFORNIA':['C1','C2','C3','C4','C5','C6','C7','C8','C9'],
       'MAKI PRINTEMPS':['P1','P2','P3','P4'],
@@ -459,13 +460,56 @@
         .map((item)=>String(item.code).toUpperCase());
     }
 
+    function getBestSellerFallbackCodes(){
+      return ['C9','R1','M1','N1','S1'];
+    }
+
+    function syncBestSellerCategory(){
+      let topCodes = getTopBestSellerCodes(5)
+        .filter((code)=>!!catalog[code]);
+      if(!topCodes.length){
+        topCodes = getBestSellerFallbackCodes().filter((code)=>!!catalog[code]);
+      }
+      categories['BEST SELLER'] = topCodes.slice(0, 5);
+    }
+
+    function findMainCategoryForCode(code){
+      const wanted = String(code || '').trim().toUpperCase();
+      if(!wanted) return '';
+      const entry = Object.entries(categories).find(([cat, codes])=>{
+        if(cat === 'BEST SELLER') return false;
+        return Array.isArray(codes) && codes.includes(wanted);
+      });
+      return entry ? entry[0] : '';
+    }
+
+    function getOrderCountForCode(code, counts){
+      const key = String(code || '').trim().toUpperCase();
+      const item = counts && counts[key];
+      return Math.max(0, Number(item && item.count) || 0);
+    }
+
+    function getSortedCodesForCategory(cat, codes, counts){
+      const list = Array.isArray(codes) ? [...codes] : [];
+      if(cat === 'BEST SELLER') return list;
+      return list.sort((a, b)=>{
+        const ca = getOrderCountForCode(a, counts);
+        const cb = getOrderCountForCode(b, counts);
+        if(cb !== ca) return cb - ca;
+        const na = String((catalog[a] && catalog[a].name) || a);
+        const nb = String((catalog[b] && catalog[b].name) || b);
+        return na.localeCompare(nb, 'fr', { sensitivity:'base' });
+      });
+    }
+
     function applyBestSellerBadges(){
       document.querySelectorAll('.item-card .best-badge').forEach((badge)=>{
         badge.hidden = true;
         badge.textContent = '';
       });
 
-      const top = getTopBestSellerCodes(4);
+      let top = getTopBestSellerCodes(5);
+      if(!top.length) top = getBestSellerFallbackCodes();
       top.forEach((code, idx)=>{
         document.querySelectorAll(`.item-card[data-code="${code}"] .best-badge`).forEach((badge)=>{
           badge.hidden = false;
@@ -497,6 +541,7 @@
       return found || fallback;
     }
 
+    syncBestSellerCategory();
     const initialCategory = getInitialCategory();
 
     function getCategoryScrollOffset(){
@@ -543,8 +588,10 @@
     function buildMenu(){
       const menu=document.getElementById('menu'); if(!menu) return;
       menu.innerHTML='';
+      const counts = rebuildBestSellerCountsFromOrdersIfNeeded();
 
       for(const [cat,codes] of Object.entries(categories)){
+        const sortedCodes = getSortedCodesForCategory(cat, codes, counts);
         const sec=document.createElement('section'); sec.className='cat-section'; sec.id = slugifyCat(cat);
 
         const header=document.createElement('div');
@@ -553,27 +600,43 @@
 
         const grid=document.createElement('div'); grid.className='menu-grid';
 
-        codes.forEach(code=>{
+        sortedCodes.forEach((code, idx)=>{
           const d=catalog[code]||{name:code, img:code.toLowerCase()+'.jpg'};
           const name=d.name||code;
           const img='images/'+(d.img || (code.toLowerCase()+'.jpg'));
           const pieces=d.pieces ?? '';
           const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
-          card.innerHTML=`
-            <span class="best-badge" hidden></span>
-            <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
-            <div class="item-name">${name}</div>
-            <div class="card-body">
-              <div class="card-footer">
-                <div class="meta">
-                  <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
+          if(cat === 'BEST SELLER'){
+            const origin = findMainCategoryForCode(code);
+            card.innerHTML=`
+              <span class="best-badge">BEST #${idx + 1}</span>
+              <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
+              <div class="item-name">${name}</div>
+              <div class="card-body">
+                <div class="card-footer">
+                  <div class="meta">
+                    <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
+                    <span class="pieces">${origin ? 'Dans ' + origin : ''}</span>
+                  </div>
                 </div>
-                <div class="ctrls">
-                  <span class="qty-badge qty" data-item="${code}- ${name}"></span>
-                  <button class="circle card-plus" data-item="${code}- ${name}" type="button" aria-label="Ajouter ${name}">+</button>
+              </div>`;
+          }else{
+            card.innerHTML=`
+              <span class="best-badge" hidden></span>
+              <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
+              <div class="item-name">${name}</div>
+              <div class="card-body">
+                <div class="card-footer">
+                  <div class="meta">
+                    <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
+                  </div>
+                  <div class="ctrls">
+                    <span class="qty-badge qty" data-item="${code}- ${name}"></span>
+                    <button class="circle card-plus" data-item="${code}- ${name}" type="button" aria-label="Ajouter ${name}">+</button>
+                  </div>
                 </div>
-              </div>
-            </div>`;
+              </div>`;
+          }
           grid.appendChild(card);
         });
 
@@ -625,6 +688,15 @@
         }
         function saveOrders(list){
           try{ localStorage.setItem(ORDERS_KEY, JSON.stringify(list)); }catch(e){}
+        }
+        function getNextOrderNumber(orders){
+          const list = Array.isArray(orders) ? orders : [];
+          let maxNo = 0;
+          list.forEach((o)=>{
+            const n = Number(o && o.order_no);
+            if(Number.isInteger(n) && n > maxNo) maxNo = n;
+          });
+          return maxNo + 1;
         }
         function getSession(){
           try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
@@ -809,8 +881,11 @@ ${c}`;
             const email = (form?.querySelector('[name="email"]')?.value?.trim().toLowerCase() || String(session.email || '').trim().toLowerCase());
             const comments = getCurrentComment();
             const items = getCartItems().map(({code, name, qty}) => ({ code, name, qty }));
+            const orders = readOrders();
+            const nextOrderNo = getNextOrderNumber(orders);
             const record = {
               id: 'CMD-' + Date.now(),
+              order_no: nextOrderNo,
               created_at: new Date().toISOString(),
               customer_name: `${first} ${last}`.trim() || 'Client',
               email,
@@ -820,7 +895,6 @@ ${c}`;
               account_email: session.email || email || '',
               account_role: session.role || 'user'
             };
-            const orders = readOrders();
             orders.unshift(record);
             saveOrders(orders);
             updateBestSellerCounts(items);

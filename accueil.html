@@ -42,7 +42,7 @@
   <div>
     <h1>Bienvenue chez YUMEKO SUSHIS</h1>
     <p>Des saveurs japonaises preparees avec passion.</p>
-    <a href="index.html" class="btn">Commande ici des maintenant</a>
+    <a href="index.html" class="btn">Commande <span class="cta-focus">ICI</span> des maintenant</a>
   </div>
 </section>
 
@@ -157,33 +157,6 @@
       <p class="review-text">Aucun avis pour le moment. Soyez le premier a donner votre retour.</p>
     </article>
   </div>
-
-  <form id="reviewForm" class="review-form" novalidate>
-    <div class="review-form-grid">
-      <div class="review-field">
-        <label for="reviewName">Votre prenom (optionnel)</label>
-        <input id="reviewName" name="name" type="text" maxlength="40" placeholder="Ex : Lea" />
-      </div>
-      <div class="review-field">
-        <label for="reviewRating">Note</label>
-        <select id="reviewRating" name="rating">
-          <option value="5">5 / 5</option>
-          <option value="4">4 / 5</option>
-          <option value="3">3 / 5</option>
-          <option value="2">2 / 5</option>
-          <option value="1">1 / 5</option>
-        </select>
-      </div>
-      <div class="review-field full">
-        <label for="reviewText">Votre avis</label>
-        <textarea id="reviewText" name="text" minlength="8" maxlength="400" required placeholder="Dites-nous ce que vous avez aime, ou ce que nous pouvons ameliorer."></textarea>
-      </div>
-    </div>
-    <div class="review-form-actions">
-      <button type="submit" class="btn">Envoyer mon avis</button>
-    </div>
-    <p id="reviewStatus" class="status" aria-live="polite"></p>
-  </form>
 </section>
 
 <div id="footer"></div>
@@ -331,26 +304,6 @@ async function readReviewsOnline() {
   return Array.isArray(data) ? data : [];
 }
 
-async function saveReviewOnline(review) {
-  const payload = {
-    name: review.name,
-    rating: review.rating,
-    text: review.text
-  };
-  const url = `${SUPABASE_URL}/rest/v1/${REVIEWS_TABLE}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      ...getSupabaseHeaders(true),
-      Prefer: 'return=minimal'
-    },
-    body: JSON.stringify(payload)
-  });
-  if (!response.ok) {
-    throw new Error(`Erreur Supabase ecriture (${response.status})`);
-  }
-}
-
 function normalizeReview(review) {
   const rawName = String(review && review.name || '').trim();
   const name = rawName ? rawName.slice(0, 40) : 'Client';
@@ -401,53 +354,16 @@ async function renderReviews() {
     const safeDate = escapeHtml(formatReviewDate(r.created_at));
     return `
       <article class="review-card">
-        <div class="review-stars" aria-label="${r.rating} etoiles sur 5">${stars}</div>
+        <div class="review-head">
+          <div class="review-author">
+            <p class="review-name">${safeName}</p>
+            <p class="review-meta">${safeDate}</p>
+          </div>
+          <div class="review-stars" aria-label="${r.rating} etoiles sur 5">${stars}</div>
+        </div>
         <p class="review-text">${safeText}</p>
-        <p class="review-name">${safeName}</p>
-        <p class="review-meta">${safeDate}</p>
       </article>`;
   }).join('');
-}
-
-function initReviewForm() {
-  const form = document.getElementById('reviewForm');
-  const status = document.getElementById('reviewStatus');
-  if (!form || !status) return;
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nameInput = document.getElementById('reviewName');
-    const ratingInput = document.getElementById('reviewRating');
-    const textInput = document.getElementById('reviewText');
-    const text = String(textInput && textInput.value || '').trim();
-    if (text.length < 8) {
-      status.textContent = 'Votre avis doit contenir au moins 8 caracteres.';
-      status.className = 'status err';
-      return;
-    }
-
-    const review = normalizeReview({
-      name: String(nameInput && nameInput.value || '').trim() || 'Client',
-      rating: Number(ratingInput && ratingInput.value || 5),
-      text,
-      created_at: new Date().toISOString(),
-      source: 'accueil'
-    });
-
-    try {
-      await saveReviewOnline(review);
-    } catch (error) {
-      status.textContent = 'Erreur lors de lenvoi de lavis. Reessayez dans quelques instants.';
-      status.className = 'status err';
-      return;
-    }
-
-    form.reset();
-    if (ratingInput) ratingInput.value = '5';
-    status.textContent = 'Merci, votre avis a bien ete envoye. Il sera visible apres validation.';
-    status.className = 'status ok';
-    await renderReviews();
-  });
 }
 
 function readBestSellerCounts() {
@@ -508,13 +424,16 @@ function renderBestSellers() {
   const fallback = [
     { code: 'C9', name: getProductNameFromCode('C9'), img: 'c9.jpg', category: 'CALIFORNIA', count: 0 },
     { code: 'R1', name: getProductNameFromCode('R1'), img: 'r1.jpg', category: 'ROLLS', count: 0 },
-    { code: 'M1', name: getProductNameFromCode('M1'), img: 'm1.jpg', category: 'MAKI', count: 0 }
+    { code: 'M1', name: getProductNameFromCode('M1'), img: 'm1.jpg', category: 'MAKI', count: 0 },
+    { code: 'N1', name: getProductNameFromCode('N1'), img: 'n1.jpg', category: 'NIGIRI', count: 0 },
+    { code: 'S1', name: getProductNameFromCode('S1'), img: 's1.jpg', category: 'SASHIMI', count: 0 }
   ];
 
-  let best = getTopBestSellers(3);
+  let best = getTopBestSellers(5);
   if (!best.length) best = fallback;
+  best = best.slice(0, 5);
 
-  box.innerHTML = best.map((item) => {
+  box.innerHTML = best.map((item, idx) => {
     const code = String(item.code || '').toUpperCase();
     const name = escapeHtml(getProductNameFromCode(code, item.name));
     const img = escapeHtml(getProductImageFromCode(code, item.img));
@@ -523,6 +442,7 @@ function renderBestSellers() {
     return `
       <a class="carousel-item-link" href="${href}">
         <div class="carousel-item">
+          <span class="best-badge">BEST #${idx + 1}</span>
           <img loading="lazy" decoding="async" src="images/${img}" alt="${name}">
           <h3>${name}</h3>
         </div>
@@ -558,7 +478,6 @@ function initCarouselWheelScroll() {
 initCarouselWheelScroll();
 renderBestSellers();
 renderReviews();
-initReviewForm();
 </script>
 
 </body>
