@@ -377,6 +377,10 @@
     const fmt = new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
     const BESTSELLER_KEY = 'yumeko_bestseller_counts_v1';
     const ORDERS_HISTORY_KEY = 'yumeko_orders_v1';
+    const SUPABASE_URL = 'https://rlyouiuobnhsvxtecriu.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RBQC4-HKQ8L1bncB_4VJAA_G_xXqg_-';
+    const BESTSELLER_TABLE = 'best_seller_counts';
+    let remoteBestSellerCounts = null;
 
     /* Publication globale pour eviter l'erreur window.catalog undefined */
     window.categories = categories;
@@ -392,6 +396,96 @@
 
     function saveBestSellerCounts(data){
       try{ localStorage.setItem(BESTSELLER_KEY, JSON.stringify(data)); }catch(e){}
+    }
+
+    function getSupabaseHeaders(includeJson){
+      const headers = {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+      };
+      if(includeJson) headers['Content-Type'] = 'application/json';
+      return headers;
+    }
+
+    function getBestSellerSourceCounts(){
+      if(remoteBestSellerCounts && Object.keys(remoteBestSellerCounts).length){
+        return remoteBestSellerCounts;
+      }
+      return rebuildBestSellerCountsFromOrdersIfNeeded();
+    }
+
+    async function loadBestSellerCountsOnline(){
+      const url = `${SUPABASE_URL}/rest/v1/${BESTSELLER_TABLE}?select=code,name,img,category,count&order=count.desc.nullslast,code.asc`;
+      const response = await fetch(url, { method:'GET', headers:getSupabaseHeaders(false) });
+      if(!response.ok) throw new Error(`Erreur Supabase best-seller lecture (${response.status})`);
+      const data = await response.json();
+      const map = {};
+      (Array.isArray(data) ? data : []).forEach((row)=>{
+        const code = String(row && row.code || '').trim().toUpperCase();
+        if(!code) return;
+        map[code] = {
+          code,
+          name: String(row && row.name || ''),
+          img: String(row && row.img || ''),
+          category: String(row && row.category || ''),
+          count: Math.max(0, Number(row && row.count) || 0)
+        };
+      });
+      remoteBestSellerCounts = map;
+      return map;
+    }
+
+    async function syncBestSellerCountsOnline(items){
+      if(!Array.isArray(items) || !items.length) return;
+      const increments = {};
+      items.forEach(({code, name, qty})=>{
+        const key = String(code || '').trim().toUpperCase();
+        if(!key) return;
+        if(!increments[key]){
+          const d = catalog[key] || {};
+          increments[key] = {
+            code: key,
+            name: name || d.name || key,
+            img: d.img || (key.toLowerCase() + '.jpg'),
+            category: getCategoryByCode(key),
+            inc: 0
+          };
+        }
+        increments[key].inc += (Number(qty) || 1);
+      });
+      const codes = Object.keys(increments);
+      if(!codes.length) return;
+
+      const inList = codes.join(',');
+      const readUrl = `${SUPABASE_URL}/rest/v1/${BESTSELLER_TABLE}?select=code,count&code=in.(${inList})`;
+      const readRes = await fetch(readUrl, { method:'GET', headers:getSupabaseHeaders(false) });
+      if(!readRes.ok) throw new Error(`Erreur Supabase best-seller lecture update (${readRes.status})`);
+      const existingRows = await readRes.json();
+      const existing = {};
+      (Array.isArray(existingRows) ? existingRows : []).forEach((row)=>{
+        const c = String(row && row.code || '').trim().toUpperCase();
+        if(!c) return;
+        existing[c] = Math.max(0, Number(row && row.count) || 0);
+      });
+
+      const payload = codes.map((c)=>{
+        const item = increments[c];
+        return {
+          code: item.code,
+          name: item.name,
+          img: item.img,
+          category: item.category,
+          count: (existing[c] || 0) + item.inc
+        };
+      });
+
+      const writeUrl = `${SUPABASE_URL}/rest/v1/${BESTSELLER_TABLE}?on_conflict=code`;
+      const writeRes = await fetch(writeUrl, {
+        method:'POST',
+        headers:{ ...getSupabaseHeaders(true), Prefer:'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if(!writeRes.ok) throw new Error(`Erreur Supabase best-seller ecriture (${writeRes.status})`);
     }
 
     function rebuildBestSellerCountsFromOrdersIfNeeded(){
@@ -450,10 +544,14 @@
         counts[key].count = (Number(counts[key].count) || 0) + (Number(qty) || 1);
       });
       saveBestSellerCounts(counts);
+      syncBestSellerCountsOnline(items)
+        .then(()=>loadBestSellerCountsOnline())
+        .then(()=>applyBestSellerBadges())
+        .catch(()=>{});
     }
 
     function getTopBestSellerCodes(limit){
-      return Object.values(rebuildBestSellerCountsFromOrdersIfNeeded())
+      return Object.values(getBestSellerSourceCounts())
         .filter((item)=>item && Number(item.count) > 0 && item.code)
         .sort((a,b)=>Number(b.count)-Number(a.count))
         .slice(0, limit)
@@ -588,7 +686,7 @@
     function buildMenu(){
       const menu=document.getElementById('menu'); if(!menu) return;
       menu.innerHTML='';
-      const counts = rebuildBestSellerCountsFromOrdersIfNeeded();
+      const counts = getBestSellerSourceCounts();
 
       for(const [cat,codes] of Object.entries(categories)){
         const sortedCodes = getSortedCodesForCategory(cat, codes, counts);
@@ -647,11 +745,34 @@
       applyBestSellerBadges();
     }
 
+    function refreshMenuFromRemoteBestSellers(){
+      syncBestSellerCategory();
+      const activePill = document.querySelector('.pill.active');
+      const activeCategory = activePill ? String(activePill.textContent || '').trim() : initialCategory;
+      const hasCartQty = Array.from(document.querySelectorAll('.qty[data-item]'))
+        .some((el)=> (parseInt(el.textContent, 10) || 0) > 0);
+      if(!hasCartQty){
+        buildCategoryNav();
+        buildMenu();
+        showOnlyCategory(activeCategory || initialCategory, false);
+      }else{
+        applyBestSellerBadges();
+      }
+    }
+
     // INIT ROBUSTE (menu)
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', ()=>{ buildCategoryNav(); buildMenu(); showOnlyCategory(initialCategory, false); });
+      document.addEventListener('DOMContentLoaded', ()=>{
+        buildCategoryNav(); buildMenu(); showOnlyCategory(initialCategory, false);
+        loadBestSellerCountsOnline()
+          .then(()=>{ refreshMenuFromRemoteBestSellers(); })
+          .catch(()=>{});
+      });
     } else {
       buildCategoryNav(); buildMenu(); showOnlyCategory(initialCategory, false);
+      loadBestSellerCountsOnline()
+        .then(()=>{ refreshMenuFromRemoteBestSellers(); })
+        .catch(()=>{});
     }
   </script>
 

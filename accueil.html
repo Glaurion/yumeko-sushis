@@ -280,6 +280,7 @@ function getProductImageFromCode(code, fallbackImg) {
 const SUPABASE_URL = 'https://rlyouiuobnhsvxtecriu.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RBQC4-HKQ8L1bncB_4VJAA_G_xXqg_-';
 const REVIEWS_TABLE = 'reviews';
+const BESTSELLER_TABLE = 'best_seller_counts';
 
 function getSupabaseHeaders(includeJson) {
   const headers = {
@@ -299,6 +300,20 @@ async function readReviewsOnline() {
   });
   if (!response.ok) {
     throw new Error(`Erreur Supabase lecture (${response.status})`);
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
+async function readBestSellerCountsOnline() {
+  const query = '?select=code,name,img,category,count&order=count.desc.nullslast,code.asc&limit=5';
+  const url = `${SUPABASE_URL}/rest/v1/${BESTSELLER_TABLE}${query}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: getSupabaseHeaders(false)
+  });
+  if (!response.ok) {
+    throw new Error(`Erreur Supabase best-seller lecture (${response.status})`);
   }
   const data = await response.json();
   return Array.isArray(data) ? data : [];
@@ -409,7 +424,25 @@ function rebuildBestSellerCountsFromOrdersIfNeeded() {
   return counts;
 }
 
-function getTopBestSellers(limit) {
+async function getTopBestSellers(limit) {
+  try {
+    const online = (await readBestSellerCountsOnline())
+      .map((row) => {
+        const code = String(row && row.code || '').trim().toUpperCase();
+        if (!code) return null;
+        return {
+          code,
+          name: getProductNameFromCode(code, String(row && row.name || code)),
+          img: getProductImageFromCode(code, row && row.img),
+          category: String(row && row.category || getCategoryFromCode(code)),
+          count: Math.max(0, Number(row && row.count) || 0)
+        };
+      })
+      .filter(Boolean)
+      .filter((item) => item && Number(item.count) > 0);
+    if (online.length) return online.slice(0, limit);
+  } catch (e) {}
+
   const counts = rebuildBestSellerCountsFromOrdersIfNeeded();
   const list = Object.values(counts)
     .filter((item) => item && Number(item.count) > 0)
@@ -417,7 +450,7 @@ function getTopBestSellers(limit) {
   return list.slice(0, limit);
 }
 
-function renderBestSellers() {
+async function renderBestSellers() {
   const box = document.getElementById('bestSellersCarousel');
   if (!box) return;
 
@@ -429,7 +462,7 @@ function renderBestSellers() {
     { code: 'S1', name: getProductNameFromCode('S1'), img: 's1.jpg', category: 'SASHIMI', count: 0 }
   ];
 
-  let best = getTopBestSellers(5);
+  let best = await getTopBestSellers(5);
   if (!best.length) best = fallback;
   best = best.slice(0, 5);
 
