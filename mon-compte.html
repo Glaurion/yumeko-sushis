@@ -614,27 +614,16 @@
 
                 <div id="adminPanelItems" class="hidden">
                   <p class="muted">Articles à préparer selon les commandes en cours (hors commandes terminées).</p>
-                  <div class="profile-actions">
-                    <button id="refreshItemsBtn" class="btn-light" type="button">Mettre à jour</button>
-                    <button id="resetItemsBtn" class="btn-light" type="button">Réinitialiser les coches</button>
-                  </div>
                   <div id="adminItems" class="course-list"></div>
                 </div>
 
                 <div id="adminPanelCourses" class="hidden">
                   <p class="muted">Courses ingrédients estimées à partir des commandes en cours (saumon, riz, etc.).</p>
-                  <div class="profile-actions">
-                    <button id="refreshCoursesBtn" class="btn-light" type="button">Mettre à jour</button>
-                    <button id="resetCoursesBtn" class="btn-light" type="button">Réinitialiser les coches</button>
-                  </div>
                   <div id="adminCourses" class="course-list"></div>
                 </div>
 
                 <div id="adminPanelReviews" class="hidden">
                   <p class="muted">Moderation des avis clients (validation avant affichage public).</p>
-                  <div class="profile-actions">
-                    <button id="refreshReviewsBtn" class="btn-light" type="button">Rafraîchir les avis</button>
-                  </div>
                   <p id="adminReviewsStatus" class="status" aria-live="polite"></p>
 
                   <h4 class="admin-subtitle">En attente</h4>
@@ -1518,6 +1507,32 @@
         ? '@page{size:100mm 70mm; margin:6mm;}'
         : '@page{size:A4; margin:12mm;}';
       const title = isLabel ? 'Etiquette de commande' : 'Commande YUMEKO';
+      let logoSrc = 'images/logo-yumeko.png';
+      try {
+        logoSrc = new URL('images/logo-yumeko.png', window.location.href).href;
+      } catch (e) {}
+      const safeLogoSrc = escapeHtml(logoSrc);
+
+      const headHtml = isLabel
+        ? '<div class="label-head">' +
+            '<h1>' + title + '</h1>' +
+            '<img class="label-logo" src="' + safeLogoSrc + '" alt="Logo YUMEKO SUSHIS" />' +
+          '</div>'
+        : '<h1>' + title + '</h1>';
+
+      const metaHtml = isLabel
+        ? '<div class="meta">' +
+            '<div><strong>Commande:</strong> ' + orderId + '</div>' +
+            '<div><strong>Client:</strong> ' + customer + '</div>' +
+          '</div>'
+        : '<div class="meta">' +
+            '<div><strong>Commande:</strong> ' + orderId + '</div>' +
+            '<div><strong>Date:</strong> ' + date + '</div>' +
+            '<div><strong>Client:</strong> ' + customer + '</div>' +
+            '<div><strong>Email:</strong> ' + email + '</div>' +
+            '<div><strong>Total articles:</strong> ' + count + '</div>' +
+            '<span class="status">Statut: ' + escapeHtml(status) + '</span>' +
+          '</div>';
 
       return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>' + title + ' - ' + orderId + '</title>' +
         '<style>' +
@@ -1525,6 +1540,9 @@
           'body{font-family:Poppins,Arial,sans-serif;color:#121212;margin:0;}' +
           '.sheet{border:1px solid #ddd;border-radius:12px;padding:' + (isLabel ? '8px' : '14px') + ';}' +
           'h1{margin:0 0 8px;font-size:' + (isLabel ? '16px' : '20px') + ';color:#c2173b;}' +
+          '.label-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}' +
+          '.label-head h1{margin:0;font-size:15px;line-height:1.2;}' +
+          '.label-logo{width:40px;height:40px;object-fit:contain;border-radius:10px;border:1px solid #ddd;background:#fff;flex:0 0 auto;}' +
           '.meta{display:grid;gap:4px;font-size:' + (isLabel ? '12px' : '14px') + ';}' +
           '.status{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;border:1px solid #e4d7bb;background:#fff8e4;font-weight:700;}' +
           'h2{font-size:' + (isLabel ? '13px' : '16px') + ';margin:10px 0 6px;}' +
@@ -1533,15 +1551,8 @@
           '.comments{margin-top:8px;font-size:' + (isLabel ? '11px' : '13px') + ';color:#37434a;}' +
         '</style></head><body>' +
         '<div class="sheet">' +
-          '<h1>' + title + '</h1>' +
-          '<div class="meta">' +
-            '<div><strong>Commande:</strong> ' + orderId + '</div>' +
-            '<div><strong>Date:</strong> ' + date + '</div>' +
-            '<div><strong>Client:</strong> ' + customer + '</div>' +
-            '<div><strong>Email:</strong> ' + email + '</div>' +
-            '<div><strong>Total articles:</strong> ' + count + '</div>' +
-            '<span class="status">Statut: ' + escapeHtml(status) + '</span>' +
-          '</div>' +
+          headHtml +
+          metaHtml +
           '<h2>Articles</h2>' +
           itemsHtml +
           '<div class="comments"><strong>Commentaire:</strong> ' + safeComments + '</div>' +
@@ -1919,28 +1930,6 @@
       document.getElementById('adminTabReviews')?.addEventListener('click', () => {
         setAdminTab('reviews');
         renderReviewsForAdmin();
-      });
-
-      document.getElementById('refreshItemsBtn')?.addEventListener('click', () => {
-        renderItemsForAdmin();
-      });
-
-      document.getElementById('resetItemsBtn')?.addEventListener('click', () => {
-        saveItemChecks({});
-        renderItemsForAdmin();
-      });
-
-      document.getElementById('refreshCoursesBtn')?.addEventListener('click', () => {
-        renderCoursesForAdmin();
-      });
-
-      document.getElementById('refreshReviewsBtn')?.addEventListener('click', () => {
-        renderReviewsForAdmin();
-      });
-
-      document.getElementById('resetCoursesBtn')?.addEventListener('click', () => {
-        saveCoursesChecks({});
-        renderCoursesForAdmin();
       });
 
       document.getElementById('adminItems')?.addEventListener('change', (e) => {

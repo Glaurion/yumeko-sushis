@@ -50,19 +50,19 @@
 <section class="carousel-wrapper" id="best-sellers">
   <h2 class="carousel-title">Nos best-sellers</h2>
   <div class="carousel" id="bestSellersCarousel">
-    <a class="carousel-item-link" href="index.html?cat=CALIFORNIA">
+    <a class="carousel-item-link" href="index.html?cat=BEST%20SELLER">
       <div class="carousel-item">
         <img loading="lazy" decoding="async" src="images/c9.jpg" alt="CALIFORNIA SAUMON CHEESE OIGNONS FRITS">
         <h3>CALIFORNIA SAUMON CHEESE OIGNONS FRITS</h3>
       </div>
     </a>
-    <a class="carousel-item-link" href="index.html?cat=ROLLS">
+    <a class="carousel-item-link" href="index.html?cat=BEST%20SELLER">
       <div class="carousel-item">
         <img loading="lazy" decoding="async" src="images/r1.jpg" alt="ROLLS SAUMON AVOCAT CHEESE">
         <h3>ROLLS SAUMON AVOCAT CHEESE</h3>
       </div>
     </a>
-    <a class="carousel-item-link" href="index.html?cat=MAKI">
+    <a class="carousel-item-link" href="index.html?cat=BEST%20SELLER">
       <div class="carousel-item">
         <img loading="lazy" decoding="async" src="images/m1.jpg" alt="MAKI SAUMON">
         <h3>MAKI SAUMON</h3>
@@ -495,8 +495,7 @@ async function renderBestSellers() {
     const code = String(item.code || '').toUpperCase();
     const name = escapeHtml(getProductNameFromCode(code, item.name));
     const img = escapeHtml(getProductImageFromCode(code, item.img));
-    const category = item.category || getCategoryFromCode(code);
-    const href = 'index.html?cat=' + encodeURIComponent(category);
+    const href = 'index.html?cat=' + encodeURIComponent('BEST SELLER');
     return `
       <a class="carousel-item-link" href="${href}">
         <div class="carousel-item">

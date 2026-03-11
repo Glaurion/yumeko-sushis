@@ -216,7 +216,7 @@ p{ margin:0; }
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.08em;
-  color:var(--brand-strong);
+  color:#111;
 }
 
 .btn-light,
