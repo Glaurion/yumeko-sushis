@@ -1212,7 +1212,8 @@
       N1: { 'RIZ CUIT (g)': 30, 'SAUMON (g)': 20 },
       N2: { 'RIZ CUIT (g)': 30, 'AVOCAT (U)': 2, 'NORI (U)': 0.1 },
       O1: { 'RIZ CUIT (g)': 145, 'NORI (U)': 0.25 },
-      BR1: { 'EMMENTAL (U)': 1, 'CARPACHO (U)': 2 },
+      // Regle metier: pour 15 brochettes yakitori -> 1 emmental + 2 carpaccio.
+      BR1: { 'EMMENTAL (U)': 1 / 15, 'CARPACHO (U)': 2 / 15 },
 
       B1: { 'TSINGTAO (U)': 1 },
       B2: { 'ASAHI (U)': 1 },
@@ -1514,14 +1515,11 @@
       const safeLogoSrc = escapeHtml(logoSrc);
 
       const headHtml = isLabel
-        ? '<div class="label-head">' +
-            '<h1>' + title + '</h1>' +
-            '<img class="label-logo" src="' + safeLogoSrc + '" alt="Logo YUMEKO SUSHIS" />' +
-          '</div>'
+        ? '<img class="label-logo" src="' + safeLogoSrc + '" alt="Logo YUMEKO SUSHIS" />'
         : '<h1>' + title + '</h1>';
 
       const metaHtml = isLabel
-        ? '<div class="meta">' +
+        ? '<div class="meta meta-label">' +
             '<div><strong>Commande:</strong> ' + orderId + '</div>' +
             '<div><strong>Client:</strong> ' + customer + '</div>' +
           '</div>'
@@ -1533,22 +1531,25 @@
             '<div><strong>Total articles:</strong> ' + count + '</div>' +
             '<span class="status">Statut: ' + escapeHtml(status) + '</span>' +
           '</div>';
+      const thanksHtml = isLabel
+        ? '<div class="label-thanks">Merci pour votre commande. A très bientôt chez YUMEKO SUSHIS.</div>'
+        : '';
 
       return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>' + title + ' - ' + orderId + '</title>' +
         '<style>' +
           pageStyle +
           'body{font-family:Poppins,Arial,sans-serif;color:#121212;margin:0;}' +
-          '.sheet{border:1px solid #ddd;border-radius:12px;padding:' + (isLabel ? '8px' : '14px') + ';}' +
+          '.sheet{position:relative;border:1px solid #ddd;border-radius:12px;padding:' + (isLabel ? '8px' : '14px') + ';}' +
           'h1{margin:0 0 8px;font-size:' + (isLabel ? '16px' : '20px') + ';color:#c2173b;}' +
-          '.label-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}' +
-          '.label-head h1{margin:0;font-size:15px;line-height:1.2;}' +
-          '.label-logo{width:40px;height:40px;object-fit:contain;border-radius:10px;border:1px solid #ddd;background:#fff;flex:0 0 auto;}' +
+          '.label-logo{width:40px;height:40px;object-fit:contain;border-radius:10px;border:1px solid #ddd;background:#fff;position:absolute;top:8px;right:8px;}' +
           '.meta{display:grid;gap:4px;font-size:' + (isLabel ? '12px' : '14px') + ';}' +
+          '.meta-label{max-width:calc(100% - 52px);margin-top:0;}' +
           '.status{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;border:1px solid #e4d7bb;background:#fff8e4;font-weight:700;}' +
           'h2{font-size:' + (isLabel ? '13px' : '16px') + ';margin:10px 0 6px;}' +
           'ul{margin:0;padding-left:18px;font-size:' + (isLabel ? '12px' : '14px') + ';}' +
           'li{margin:2px 0;}' +
           '.comments{margin-top:8px;font-size:' + (isLabel ? '11px' : '13px') + ';color:#37434a;}' +
+          '.label-thanks{margin-top:10px;padding-top:6px;border-top:1px dashed #e5e5e5;text-align:center;font-size:10px;color:#5b5b5b;}' +
         '</style></head><body>' +
         '<div class="sheet">' +
           headHtml +
@@ -1556,6 +1557,7 @@
           '<h2>Articles</h2>' +
           itemsHtml +
           '<div class="comments"><strong>Commentaire:</strong> ' + safeComments + '</div>' +
+          thanksHtml +
         '</div>' +
       '</body></html>';
     }
