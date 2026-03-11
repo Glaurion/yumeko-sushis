@@ -283,7 +283,7 @@
     </header>
     <div class="body">
       <div id="stepCart" class="step active">
-        <p class="muted" id="sheetIntro">Verifiez votre panier :</p>
+        <p class="muted" id="sheetIntro">Vérifiez votre panier :</p>
         <ul class="recap-list" id="recapList"></ul>
         <div id="recapComment" class="muted" style="margin-top:4px;"></div>
         <div id="quickCommentBlock" class="field full hidden" style="margin-top:10px;">
@@ -295,7 +295,7 @@
         <form id="orderForm" action="#" method="post" novalidate>
           <div class="form-grid">
             <div class="field">
-              <label for="first_name">Prenom</label>
+              <label for="first_name">Prénom</label>
               <input id="first_name" name="first_name" type="text" required autocomplete="given-name" />
             </div>
             <div class="field">
@@ -380,7 +380,7 @@
       CO4:{name:'SAUCE MAYO JAPONAISE EPICEE MAISON', img:'co4.jpg', comp:'', allergens:'Aucun', desc:''},
       CO5:{name:'GINGEMBRE', img:'co5.jpg', comp:'', allergens:'Aucun', desc:''},
       CO6:{name:'WASABI', img:'co6.jpg', comp:'', allergens:'Aucun', desc:''},
-      CO7:{name:'WASABI CACAHUETE', img:'co7.jpg', comp:'', allergens:'Aucun', desc:''},
+      CO7:{name:'WASABI CACAHUÈTE', img:'co7.jpg', comp:'', allergens:'Aucun', desc:''},
       CO8:{name:'WASABI PETIT POIS', img:'co8.jpg', comp:'', allergens:'Aucun', desc:''},
       CO9:{name:'OIGNONS FRITS', img:'co9.jpg', comp:'', allergens:'Aucun', desc:''},
       CO10:{name:'SAUCE SRIRACHA', img:'co10.jpg', comp:'', allergens:'Aucun', desc:''},
@@ -888,8 +888,8 @@
           if(quickCommentBlock) quickCommentBlock.classList.toggle('hidden', !connected);
           if(sheetIntro){
             sheetIntro.textContent = connected
-              ? 'Verifiez votre panier puis ajoutez un commentaire si besoin :'
-              : 'Verifiez votre panier :';
+              ? 'Vérifiez votre panier puis ajoutez un commentaire si besoin :'
+              : 'Vérifiez votre panier :';
           }
           if(connected && currentStep === 'details'){
             setStep('cart');
@@ -1092,7 +1092,7 @@ ${c}`;
           const items = itemsTextForEmail();
           const order_full = buildOrderText();
           const base = { from_name:'YUMEKO SUSHIS', items_text:items, comments:notes || '-', full_name:`${first} ${last}`.trim(), order_full };
-          const paramsCustomer = { ...base, to_name:first || 'Client', to_email:email, reply_to:email, subject:'Votre recapitulatif de commande - YUMEKO SUSHIS' };
+          const paramsCustomer = { ...base, to_name:first || 'Client', to_email:email, reply_to:email, subject:'Votre récapitulatif de commande - YUMEKO SUSHIS' };
           const paramsAdmin = { ...base, to_name:'YUMEKO', to_email:YUMEKO_EMAIL, reply_to:email, subject:`Nouvelle commande - ${first} ${last}`.trim() };
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsCustomer);
           await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, paramsAdmin);
@@ -1159,8 +1159,8 @@ ${c}`;
           if(mImg){ mImg.src=img; mImg.alt=name; }
           if(mTitle) mTitle.textContent=name;
           if(mPieces) mPieces.textContent=d.pieces ?? '-';
-          if(mAllergens) mAllergens.textContent=d.allergens || 'Non renseigne';
-          if(mComp) mComp.textContent=d.comp || 'Non renseigne';
+          if(mAllergens) mAllergens.textContent=d.allergens || 'Non renseigné';
+          if(mComp) mComp.textContent=d.comp || 'Non renseigné';
           if(mDesc) mDesc.textContent=d.desc || '-';
 
           const itemKey=`${code}- ${name}`;
@@ -1317,7 +1317,7 @@ ${c}`;
           <h4 id="mTitle" style="margin:6px 0 6px;font-size:1.15rem">Produit</h4>
           <p style="margin:0;color:var(--muted);font-size:.9rem">
             <strong>Pieces:</strong> <span id="mPieces">-</span> -
-            <strong>Allergenes:</strong> <span id="mAllergens">-</span>
+            <strong>Allergènes:</strong> <span id="mAllergens">-</span>
           </p>
           <p id="mComp" style="margin:8px 0;color:#2f2f2f;font-size:.95rem">-</p>
           <p id="mDesc" style="margin:6px 0;color:#6b6b6b;font-size:.9rem">-</p>
@@ -1364,4 +1364,5 @@ loadComponent("footer", "footer.html");
 </script>  
 </body>
 </html>
+
 

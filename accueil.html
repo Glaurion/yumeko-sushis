@@ -1,4 +1,4 @@
-﻿<!-- Version amelioree de la page d'accueil YUMEKO SUSHIS -->
+﻿<!-- Version améliorée de la page d'accueil YUMEKO SUSHIS -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -41,8 +41,8 @@
 <section class="hero">
   <div>
     <h1>Bienvenue chez YUMEKO SUSHIS</h1>
-    <p>Des saveurs japonaises preparees avec passion.</p>
-    <a href="index.html" class="btn">Commande <span class="cta-focus">ICI</span> des maintenant</a>
+    <p>Des saveurs japonaises préparées avec passion.</p>
+    <a href="index.html" class="btn">Commande <span class="cta-focus">ICI</span> dès maintenant</a>
   </div>
 </section>
 
@@ -73,7 +73,7 @@
 
 <!-- CARROUSEL -->
 <section class="carousel-wrapper">
-  <h2 class="carousel-title">Apercu de nos varietes</h2>
+  <h2 class="carousel-title">Aperçu de nos variétés</h2>
 
   <div class="carousel">
 
@@ -154,7 +154,7 @@
   <h2 id="reviews-title" class="carousel-title">Avis de nos clients</h2>
   <div id="reviewsList" class="reviews-grid">
     <article class="review-card reviews-empty">
-      <p class="review-text">Aucun avis pour le moment. Soyez le premier a donner votre retour.</p>
+      <p class="review-text">Aucun avis pour le moment. Soyez le premier à donner votre retour.</p>
     </article>
   </div>
 </section>
@@ -257,7 +257,7 @@ const PRODUCT_LABELS = {
   CO4:'SAUCE MAYO JAPONAISE EPICEE MAISON',
   CO5:'GINGEMBRE',
   CO6:'WASABI',
-  CO7:'WASABI CACAHUETE',
+  CO7:'WASABI CACAHUÈTE',
   CO8:'WASABI PETIT POIS',
   CO9:'OIGNONS FRITS',
   CO10:'SAUCE SRIRACHA',
@@ -357,7 +357,7 @@ async function renderReviews() {
   if (!reviews.length) {
     box.innerHTML = `
       <article class="review-card reviews-empty">
-        <p class="review-text">Aucun avis pour le moment. Soyez le premier a donner votre retour.</p>
+        <p class="review-text">Aucun avis pour le moment. Soyez le premier à donner votre retour.</p>
       </article>`;
     return;
   }
@@ -374,7 +374,7 @@ async function renderReviews() {
             <p class="review-name">${safeName}</p>
             <p class="review-meta">${safeDate}</p>
           </div>
-          <div class="review-stars" aria-label="${r.rating} etoiles sur 5">${stars}</div>
+          <div class="review-stars" aria-label="${r.rating} étoiles sur 5">${stars}</div>
         </div>
         <p class="review-text">${safeText}</p>
       </article>`;
@@ -562,4 +562,5 @@ renderReviews();
 
 </body>
 </html>
+
 

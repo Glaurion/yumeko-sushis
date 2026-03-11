@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -543,7 +543,7 @@
                 <input id="regPasswordConfirm" name="password_confirm" type="password" minlength="6" required />
               </div>
               <div class="profile-actions">
-                <button class="btn-main" type="submit">Creer mon compte</button>
+                <button class="btn-main" type="submit">Créer mon compte</button>
                 <button id="hideRegisterBtn" class="btn-light" type="button">Annuler</button>
               </div>
             </form>
@@ -584,9 +584,9 @@
             </div>
           </div>
 
-          <div class="card">
+          <div id="userOrdersCard" class="card">
             <button class="panel-toggle" type="button" data-target="panelOrdersBody" aria-expanded="false">
-              <span>Mes commandes passees</span>
+              <span>Mes commandes passées</span>
               <span class="panel-icon" aria-hidden="true">v</span>
             </button>
             <div id="panelOrdersBody" class="panel-body hidden">
@@ -603,6 +603,7 @@
               <div id="panelAdminBody" class="panel-body hidden">
                 <div class="admin-tabs">
                   <button id="adminTabOrders" class="admin-tab active" type="button">Toutes les commandes</button>
+                  <button id="adminTabItems" class="admin-tab" type="button">Articles</button>
                   <button id="adminTabCourses" class="admin-tab" type="button">Courses</button>
                   <button id="adminTabReviews" class="admin-tab" type="button">Avis</button>
                 </div>
@@ -611,11 +612,20 @@
                   <div id="adminOrders" class="orders-list"></div>
                 </div>
 
-                <div id="adminPanelCourses" class="hidden">
-                  <p class="muted">Liste de courses basee sur les articles les plus commandes.</p>
+                <div id="adminPanelItems" class="hidden">
+                  <p class="muted">Articles à préparer selon les commandes en cours (hors commandes terminées).</p>
                   <div class="profile-actions">
-                    <button id="refreshCoursesBtn" class="btn-light" type="button">Mettre a jour</button>
-                    <button id="resetCoursesBtn" class="btn-light" type="button">Reinitialiser les coches</button>
+                    <button id="refreshItemsBtn" class="btn-light" type="button">Mettre à jour</button>
+                    <button id="resetItemsBtn" class="btn-light" type="button">Réinitialiser les coches</button>
+                  </div>
+                  <div id="adminItems" class="course-list"></div>
+                </div>
+
+                <div id="adminPanelCourses" class="hidden">
+                  <p class="muted">Courses ingrédients estimées à partir des commandes en cours (saumon, riz, etc.).</p>
+                  <div class="profile-actions">
+                    <button id="refreshCoursesBtn" class="btn-light" type="button">Mettre à jour</button>
+                    <button id="resetCoursesBtn" class="btn-light" type="button">Réinitialiser les coches</button>
                   </div>
                   <div id="adminCourses" class="course-list"></div>
                 </div>
@@ -623,14 +633,14 @@
                 <div id="adminPanelReviews" class="hidden">
                   <p class="muted">Moderation des avis clients (validation avant affichage public).</p>
                   <div class="profile-actions">
-                    <button id="refreshReviewsBtn" class="btn-light" type="button">Rafraichir les avis</button>
+                    <button id="refreshReviewsBtn" class="btn-light" type="button">Rafraîchir les avis</button>
                   </div>
                   <p id="adminReviewsStatus" class="status" aria-live="polite"></p>
 
                   <h4 class="admin-subtitle">En attente</h4>
                   <div id="adminReviewsPending" class="orders-list"></div>
 
-                  <h4 class="admin-subtitle">Publies</h4>
+                  <h4 class="admin-subtitle">Publiés</h4>
                   <div id="adminReviewsApproved" class="orders-list"></div>
                 </div>
               </div>
@@ -639,7 +649,7 @@
         </div>
 
         <div id="logoutArea" class="logout-area hidden">
-          <button id="logoutBtnOutside" class="btn-light" type="button">Se deconnecter</button>
+          <button id="logoutBtnOutside" class="btn-light" type="button">Se déconnecter</button>
         </div>
       </div>
     </section>
@@ -648,7 +658,7 @@
   <div id="orderModal" class="modal-overlay hidden" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
       <div class="modal-top">
-        <h3 id="orderModalTitle" style="margin:0;color:#c2173b;">Detail de commande</h3>
+        <h3 id="orderModalTitle" style="margin:0;color:#c2173b;">Détail de commande</h3>
         <button id="orderModalClose" class="modal-close" type="button" aria-label="Fermer">&times;</button>
       </div>
       <p id="adminOrderStatusHint" class="small-note hidden" style="margin-top:8px;"></p>
@@ -660,7 +670,7 @@
       </div>
       <div id="adminOrderActions" class="profile-actions hidden">
         <button id="printLabelBtn" class="btn-light" type="button">Imprimer etiquette</button>
-        <button id="markDoneBtn" class="btn-main" type="button">Marquer terminee</button>
+        <button id="markDoneBtn" class="btn-main" type="button">Marquer terminée</button>
       </div>
     </div>
   </div>
@@ -672,7 +682,9 @@
     const SESSION_KEY = 'yumeko_session_v1';
     const ORDERS_KEY = 'yumeko_orders_v1';
     const REORDER_KEY = 'yumeko_reorder_cart_v1';
-    const COURSES_CHECK_KEY = 'yumeko_admin_courses_checks_v1';
+    const LEGACY_COURSES_CHECK_KEY = 'yumeko_admin_courses_checks_v1';
+    const ITEMS_CHECK_KEY = 'yumeko_admin_items_checks_v1';
+    const COURSES_CHECK_KEY = 'yumeko_admin_courses_checks_v2';
     const ADMIN_EMAIL = 'admin@yumeko.fr';
     const ADMIN_PASSWORD = 'Admin123!';
     const ADMIN_NAME = 'Admin Yumeko';
@@ -689,6 +701,24 @@
     let selectedOrder = null;
     let lastConnectedEmail = '';
     let profileInitialState = null;
+
+    const ITEM_NAME_BY_CODE = {
+      M1:'MAKI SAUMON', M2:'MAKI SAUMON AVOCAT', M3:'MAKI SAUMON CHEESE', M4:'MAKI CONCOMBRE', M5:'MAKI CONCOMBRE CHEESE',
+      M6:'MAKI AVOCAT', M7:'MAKI AVOCAT CHEESE', M8:'MAKI CHEESE',
+      C1:'CALIFORNIA SAUMON', C2:'CALIFORNIA SAUMON AVOCAT', C3:'CALIFORNIA SAUMON CHEESE', C4:'CALIFORNIA CONCOMBRE', C5:'CALIFORNIA CONCOMBRE CHEESE',
+      C6:'CALIFORNIA AVOCAT', C7:'CALIFORNIA AVOCAT CHEESE', C8:'CALIFORNIA CHEESE', C9:'CALIFORNIA SAUMON CHEESE OIGNONS FRITS',
+      P1:'MAKI PRINTEMPS SAUMON AVOCAT', P2:'MAKI PRINTEMPS SAUMON CHEESE', P3:'MAKI PRINTEMPS CONCOMBRE CHEESE', P4:'MAKI PRINTEMPS AVOCAT CHEESE',
+      R1:'ROLLS SAUMON AVOCAT CHEESE', R2:'ROLLS AVOCAT SAUMON CHEESE',
+      N1:'NIGIRI SAUMON', N2:'NIGIRI AVOCAT',
+      O1:'ONIGIRI THON MAYO',
+      S1:'SASHIMI SAUMON',
+      G1:'GYOZA POULET LÉGUMES', G2:'GYOZA BOEUF LÉGUMES', G3:'GYOZA LÉGUMES',
+      BR1:'YAKITORI BOEUF FROMAGE',
+      SO1:'SOUPE MISO',
+      CO1:'SAUCE SOJA SUCRÉE', CO2:'SAUCE SOJA SALÉE', CO3:'SAUCE MAYO JAPONAISE MAISON', CO4:'SAUCE MAYO JAPONAISE ÉPICÉE MAISON',
+      CO5:'GINGEMBRE', CO6:'WASABI', CO7:'WASABI CACAHUÈTE', CO8:'WASABI PETIT POIS', CO9:'OIGNONS FRITS', CO10:'SAUCE SRIRACHA',
+      B1:'BIÈRE TSINGTAO', B2:'BIÈRE ASAHI', B3:'COCA COLA ZÉRO'
+    };
 
     function setActiveNav() {
       const here = location.pathname.split('/').pop() || 'mon-compte.html';
@@ -754,7 +784,7 @@
     }
 
     function getOrderStatusLabel(status) {
-      if (status === STATUS_DONE) return 'Terminee';
+      if (status === STATUS_DONE) return 'Terminée';
       if (status === STATUS_IN_PROGRESS) return 'En cours';
       return 'Nouveau';
     }
@@ -995,12 +1025,47 @@
       return items.reduce((sum, it) => sum + (Number(it.qty) || 1), 0);
     }
 
+    function readItemChecks() {
+      const current = readJSON(ITEMS_CHECK_KEY, null);
+      if (current && typeof current === 'object') return current;
+      // Migration depuis l'ancien stockage unique.
+      return readJSON(LEGACY_COURSES_CHECK_KEY, {});
+    }
+
+    function saveItemChecks(value) {
+      writeJSON(ITEMS_CHECK_KEY, value || {});
+    }
+
     function readCoursesChecks() {
       return readJSON(COURSES_CHECK_KEY, {});
     }
 
     function saveCoursesChecks(value) {
       writeJSON(COURSES_CHECK_KEY, value || {});
+    }
+
+    function getActiveOrders() {
+      return readOrders().filter((order) => normalizeOrderStatus(order && order.admin_status) !== STATUS_DONE);
+    }
+
+    function sumItemsFromOrders(orders) {
+      const totals = {};
+      (Array.isArray(orders) ? orders : []).forEach((order) => {
+        const items = Array.isArray(order && order.items) ? order.items : [];
+        items.forEach((it) => {
+          const code = String(it && it.code || '').trim().toUpperCase();
+          if (!code) return;
+          if (!totals[code]) {
+            totals[code] = {
+              code,
+              name: ITEM_NAME_BY_CODE[code] || String(it && it.name || code || 'Article').trim(),
+              qty: 0
+            };
+          }
+          totals[code].qty += Number(it && it.qty || 1);
+        });
+      });
+      return totals;
     }
 
     function renderOrdersForUser(email) {
@@ -1040,7 +1105,7 @@
             '<div class="order-summary-meta">' +
               '<span>' + formatDate(order.created_at) + '</span>' +
               '<span class="order-chip">' + count + ' article(s)</span>' +
-              (previewText ? '<span>' + previewText + (hasMore ? '...' : '') + '</span>' : '<span>Apercu indisponible</span>') +
+              (previewText ? '<span>' + previewText + (hasMore ? '...' : '') + '</span>' : '<span>Aperçu indisponible</span>') +
             '</div>' +
           '</button>'
         );
@@ -1056,7 +1121,7 @@
       adminOrdersCache = orders;
 
       if (!orders.length) {
-        box.innerHTML = '<p class="muted">Aucune commande enregistree.</p>';
+        box.innerHTML = '<p class="muted">Aucune commande enregistrée.</p>';
         return;
       }
 
@@ -1086,31 +1151,18 @@
       }).join('');
     }
 
-    function renderCoursesForAdmin() {
-      const box = document.getElementById('adminCourses');
+    function renderItemsForAdmin() {
+      const box = document.getElementById('adminItems');
       if (!box) return;
 
-      const checks = readCoursesChecks();
-      const totals = {};
-      const orders = readOrders();
-
-      orders.forEach((order) => {
-        const items = Array.isArray(order && order.items) ? order.items : [];
-        items.forEach((it) => {
-          const code = String(it && it.code || '').trim().toUpperCase();
-          const name = String(it && it.name || code || 'Article').trim();
-          if (!code) return;
-          if (!totals[code]) totals[code] = { code, name, qty: 0 };
-          totals[code].qty += Number(it && it.qty || 1);
-        });
-      });
-
+      const checks = readItemChecks();
+      const totals = sumItemsFromOrders(getActiveOrders());
       const list = Object.values(totals)
         .filter((it) => it.qty > 0)
         .sort((a, b) => b.qty - a.qty);
 
       if (!list.length) {
-        box.innerHTML = '<p class="muted">Pas encore de donnees de commande pour generer les courses.</p>';
+        box.innerHTML = '<p class="muted">Aucun article à préparer pour le moment.</p>';
         return;
       }
 
@@ -1121,10 +1173,166 @@
         return (
           '<div class="order-card course-row">' +
             '<label>' +
-              '<input class="course-check" type="checkbox" data-course-code="' + code + '" ' + checked + ' />' +
+              '<input class="item-check" type="checkbox" data-item-code="' + code + '" ' + checked + ' />' +
               '<span>' + name + ' (' + code + ')</span>' +
             '</label>' +
-            '<span class="course-qty">' + it.qty + ' commande(s)</span>' +
+            '<span class="course-qty">x' + it.qty + '</span>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function addIngredient(totals, name, amount) {
+      const key = String(name || '').trim();
+      const value = Number(amount) || 0;
+      if (!key || value <= 0) return;
+      totals[key] = (Number(totals[key]) || 0) + value;
+    }
+
+    function estimateIngredientsForCode(code, qty, totals) {
+      const q = Math.max(0, Number(qty) || 0);
+      if (!q) return;
+      const c = String(code || '').toUpperCase();
+      const p = c.slice(0, 2);
+      const first = c.charAt(0);
+
+      if (first === 'M') {
+        addIngredient(totals, 'Riz à sushi cuit (g)', 70 * q);
+        addIngredient(totals, 'Nori (feuille)', 0.5 * q);
+        if (['M1','M2','M3'].includes(c)) addIngredient(totals, 'Saumon (g)', 30 * q);
+        if (['M2','M6','M7'].includes(c)) addIngredient(totals, 'Avocat (g)', 25 * q);
+        if (['M4','M5'].includes(c)) addIngredient(totals, 'Concombre (g)', 25 * q);
+        if (['M3','M5','M7','M8'].includes(c)) addIngredient(totals, 'Fromage frais (g)', 25 * q);
+        return;
+      }
+
+      if (first === 'C') {
+        addIngredient(totals, 'Riz à sushi cuit (g)', 80 * q);
+        addIngredient(totals, 'Nori (feuille)', 0.5 * q);
+        addIngredient(totals, 'Sésame (g)', 5 * q);
+        if (['C1','C2','C3','C9'].includes(c)) addIngredient(totals, 'Saumon (g)', 30 * q);
+        if (['C2','C6','C7'].includes(c)) addIngredient(totals, 'Avocat (g)', 25 * q);
+        if (['C4','C5'].includes(c)) addIngredient(totals, 'Concombre (g)', 25 * q);
+        if (['C3','C5','C7','C8','C9'].includes(c)) addIngredient(totals, 'Fromage frais (g)', 25 * q);
+        if (c === 'C9') addIngredient(totals, 'Oignons frits (g)', 12 * q);
+        return;
+      }
+
+      if (first === 'P') {
+        addIngredient(totals, 'Riz à sushi cuit (g)', 70 * q);
+        addIngredient(totals, 'Feuille de riz (pièce)', 1 * q);
+        if (['P1','P2'].includes(c)) addIngredient(totals, 'Saumon (g)', 30 * q);
+        if (['P1','P4'].includes(c)) addIngredient(totals, 'Avocat (g)', 25 * q);
+        if (['P3'].includes(c)) addIngredient(totals, 'Concombre (g)', 25 * q);
+        if (['P2','P3','P4'].includes(c)) addIngredient(totals, 'Fromage frais (g)', 25 * q);
+        return;
+      }
+
+      if (first === 'R') {
+        addIngredient(totals, 'Riz à sushi cuit (g)', 85 * q);
+        addIngredient(totals, 'Nori (feuille)', 0.5 * q);
+        addIngredient(totals, 'Saumon (g)', 30 * q);
+        addIngredient(totals, 'Avocat (g)', 20 * q);
+        addIngredient(totals, 'Fromage frais (g)', 20 * q);
+        return;
+      }
+
+      if (first === 'N') {
+        addIngredient(totals, 'Riz à sushi cuit (g)', 35 * q);
+        if (c === 'N1') addIngredient(totals, 'Saumon (g)', 25 * q);
+        if (c === 'N2') addIngredient(totals, 'Avocat (g)', 30 * q);
+        return;
+      }
+
+      if (first === 'O') {
+        addIngredient(totals, 'Riz à sushi cuit (g)', 90 * q);
+        addIngredient(totals, 'Nori (feuille)', 0.25 * q);
+        addIngredient(totals, 'Thon (g)', 25 * q);
+        addIngredient(totals, 'Mayonnaise (g)', 12 * q);
+        return;
+      }
+
+      if (first === 'S') {
+        addIngredient(totals, 'Saumon (g)', 60 * q);
+        return;
+      }
+
+      if (first === 'G') {
+        addIngredient(totals, 'Pâte à gyoza (pièce)', 4 * q);
+        if (c === 'G1') {
+          addIngredient(totals, 'Poulet (g)', 40 * q);
+          addIngredient(totals, 'Légumes (g)', 30 * q);
+        } else if (c === 'G2') {
+          addIngredient(totals, 'Boeuf (g)', 40 * q);
+          addIngredient(totals, 'Légumes (g)', 30 * q);
+        } else if (c === 'G3') {
+          addIngredient(totals, 'Légumes (g)', 55 * q);
+        }
+        return;
+      }
+
+      if (p === 'BR') {
+        addIngredient(totals, 'Boeuf (g)', 70 * q);
+        addIngredient(totals, 'Fromage (g)', 40 * q);
+        addIngredient(totals, 'Brochette (pièce)', 1 * q);
+        return;
+      }
+
+      if (p === 'SO') {
+        addIngredient(totals, 'Soupe miso (portion)', 1 * q);
+        return;
+      }
+
+      if (p === 'CO') {
+        addIngredient(totals, (ITEM_NAME_BY_CODE[c] || c) + ' (portion)', 1 * q);
+        return;
+      }
+
+      if (first === 'B') {
+        addIngredient(totals, (ITEM_NAME_BY_CODE[c] || c) + ' (unité)', 1 * q);
+      }
+    }
+
+    function formatIngredientQty(name, amount) {
+      const n = Number(amount) || 0;
+      if (!n) return '0';
+      const rounded = Math.round(n * 100) / 100;
+      return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace('.', ',');
+    }
+
+    function renderCoursesForAdmin() {
+      const box = document.getElementById('adminCourses');
+      if (!box) return;
+
+      const checks = readCoursesChecks();
+      const totals = {};
+      const activeOrders = getActiveOrders();
+      const itemTotals = sumItemsFromOrders(activeOrders);
+
+      Object.values(itemTotals).forEach((it) => {
+        estimateIngredientsForCode(it.code, it.qty, totals);
+      });
+
+      const list = Object.entries(totals)
+        .map(([name, qty]) => ({ name, qty }))
+        .filter((it) => Number(it.qty) > 0)
+        .sort((a, b) => Number(b.qty) - Number(a.qty));
+
+      if (!list.length) {
+        box.innerHTML = '<p class="muted">Aucune course à prévoir pour le moment.</p>';
+        return;
+      }
+
+      box.innerHTML = list.map((it) => {
+        const key = escapeHtml(it.name);
+        const checked = checks[it.name] ? 'checked' : '';
+        return (
+          '<div class="order-card course-row">' +
+            '<label>' +
+              '<input class="course-check" type="checkbox" data-course-key="' + key + '" ' + checked + ' />' +
+              '<span>' + key + '</span>' +
+            '</label>' +
+            '<span class="course-qty">' + formatIngredientQty(it.name, it.qty) + '</span>' +
           '</div>'
         );
       }).join('');
@@ -1220,7 +1428,7 @@
           '</div>' +
           '<div class="admin-review-meta">' +
             '<span>' + formatDate(review.created_at) + '</span>' +
-            '<span class="admin-review-stars" aria-label="' + review.rating + ' etoiles sur 5">' + renderReviewStars(review.rating) + '</span>' +
+            '<span class="admin-review-stars" aria-label="' + review.rating + ' étoiles sur 5">' + renderReviewStars(review.rating) + '</span>' +
           '</div>' +
           '<p class="admin-review-text">' + escapeHtml(review.text || '-') + '</p>' +
           '<div class="profile-actions profile-actions-right">' +
@@ -1260,7 +1468,7 @@
         pendingBox.innerHTML = '<p class="muted">Chargement impossible.</p>';
         approvedBox.innerHTML = '<p class="muted">Chargement impossible.</p>';
         if (status) {
-          status.textContent = 'Impossible de charger les avis depuis Supabase. Verifiez les policies.';
+          status.textContent = 'Impossible de charger les avis depuis Supabase. Vérifiez les policies.';
           status.className = 'status err';
         }
       }
@@ -1268,17 +1476,21 @@
 
     function setAdminTab(tab) {
       const ordersTab = document.getElementById('adminTabOrders');
+      const itemsTab = document.getElementById('adminTabItems');
       const coursesTab = document.getElementById('adminTabCourses');
       const reviewsTab = document.getElementById('adminTabReviews');
       const ordersPanel = document.getElementById('adminPanelOrders');
+      const itemsPanel = document.getElementById('adminPanelItems');
       const coursesPanel = document.getElementById('adminPanelCourses');
       const reviewsPanel = document.getElementById('adminPanelReviews');
       const active = String(tab || 'orders');
 
       if (ordersTab) ordersTab.classList.toggle('active', active === 'orders');
+      if (itemsTab) itemsTab.classList.toggle('active', active === 'items');
       if (coursesTab) coursesTab.classList.toggle('active', active === 'courses');
       if (reviewsTab) reviewsTab.classList.toggle('active', active === 'reviews');
       if (ordersPanel) ordersPanel.classList.toggle('hidden', active !== 'orders');
+      if (itemsPanel) itemsPanel.classList.toggle('hidden', active !== 'items');
       if (coursesPanel) coursesPanel.classList.toggle('hidden', active !== 'courses');
       if (reviewsPanel) reviewsPanel.classList.toggle('hidden', active !== 'reviews');
     }
@@ -1321,7 +1533,7 @@
           const qty = Number(it.qty) || 1;
           return '<li><strong>' + qty + 'x</strong> ' + name + '</li>';
         }).join('') + '</ul>'
-        : '<p>Aucun article detaille.</p>';
+        : '<p>Aucun article détaillé.</p>';
 
       const isLabel = mode === 'label';
       const pageStyle = isLabel
@@ -1373,6 +1585,8 @@
         if (updated) {
           selectedOrder = updated;
           renderOrdersForAdmin();
+          renderItemsForAdmin();
+          renderCoursesForAdmin();
           renderAdminModalStatus(selectedOrder);
         }
       }
@@ -1392,6 +1606,8 @@
       if (!updated) return;
       selectedOrder = updated;
       renderOrdersForAdmin();
+      renderItemsForAdmin();
+      renderCoursesForAdmin();
       renderAdminModalStatus(selectedOrder);
     }
 
@@ -1411,7 +1627,7 @@
 
       const items = Array.isArray(order.items) ? order.items : [];
       if (!items.length) {
-        itemsBox.innerHTML = '<p class="muted">Aucun article detaille.</p>';
+        itemsBox.innerHTML = '<p class="muted">Aucun article détaillé.</p>';
       } else {
         itemsBox.innerHTML = '<ul class="order-items">' +
           items.map(it => '<li>' + escapeHtml(it.name) + ' x' + (Number(it.qty) || 1) + '</li>').join('') +
@@ -1496,6 +1712,7 @@
       const profileArea = document.getElementById('profileArea');
       const adminArea = document.getElementById('adminArea');
       const logoutArea = document.getElementById('logoutArea');
+      const userOrdersCard = document.getElementById('userOrdersCard');
 
       if (!session) {
         authArea.classList.remove('hidden');
@@ -1528,12 +1745,16 @@
 
       renderOrdersForUser(session.email || '');
       if (isAdminSession(session)) {
+        if (userOrdersCard) userOrdersCard.classList.add('hidden');
+        setPanelOpen('panelOrdersBody', false);
         if (adminArea) adminArea.classList.remove('hidden');
         renderOrdersForAdmin();
+        renderItemsForAdmin();
         renderCoursesForAdmin();
         renderReviewsForAdmin();
         setAdminTab('orders');
       } else {
+        if (userOrdersCard) userOrdersCard.classList.remove('hidden');
         if (adminArea) adminArea.classList.add('hidden');
       }
 
@@ -1564,7 +1785,7 @@
           return;
         }
         if (password.length < 6) {
-          setStatus(status, 'Le mot de passe doit contenir au moins 6 caracteres.', false);
+          setStatus(status, 'Le mot de passe doit contenir au moins 6 caractères.', false);
           return;
         }
         if (password !== confirm) {
@@ -1574,15 +1795,15 @@
 
         const accounts = readAccounts();
         if (accounts.some(a => String(a.email).toLowerCase() === email)) {
-          setStatus(status, 'Un compte existe deja avec cet email.', false);
+          setStatus(status, 'Un compte existe déjà avec cet email.', false);
           return;
         }
 
         const account = { name, email, password, role: 'user' };
         accounts.push(account);
         saveAccounts(accounts);
-        setStatus(status, 'Compte cree avec succes.', true);
-        alert('Compte cree avec succes. Vous pouvez maintenant vous connecter.');
+        setStatus(status, 'Compte créé avec succès.', true);
+        alert('Compte créé avec succès. Vous pouvez maintenant vous connecter.');
         e.target.reset();
         showRegister(false);
 
@@ -1593,7 +1814,7 @@
           loginPassword.value = '';
           loginPassword.focus();
         }
-        setStatus(document.getElementById('loginStatus'), 'Compte cree. Connectez-vous.', true);
+        setStatus(document.getElementById('loginStatus'), 'Compte créé. Connectez-vous.', true);
       });
 
       document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
@@ -1617,7 +1838,7 @@
         }
 
         writeSession(account);
-        setStatus(status, 'Connexion reussie.', true);
+        setStatus(status, 'Connexion réussie.', true);
         e.target.reset();
         await renderUI();
       });
@@ -1652,7 +1873,7 @@
 
         if (password || confirm) {
           if (password.length < 6) {
-            setStatus(status, 'Le nouveau mot de passe doit contenir au moins 6 caracteres.', false);
+            setStatus(status, 'Le nouveau mot de passe doit contenir au moins 6 caractères.', false);
             return;
           }
           if (password !== confirm) {
@@ -1670,7 +1891,7 @@
 
         const duplicate = accounts.some((a, i) => i !== idx && String(a.email).toLowerCase() === email);
         if (duplicate) {
-          setStatus(status, 'Cet email est deja utilise par un autre compte.', false);
+          setStatus(status, 'Cet email est déjà utilisé par un autre compte.', false);
           return;
         }
 
@@ -1679,7 +1900,7 @@
         if (password) accounts[idx].password = password;
         saveAccounts(accounts);
         writeSession(accounts[idx]);
-        setStatus(status, 'Informations mises a jour.', true);
+        setStatus(status, 'Informations mises à jour.', true);
         await renderUI();
       });
     }
@@ -1715,10 +1936,20 @@
 
     function initAdminArea() {
       document.getElementById('adminTabOrders')?.addEventListener('click', () => setAdminTab('orders'));
+      document.getElementById('adminTabItems')?.addEventListener('click', () => setAdminTab('items'));
       document.getElementById('adminTabCourses')?.addEventListener('click', () => setAdminTab('courses'));
       document.getElementById('adminTabReviews')?.addEventListener('click', () => {
         setAdminTab('reviews');
         renderReviewsForAdmin();
+      });
+
+      document.getElementById('refreshItemsBtn')?.addEventListener('click', () => {
+        renderItemsForAdmin();
+      });
+
+      document.getElementById('resetItemsBtn')?.addEventListener('click', () => {
+        saveItemChecks({});
+        renderItemsForAdmin();
       });
 
       document.getElementById('refreshCoursesBtn')?.addEventListener('click', () => {
@@ -1734,13 +1965,23 @@
         renderCoursesForAdmin();
       });
 
+      document.getElementById('adminItems')?.addEventListener('change', (e) => {
+        const input = e.target.closest('.item-check');
+        if (!input) return;
+        const code = String(input.dataset.itemCode || '').trim().toUpperCase();
+        if (!code) return;
+        const checks = readItemChecks();
+        checks[code] = !!input.checked;
+        saveItemChecks(checks);
+      });
+
       document.getElementById('adminCourses')?.addEventListener('change', (e) => {
         const input = e.target.closest('.course-check');
         if (!input) return;
-        const code = String(input.dataset.courseCode || '').trim().toUpperCase();
-        if (!code) return;
+        const key = String(input.dataset.courseKey || '').trim();
+        if (!key) return;
         const checks = readCoursesChecks();
-        checks[code] = !!input.checked;
+        checks[key] = !!input.checked;
         saveCoursesChecks(checks);
       });
 
@@ -1754,13 +1995,13 @@
           try {
             await setReviewApproval(id, true);
             if (status) {
-              status.textContent = 'Avis approuve.';
+              status.textContent = 'Avis approuvé.';
               status.className = 'status ok';
             }
             await renderReviewsForAdmin();
           } catch (error) {
             if (status) {
-              status.textContent = 'Impossible dapprouver cet avis.';
+              status.textContent = 'Impossible d'approuver cet avis.';
               status.className = 'status err';
             }
           }
@@ -1774,7 +2015,7 @@
           try {
             await setReviewApproval(id, false);
             if (status) {
-              status.textContent = 'Avis retire des avis publics.';
+              status.textContent = 'Avis retiré des avis publics.';
               status.className = 'status ok';
             }
             await renderReviewsForAdmin();
@@ -1791,11 +2032,11 @@
         if (deleteBtn) {
           const id = Number(deleteBtn.dataset.reviewId);
           if (!Number.isFinite(id) || id <= 0) return;
-          if (!confirm('Supprimer definitivement cet avis ?')) return;
+          if (!confirm('Supprimer définitivement cet avis ?')) return;
           try {
             await deleteReviewById(id);
             if (status) {
-              status.textContent = 'Avis supprime.';
+              status.textContent = 'Avis supprimé.';
               status.className = 'status ok';
             }
             await renderReviewsForAdmin();
@@ -1833,4 +2074,5 @@
   </script>
 </body>
 </html>
+
 

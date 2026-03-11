@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -147,11 +147,11 @@
       <h2 id="titre-merci">Merci pour votre commande !</h2>
       <div class="sep" aria-hidden="true"></div>
 
-      <p class="muted">Recapitulatif de votre commande :</p>
-      <div id="orderRecap" class="lead">(Chargement du recapitulatif...)</div>
+      <p class="muted">Récapitulatif de votre commande :</p>
+      <div id="orderRecap" class="lead">(Chargement du récapitulatif...)</div>
 
       <div class="merci-actions">
-        <a class="btn" href="accueil.html">Retour a l'accueil</a>
+        <a class="btn" href="accueil.html">Retour à l'accueil</a>
         <a class="btn" href="index.html#menu">Nouvelle commande</a>
       </div>
     </section>
@@ -166,7 +166,7 @@
       <form id="merciReviewForm" class="review-form hidden" novalidate>
         <div class="review-form-grid">
           <div class="review-field">
-            <label for="merciReviewName">Votre prenom (optionnel)</label>
+            <label for="merciReviewName">Votre prénom (optionnel)</label>
             <input id="merciReviewName" name="name" type="text" maxlength="40" placeholder="Ex : Lea" />
           </div>
           <div class="review-field">
@@ -181,7 +181,7 @@
           </div>
           <div class="review-field full">
             <label for="merciReviewText">Votre avis</label>
-            <textarea id="merciReviewText" name="text" minlength="8" maxlength="400" required placeholder="Partagez votre experience YUMEKO SUSHIS."></textarea>
+            <textarea id="merciReviewText" name="text" minlength="8" maxlength="400" required placeholder="Partagez votre expérience YUMEKO SUSHIS."></textarea>
           </div>
         </div>
         <div class="review-form-actions">
@@ -289,7 +289,7 @@
       } catch (e) {}
 
       if (!text.trim()) {
-        recapEl.innerHTML = '<p class="muted">Aucun recapitulatif trouve.</p><p class="muted" style="margin-top:6px;">Astuce : passez une commande depuis le menu pour voir le detail ici.</p>';
+        recapEl.innerHTML = '<p class="muted">Aucun récapitulatif trouvé.</p><p class="muted" style="margin-top:6px;">Astuce : passez une commande depuis le menu pour voir le détail ici.</p>';
         return;
       }
 
@@ -302,14 +302,14 @@
               '<span class="recap-item-qty">x' + (Number(it.qty) || 1) + '</span>' +
             '</li>'
           )).join("")
-        : '<li class="muted">Aucun article detaille.</li>';
+        : '<li class="muted">Aucun article détaillé.</li>';
 
       recapEl.innerHTML =
         '<div class="recap-grid">' +
           '<div class="recap-box"><div class="k">Client</div><div class="v">' + escapeHtml(recap.client) + '</div></div>' +
           '<div class="recap-box"><div class="k">E-mail</div><div class="v">' + escapeHtml(recap.email) + '</div></div>' +
           '<div class="recap-box"><div class="k">Total articles</div><div class="v">' + totalItems + '</div></div>' +
-          '<div class="recap-box"><div class="k">Statut</div><div class="v">Commande envoyee</div></div>' +
+          '<div class="recap-box"><div class="k">Statut</div><div class="v">Commande envoyée</div></div>' +
         '</div>' +
         '<h4 class="recap-title">Articles</h4>' +
         '<ul class="recap-items">' + itemsHtml + '</ul>' +
@@ -379,7 +379,7 @@
         e.preventDefault();
         const text = String(textInput.value || "").trim();
         if (text.length < 8) {
-          status.textContent = "Votre avis doit contenir au moins 8 caracteres.";
+          status.textContent = "Votre avis doit contenir au moins 8 caractères.";
           status.className = "status err";
           return;
         }
@@ -399,7 +399,7 @@
         form.reset();
         if (defaultName) nameInput.value = defaultName;
         ratingInput.value = "5";
-        status.textContent = "Merci pour votre avis, il a bien ete enregistre.";
+        status.textContent = "Merci pour votre avis, il a bien été enregistré.";
         status.className = "status ok";
       });
     }
@@ -425,3 +425,4 @@
   </script>
 </body>
 </html>
+
