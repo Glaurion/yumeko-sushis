@@ -587,16 +587,6 @@
       categories['BEST SELLER'] = topCodes.slice(0, 5);
     }
 
-    function findMainCategoryForCode(code){
-      const wanted = String(code || '').trim().toUpperCase();
-      if(!wanted) return '';
-      const entry = Object.entries(categories).find(([cat, codes])=>{
-        if(cat === 'BEST SELLER') return false;
-        return Array.isArray(codes) && codes.includes(wanted);
-      });
-      return entry ? entry[0] : '';
-    }
-
     function getOrderCountForCode(code, counts){
       const key = String(code || '').trim().toUpperCase();
       const item = counts && counts[key];
@@ -722,7 +712,6 @@
           const pieces=d.pieces ?? '';
           const card=document.createElement('div'); card.className='item-card'; card.dataset.code=code; card.dataset.name=name;
           if(cat === 'BEST SELLER'){
-            const origin = findMainCategoryForCode(code);
             card.innerHTML=`
               <span class="best-badge">BEST #${idx + 1}</span>
               <img class="thumb" loading="lazy" decoding="async" src="${img}" alt="${name}" onerror="this.style.display='none'">
@@ -731,7 +720,10 @@
                 <div class="card-footer">
                   <div class="meta">
                     <span class="pieces">${pieces? pieces+' PIECES' : ''}</span>
-                    <span class="pieces">${origin ? 'Dans ' + origin : ''}</span>
+                  </div>
+                  <div class="ctrls">
+                    <span class="qty-badge qty" data-item="${code}- ${name}"></span>
+                    <button class="circle card-plus" data-item="${code}- ${name}" type="button" aria-label="Ajouter ${name}">+</button>
                   </div>
                 </div>
               </div>`;
