@@ -660,7 +660,6 @@
       </div>
       <div id="adminOrderActions" class="profile-actions hidden">
         <button id="printLabelBtn" class="btn-light" type="button">Imprimer etiquette</button>
-        <button id="printPdfBtn" class="btn-light" type="button">Imprimer PDF</button>
         <button id="markDoneBtn" class="btn-main" type="button">Marquer terminee</button>
       </div>
     </div>
@@ -1029,13 +1028,17 @@
         const previewText = previewItems.map(it => escapeHtml(it.name)).join(' / ');
         const hasMore = (Array.isArray(order.items) ? order.items.length : 0) > 2;
         const displayId = escapeHtml(getOrderDisplayId(order));
+        const status = normalizeOrderStatus(order.admin_status);
+        const statusClass = getOrderStatusClass(status);
+        const statusLabel = getOrderStatusLabel(status);
         return (
           '<button type="button" class="order-summary" data-order-index="' + idx + '">' +
             '<div class="order-head">' +
               '<span>' + displayId + '</span>' +
-              '<span>' + formatDate(order.created_at) + '</span>' +
+              '<span class="order-chip order-status-chip ' + statusClass + '">' + statusLabel + '</span>' +
             '</div>' +
             '<div class="order-summary-meta">' +
+              '<span>' + formatDate(order.created_at) + '</span>' +
               '<span class="order-chip">' + count + ' article(s)</span>' +
               (previewText ? '<span>' + previewText + (hasMore ? '...' : '') + '</span>' : '<span>Apercu indisponible</span>') +
             '</div>' +
@@ -1065,23 +1068,19 @@
         const status = normalizeOrderStatus(order.admin_status);
         const statusClass = getOrderStatusClass(status);
         const statusLabel = getOrderStatusLabel(status);
-        const doneDisabled = status === STATUS_DONE ? 'disabled' : '';
         return (
           '<div class="order-card admin-order-card">' +
             '<button type="button" class="order-summary admin-order-summary" data-admin-order-index="' + idx + '">' +
               '<div class="order-head">' +
                 '<span>' + displayId + '</span>' +
-                '<span>' + formatDate(order.created_at) + '</span>' +
+                '<span class="order-chip order-status-chip ' + statusClass + '">' + statusLabel + '</span>' +
               '</div>' +
               '<div class="order-summary-meta">' +
+                '<span>' + formatDate(order.created_at) + '</span>' +
                 '<span class="order-chip">' + count + ' article(s)</span>' +
                 '<span><strong>' + customer + '</strong> - ' + email + '</span>' +
               '</div>' +
             '</button>' +
-            '<div class="admin-order-actions">' +
-              '<span class="order-chip order-status-chip ' + statusClass + '">' + statusLabel + '</span>' +
-              '<button type="button" class="btn-light admin-mark-done-btn" data-admin-order-index="' + idx + '" ' + doneDisabled + '>Marquer terminee</button>' +
-            '</div>' +
           '</div>'
         );
       }).join('');
@@ -1695,21 +1694,6 @@
       });
 
       document.getElementById('adminOrders')?.addEventListener('click', async (e) => {
-        const doneBtn = e.target.closest('.admin-mark-done-btn');
-        if (doneBtn) {
-          const idx = Number(doneBtn.dataset.adminOrderIndex);
-          if (!Number.isInteger(idx) || idx < 0 || idx >= adminOrdersCache.length) return;
-          const order = adminOrdersCache[idx];
-          if (!order) return;
-          const updated = await updateOrderStatusById(order.id, STATUS_DONE);
-          renderOrdersForAdmin();
-          if (updated && selectedOrder && String(selectedOrder.id || '') === String(order.id || '')) {
-            selectedOrder = updated;
-            renderAdminModalStatus(selectedOrder);
-          }
-          return;
-        }
-
         const btn = e.target.closest('.admin-order-summary');
         if (!btn) return;
         const idx = Number(btn.dataset.adminOrderIndex);
@@ -1726,7 +1710,6 @@
       });
       document.getElementById('reorderBtn')?.addEventListener('click', reorderFromSelectedOrder);
       document.getElementById('printLabelBtn')?.addEventListener('click', () => printSelectedOrder('label'));
-      document.getElementById('printPdfBtn')?.addEventListener('click', () => printSelectedOrder('pdf'));
       document.getElementById('markDoneBtn')?.addEventListener('click', markSelectedOrderDone);
     }
 
