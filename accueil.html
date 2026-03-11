@@ -452,6 +452,11 @@ function renderBestSellers() {
 
 function initCarouselWheelScroll() {
   document.querySelectorAll('.carousel').forEach((carousel) => {
+    let isDown = false;
+    let startX = 0;
+    let startLeft = 0;
+    let moved = false;
+
     carousel.addEventListener('wheel', (e) => {
       const canScroll = carousel.scrollWidth > (carousel.clientWidth + 2);
       if (!canScroll) return;
@@ -460,6 +465,42 @@ function initCarouselWheelScroll() {
       e.preventDefault();
       carousel.scrollLeft += delta;
     }, { passive: false });
+
+    carousel.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      isDown = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = carousel.scrollLeft;
+      carousel.classList.add('dragging');
+      carousel.setPointerCapture?.(e.pointerId);
+    });
+
+    carousel.addEventListener('pointermove', (e) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) moved = true;
+      carousel.scrollLeft = startLeft - dx;
+    });
+
+    function stopDrag(e) {
+      if (!isDown) return;
+      isDown = false;
+      carousel.classList.remove('dragging');
+      carousel.releasePointerCapture?.(e.pointerId);
+    }
+
+    carousel.addEventListener('pointerup', stopDrag);
+    carousel.addEventListener('pointercancel', stopDrag);
+    carousel.addEventListener('pointerleave', stopDrag);
+
+    carousel.addEventListener('click', (e) => {
+      if (!moved) return;
+      const link = e.target.closest('a');
+      if (!link) return;
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
   });
 }
 
