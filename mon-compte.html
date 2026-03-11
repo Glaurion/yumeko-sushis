@@ -1189,107 +1189,63 @@
       totals[key] = (Number(totals[key]) || 0) + value;
     }
 
+    // Coefficients importés depuis le fichier Excel COURSES.xlsx (onglet "Courses").
+    const EXCEL_COURSES_COEFFICIENTS = {
+      M1: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'NORI (U)': 0.25 },
+      M2: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'AVOCAT (U)': 1, 'NORI (U)': 0.25 },
+      M3: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25 },
+      M4: { 'RIZ CUIT (g)': 50, 'CONCOMBRE (U)': 3, 'NORI (U)': 0.25 },
+      M5: { 'RIZ CUIT (g)': 50, 'CONCOMBRE (U)': 3, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25 },
+      M6: { 'RIZ CUIT (g)': 50, 'AVOCAT (U)': 1, 'NORI (U)': 0.25 },
+      M7: { 'RIZ CUIT (g)': 50, 'AVOCAT (U)': 1, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25 },
+      M8: { 'RIZ CUIT (g)': 50, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25 },
+
+      C1: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C2: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'AVOCAT (U)': 1, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C3: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C4: { 'RIZ CUIT (g)': 50, 'CONCOMBRE (U)': 3, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C5: { 'RIZ CUIT (g)': 50, 'CONCOMBRE (U)': 3, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C6: { 'RIZ CUIT (g)': 50, 'AVOCAT (U)': 1, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C7: { 'RIZ CUIT (g)': 50, 'AVOCAT (U)': 1, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C8: { 'RIZ CUIT (g)': 50, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'SESAM B/N (g)': 8 },
+      C9: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'SAINT MORRET (g)': 10, 'OIGNONS FRITS (g)': 15, 'NORI (U)': 0.25 },
+
+      P1: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'AVOCAT (U)': 1, 'NORI (U)': 0.25, 'FEUILLE DE RIZ (U)': 1, 'SALADE (U)': 1 },
+      P2: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'FEUILLE DE RIZ (U)': 1, 'SALADE (U)': 1 },
+      P3: { 'RIZ CUIT (g)': 50, 'CONCOMBRE (U)': 3, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'FEUILLE DE RIZ (U)': 1, 'SALADE (U)': 1 },
+      // Conserve exactement la logique du fichier Excel fourni.
+      P4: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'AVOCAT (U)': 1, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25, 'FEUILLE DE RIZ (U)': 1, 'SALADE (U)': 1 },
+
+      R1: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 80, 'AVOCAT (U)': 1, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25 },
+      R2: { 'RIZ CUIT (g)': 50, 'SAUMON (g)': 15, 'AVOCAT (U)': 4, 'SAINT MORRET (g)': 10, 'NORI (U)': 0.25 },
+
+      S1: { 'SAUMON (g)': 20 },
+      N1: { 'RIZ CUIT (g)': 30, 'SAUMON (g)': 20 },
+      N2: { 'RIZ CUIT (g)': 30, 'AVOCAT (U)': 2, 'NORI (U)': 0.1 },
+      O1: { 'RIZ CUIT (g)': 145, 'NORI (U)': 0.25 },
+      BR1: { 'EMMENTAL (U)': 1, 'CARPACHO (U)': 2 },
+
+      B1: { 'TSINGTAO (U)': 1 },
+      B2: { 'ASAHI (U)': 1 },
+      B3: { 'COCA ZERO (U)': 1 }
+    };
+
+    const EXCEL_FALLBACK_UNIT_CODES = new Set(['G1', 'G2', 'G3', 'SO1', 'CO1', 'CO2', 'CO3', 'CO4', 'CO5', 'CO6', 'CO7', 'CO8', 'CO9', 'CO10']);
+
     function estimateIngredientsForCode(code, qty, totals) {
       const q = Math.max(0, Number(qty) || 0);
       if (!q) return;
       const c = String(code || '').toUpperCase();
-      const p = c.slice(0, 2);
-      const first = c.charAt(0);
-
-      if (first === 'M') {
-        addIngredient(totals, 'Riz à sushi cuit (g)', 70 * q);
-        addIngredient(totals, 'Nori (feuille)', 0.5 * q);
-        if (['M1','M2','M3'].includes(c)) addIngredient(totals, 'Saumon (g)', 30 * q);
-        if (['M2','M6','M7'].includes(c)) addIngredient(totals, 'Avocat (g)', 25 * q);
-        if (['M4','M5'].includes(c)) addIngredient(totals, 'Concombre (g)', 25 * q);
-        if (['M3','M5','M7','M8'].includes(c)) addIngredient(totals, 'Fromage frais (g)', 25 * q);
+      const coeffs = EXCEL_COURSES_COEFFICIENTS[c];
+      if (coeffs) {
+        Object.entries(coeffs).forEach(([ingredient, coeff]) => {
+          addIngredient(totals, ingredient, Number(coeff || 0) * q);
+        });
         return;
       }
 
-      if (first === 'C') {
-        addIngredient(totals, 'Riz à sushi cuit (g)', 80 * q);
-        addIngredient(totals, 'Nori (feuille)', 0.5 * q);
-        addIngredient(totals, 'Sésame (g)', 5 * q);
-        if (['C1','C2','C3','C9'].includes(c)) addIngredient(totals, 'Saumon (g)', 30 * q);
-        if (['C2','C6','C7'].includes(c)) addIngredient(totals, 'Avocat (g)', 25 * q);
-        if (['C4','C5'].includes(c)) addIngredient(totals, 'Concombre (g)', 25 * q);
-        if (['C3','C5','C7','C8','C9'].includes(c)) addIngredient(totals, 'Fromage frais (g)', 25 * q);
-        if (c === 'C9') addIngredient(totals, 'Oignons frits (g)', 12 * q);
-        return;
-      }
-
-      if (first === 'P') {
-        addIngredient(totals, 'Riz à sushi cuit (g)', 70 * q);
-        addIngredient(totals, 'Feuille de riz (pièce)', 1 * q);
-        if (['P1','P2'].includes(c)) addIngredient(totals, 'Saumon (g)', 30 * q);
-        if (['P1','P4'].includes(c)) addIngredient(totals, 'Avocat (g)', 25 * q);
-        if (['P3'].includes(c)) addIngredient(totals, 'Concombre (g)', 25 * q);
-        if (['P2','P3','P4'].includes(c)) addIngredient(totals, 'Fromage frais (g)', 25 * q);
-        return;
-      }
-
-      if (first === 'R') {
-        addIngredient(totals, 'Riz à sushi cuit (g)', 85 * q);
-        addIngredient(totals, 'Nori (feuille)', 0.5 * q);
-        addIngredient(totals, 'Saumon (g)', 30 * q);
-        addIngredient(totals, 'Avocat (g)', 20 * q);
-        addIngredient(totals, 'Fromage frais (g)', 20 * q);
-        return;
-      }
-
-      if (first === 'N') {
-        addIngredient(totals, 'Riz à sushi cuit (g)', 35 * q);
-        if (c === 'N1') addIngredient(totals, 'Saumon (g)', 25 * q);
-        if (c === 'N2') addIngredient(totals, 'Avocat (g)', 30 * q);
-        return;
-      }
-
-      if (first === 'O') {
-        addIngredient(totals, 'Riz à sushi cuit (g)', 90 * q);
-        addIngredient(totals, 'Nori (feuille)', 0.25 * q);
-        addIngredient(totals, 'Thon (g)', 25 * q);
-        addIngredient(totals, 'Mayonnaise (g)', 12 * q);
-        return;
-      }
-
-      if (first === 'S') {
-        addIngredient(totals, 'Saumon (g)', 60 * q);
-        return;
-      }
-
-      if (first === 'G') {
-        addIngredient(totals, 'Pâte à gyoza (pièce)', 4 * q);
-        if (c === 'G1') {
-          addIngredient(totals, 'Poulet (g)', 40 * q);
-          addIngredient(totals, 'Légumes (g)', 30 * q);
-        } else if (c === 'G2') {
-          addIngredient(totals, 'Boeuf (g)', 40 * q);
-          addIngredient(totals, 'Légumes (g)', 30 * q);
-        } else if (c === 'G3') {
-          addIngredient(totals, 'Légumes (g)', 55 * q);
-        }
-        return;
-      }
-
-      if (p === 'BR') {
-        addIngredient(totals, 'Boeuf (g)', 70 * q);
-        addIngredient(totals, 'Fromage (g)', 40 * q);
-        addIngredient(totals, 'Brochette (pièce)', 1 * q);
-        return;
-      }
-
-      if (p === 'SO') {
-        addIngredient(totals, 'Soupe miso (portion)', 1 * q);
-        return;
-      }
-
-      if (p === 'CO') {
-        addIngredient(totals, (ITEM_NAME_BY_CODE[c] || c) + ' (portion)', 1 * q);
-        return;
-      }
-
-      if (first === 'B') {
-        addIngredient(totals, (ITEM_NAME_BY_CODE[c] || c) + ' (unité)', 1 * q);
+      if (EXCEL_FALLBACK_UNIT_CODES.has(c)) {
+        addIngredient(totals, (ITEM_NAME_BY_CODE[c] || c) + ' (U)', q);
       }
     }
 
@@ -1305,12 +1261,34 @@
       if (!box) return;
 
       const checks = readCoursesChecks();
+      const prepTotals = {};
       const totals = {};
       const activeOrders = getActiveOrders();
       const itemTotals = sumItemsFromOrders(activeOrders);
 
       Object.values(itemTotals).forEach((it) => {
-        estimateIngredientsForCode(it.code, it.qty, totals);
+        estimateIngredientsForCode(it.code, it.qty, prepTotals);
+      });
+
+      const rizCuit = Number(prepTotals['RIZ CUIT (g)'] || 0);
+      const saumon = Number(prepTotals['SAUMON (g)'] || 0);
+      const avocatU = Number(prepTotals['AVOCAT (U)'] || 0);
+
+      if (rizCuit > 0) {
+        const rizCru = rizCuit / 2.2; // Excel ligne 52.
+        addIngredient(totals, 'RIZ CRU (g)', rizCru);
+        addIngredient(totals, 'VINAIGRE RIZ (U)', rizCru / 2000); // Excel ligne 50.
+      }
+      if (saumon > 0) {
+        addIngredient(totals, 'SAUMON AVEC PEAU (g)', saumon * 1.08); // Excel ligne 52.
+      }
+      if (avocatU > 0) {
+        addIngredient(totals, 'AVOCAT (E)', avocatU / 8); // Excel ligne 52.
+      }
+
+      Object.entries(prepTotals).forEach(([name, qty]) => {
+        if (name === 'RIZ CUIT (g)' || name === 'SAUMON (g)' || name === 'AVOCAT (U)') return;
+        addIngredient(totals, name, qty);
       });
 
       const list = Object.entries(totals)
