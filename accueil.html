@@ -458,12 +458,11 @@ function initCarouselWheelScroll() {
     let moved = false;
 
     carousel.addEventListener('wheel', (e) => {
-      const canScroll = carousel.scrollWidth > (carousel.clientWidth + 2);
-      if (!canScroll) return;
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (carousel.scrollWidth <= carousel.clientWidth) return;
+      const delta = e.deltaY + e.deltaX;
       if (!delta) return;
       e.preventDefault();
-      carousel.scrollLeft += delta;
+      carousel.scrollBy({ left: delta, behavior: 'auto' });
     }, { passive: false });
 
     carousel.addEventListener('pointerdown', (e) => {
