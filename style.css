@@ -213,15 +213,10 @@ p{ margin:0; }
 }
 
 .cta-focus{
-  display:inline-block;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.08em;
   color:var(--brand-strong);
-  background:rgba(255,255,255,.35);
-  padding:0 .28em;
-  border-radius:6px;
-  box-shadow:inset 0 -2px 0 rgba(194,23,59,.28);
 }
 
 .btn-light,
