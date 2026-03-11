@@ -679,6 +679,7 @@
     const ADMIN_NAME = 'Admin Yumeko';
     const SUPABASE_URL = 'https://rlyouiuobnhsvxtecriu.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RBQC4-HKQ8L1bncB_4VJAA_G_xXqg_-';
+    const ORDERS_TABLE = 'orders';
     const REVIEWS_TABLE = 'reviews';
     const STATUS_NEW = 'nouveau';
     const STATUS_IN_PROGRESS = 'en_cours';
@@ -774,6 +775,32 @@
       return String(order && order.id || 'Commande');
     }
 
+    function normalizeOrderRecord(order) {
+      if (!order || typeof order !== 'object') return null;
+      const id = String(order.id || '').trim();
+      if (!id) return null;
+      const items = Array.isArray(order.items) ? order.items : [];
+      const normalizedItems = items
+        .map((it) => ({
+          code: String(it && it.code || '').trim().toUpperCase(),
+          name: String(it && it.name || '').trim(),
+          qty: Math.max(1, Number(it && it.qty || 1))
+        }))
+        .filter((it) => it.code && it.name);
+      return {
+        id,
+        order_no: Number(order.order_no) || 0,
+        created_at: String(order.created_at || new Date().toISOString()),
+        customer_name: String(order.customer_name || 'Client').trim(),
+        email: String(order.email || '').trim().toLowerCase(),
+        comments: String(order.comments || '').trim(),
+        items: normalizedItems,
+        admin_status: normalizeOrderStatus(order.admin_status),
+        account_email: String(order.account_email || '').trim().toLowerCase(),
+        account_role: String(order.account_role || 'user').trim().toLowerCase()
+      };
+    }
+
     function readOrders() {
       const raw = readJSON(ORDERS_KEY, []);
       const list = Array.isArray(raw) ? raw.filter(o => o && typeof o === 'object') : [];
@@ -812,13 +839,92 @@
       writeJSON(ORDERS_KEY, Array.isArray(orders) ? orders : []);
     }
 
-    function updateOrderStatusById(orderId, nextStatus) {
+    async function fetchOrdersOnline(session) {
+      if (!session) return [];
+      const select = 'id,order_no,created_at,customer_name,email,comments,items,admin_status,account_email,account_role';
+      let url = SUPABASE_URL + '/rest/v1/' + ORDERS_TABLE + '?select=' + select + '&order=created_at.desc';
+
+      if (!isAdminSession(session)) {
+        const email = encodeURIComponent(String(session.email || '').trim().toLowerCase());
+        if (!email) return [];
+        url += '&or=(email.eq.' + email + ',account_email.eq.' + email + ')';
+      }
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getSupabaseHeaders(false)
+      });
+      if (!response.ok) {
+        throw new Error('Erreur lecture commandes online (' + response.status + ')');
+      }
+      const rows = await response.json();
+      const list = Array.isArray(rows) ? rows : [];
+      return list
+        .map(normalizeOrderRecord)
+        .filter(Boolean);
+    }
+
+    function mergeOrdersWithLocal(onlineOrders) {
+      const online = Array.isArray(onlineOrders) ? onlineOrders : [];
+      const local = readOrders();
+      const map = new Map();
+      online.forEach((o) => map.set(String(o.id), o));
+      local.forEach((o) => {
+        const id = String(o && o.id || '').trim();
+        if (!id || map.has(id)) return;
+        map.set(id, normalizeOrderRecord(o) || o);
+      });
+
+      const merged = Array.from(map.values()).filter(Boolean);
+      merged.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+      saveOrders(merged);
+      return readOrders();
+    }
+
+    async function syncOrdersFromOnline(session) {
+      if (!session || !String(session.email || '').trim()) return readOrders();
+      try {
+        const online = await fetchOrdersOnline(session);
+        return mergeOrdersWithLocal(online);
+      } catch (error) {
+        return readOrders();
+      }
+    }
+
+    async function updateOrderStatusById(orderId, nextStatus) {
       const id = String(orderId || '').trim();
       if (!id) return null;
+      const normalizedStatus = normalizeOrderStatus(nextStatus);
+
+      try {
+        const url = SUPABASE_URL + '/rest/v1/' + ORDERS_TABLE + '?id=eq.' + encodeURIComponent(id);
+        const response = await fetch(url, {
+          method: 'PATCH',
+          headers: {
+            ...getSupabaseHeaders(true),
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({ admin_status: normalizedStatus })
+        });
+        if (response.ok) {
+          const rows = await response.json();
+          if (Array.isArray(rows) && rows.length) {
+            const remote = normalizeOrderRecord(rows[0]);
+            if (remote) {
+              const list = readOrders();
+              const idxRemote = list.findIndex((o) => String(o && o.id || '') === id);
+              if (idxRemote !== -1) list[idxRemote] = remote;
+              else list.unshift(remote);
+              saveOrders(list);
+            }
+          }
+        }
+      } catch (error) {}
+
       const orders = readOrders();
       const idx = orders.findIndex((o) => String(o.id || '').trim() === id);
       if (idx === -1) return null;
-      orders[idx].admin_status = normalizeOrderStatus(nextStatus);
+      orders[idx].admin_status = normalizedStatus;
       saveOrders(orders);
       return orders[idx];
     }
@@ -1254,7 +1360,7 @@
       '</body></html>';
     }
 
-    function printSelectedOrder(mode) {
+    async function printSelectedOrder(mode) {
       if (!selectedOrder) return;
       const win = window.open('', '_blank', 'width=900,height=900');
       if (!win) {
@@ -1264,7 +1370,7 @@
 
       const isAdmin = isAdminSession(readSession());
       if (isAdmin && normalizeOrderStatus(selectedOrder.admin_status) !== STATUS_DONE) {
-        const updated = updateOrderStatusById(selectedOrder.id, STATUS_IN_PROGRESS);
+        const updated = await updateOrderStatusById(selectedOrder.id, STATUS_IN_PROGRESS);
         if (updated) {
           selectedOrder = updated;
           renderOrdersForAdmin();
@@ -1281,9 +1387,9 @@
       }, 150);
     }
 
-    function markSelectedOrderDone() {
+    async function markSelectedOrderDone() {
       if (!selectedOrder) return;
-      const updated = updateOrderStatusById(selectedOrder.id, STATUS_DONE);
+      const updated = await updateOrderStatusById(selectedOrder.id, STATUS_DONE);
       if (!updated) return;
       selectedOrder = updated;
       renderOrdersForAdmin();
@@ -1385,7 +1491,7 @@
       });
     }
 
-    function renderUI() {
+    async function renderUI() {
       const session = readSession();
       const authArea = document.getElementById('authArea');
       const profileArea = document.getElementById('profileArea');
@@ -1418,6 +1524,8 @@
         email: String(session.email || '').trim().toLowerCase()
       };
       updateProfileSaveButtonVisibility();
+
+      await syncOrdersFromOnline(session);
 
       renderOrdersForUser(session.email || '');
       if (isAdminSession(session)) {
@@ -1489,7 +1597,7 @@
         setStatus(document.getElementById('loginStatus'), 'Compte cree. Connectez-vous.', true);
       });
 
-      document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+      document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const status = document.getElementById('loginStatus');
         const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -1512,7 +1620,7 @@
         writeSession(account);
         setStatus(status, 'Connexion reussie.', true);
         e.target.reset();
-        renderUI();
+        await renderUI();
       });
     }
 
@@ -1529,7 +1637,7 @@
         document.getElementById(id)?.addEventListener('input', updateProfileSaveButtonVisibility);
       });
 
-      document.getElementById('profileForm')?.addEventListener('submit', (e) => {
+      document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const status = document.getElementById('profileStatus');
         const currentEmail = document.getElementById('currentEmail').value.trim().toLowerCase();
@@ -1573,7 +1681,7 @@
         saveAccounts(accounts);
         writeSession(accounts[idx]);
         setStatus(status, 'Informations mises a jour.', true);
-        renderUI();
+        await renderUI();
       });
     }
 
@@ -1586,14 +1694,14 @@
         openOrderModal(userOrdersCache[idx]);
       });
 
-      document.getElementById('adminOrders')?.addEventListener('click', (e) => {
+      document.getElementById('adminOrders')?.addEventListener('click', async (e) => {
         const doneBtn = e.target.closest('.admin-mark-done-btn');
         if (doneBtn) {
           const idx = Number(doneBtn.dataset.adminOrderIndex);
           if (!Number.isInteger(idx) || idx < 0 || idx >= adminOrdersCache.length) return;
           const order = adminOrdersCache[idx];
           if (!order) return;
-          const updated = updateOrderStatusById(order.id, STATUS_DONE);
+          const updated = await updateOrderStatusById(order.id, STATUS_DONE);
           renderOrdersForAdmin();
           if (updated && selectedOrder && String(selectedOrder.id || '') === String(order.id || '')) {
             selectedOrder = updated;

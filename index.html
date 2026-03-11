@@ -395,6 +395,7 @@
     const SUPABASE_URL = 'https://rlyouiuobnhsvxtecriu.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RBQC4-HKQ8L1bncB_4VJAA_G_xXqg_-';
     const BESTSELLER_TABLE = 'best_seller_counts';
+    const ORDERS_TABLE = 'orders';
     let remoteBestSellerCounts = null;
 
     /* Publication globale pour eviter l'erreur window.catalog undefined */
@@ -835,6 +836,27 @@
           });
           return maxNo + 1;
         }
+        async function fetchMaxOnlineOrderNumber(){
+          const url = `${SUPABASE_URL}/rest/v1/${ORDERS_TABLE}?select=order_no&order=order_no.desc.nullslast&limit=1`;
+          const res = await fetch(url, { method:'GET', headers:getSupabaseHeaders(false) });
+          if(!res.ok) throw new Error(`Erreur lecture numero commande online (${res.status})`);
+          const rows = await res.json();
+          if(!Array.isArray(rows) || !rows.length) return 0;
+          const n = Number(rows[0]?.order_no);
+          return Number.isInteger(n) && n > 0 ? n : 0;
+        }
+        async function saveOrderOnline(record){
+          const url = `${SUPABASE_URL}/rest/v1/${ORDERS_TABLE}`;
+          const res = await fetch(url, {
+            method:'POST',
+            headers:{ ...getSupabaseHeaders(true), Prefer:'return=representation' },
+            body: JSON.stringify(record)
+          });
+          if(!res.ok) throw new Error(`Erreur ecriture commande online (${res.status})`);
+          const rows = await res.json();
+          if(!Array.isArray(rows) || !rows.length) return record;
+          return rows[0] || record;
+        }
         function getSession(){
           try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }
           catch(e){ return null; }
@@ -1006,37 +1028,53 @@ ${c}`;
             localStorage.setItem('yumeko_last_order', text);
           }catch(e){}
         }
-        function saveOrderToHistory(){
+        async function saveOrderToHistory(){
+          const session = getSession() || {};
+          const firstFromForm = form?.querySelector('[name="first_name"]')?.value?.trim() || '';
+          const lastFromForm  = form?.querySelector('[name="last_name"]')?.value?.trim() || '';
+          const fullSessionName = String(session.name || '').trim();
+          const sessionParts = fullSessionName.split(/\s+/).filter(Boolean);
+          const first = firstFromForm || sessionParts[0] || '';
+          const last  = lastFromForm || (sessionParts.length > 1 ? sessionParts.slice(1).join(' ') : '');
+          const email = (form?.querySelector('[name="email"]')?.value?.trim().toLowerCase() || String(session.email || '').trim().toLowerCase());
+          const comments = getCurrentComment();
+          const items = getCartItems().map(({code, name, qty}) => ({ code, name, qty }));
+          const orders = readOrders();
+
+          let nextOrderNo = getNextOrderNumber(orders);
           try{
-            const session = getSession() || {};
-            const firstFromForm = form?.querySelector('[name="first_name"]')?.value?.trim() || '';
-            const lastFromForm  = form?.querySelector('[name="last_name"]')?.value?.trim() || '';
-            const fullSessionName = String(session.name || '').trim();
-            const sessionParts = fullSessionName.split(/\s+/).filter(Boolean);
-            const first = firstFromForm || sessionParts[0] || '';
-            const last  = lastFromForm || (sessionParts.length > 1 ? sessionParts.slice(1).join(' ') : '');
-            const email = (form?.querySelector('[name="email"]')?.value?.trim().toLowerCase() || String(session.email || '').trim().toLowerCase());
-            const comments = getCurrentComment();
-            const items = getCartItems().map(({code, name, qty}) => ({ code, name, qty }));
-            const orders = readOrders();
-            const nextOrderNo = getNextOrderNumber(orders);
-            const record = {
-              id: 'CMD-' + Date.now(),
-              order_no: nextOrderNo,
-              created_at: new Date().toISOString(),
-              customer_name: `${first} ${last}`.trim() || 'Client',
-              email,
-              comments,
-              items,
-              admin_status: 'nouveau',
-              account_email: session.email || email || '',
-              account_role: session.role || 'user'
-            };
+            const maxOnline = await fetchMaxOnlineOrderNumber();
+            if(maxOnline + 1 > nextOrderNo) nextOrderNo = maxOnline + 1;
+          }catch(e){}
+
+          let record = {
+            id: 'CMD-' + Date.now() + '-' + Math.floor(Math.random() * 100000),
+            order_no: nextOrderNo,
+            created_at: new Date().toISOString(),
+            customer_name: `${first} ${last}`.trim() || 'Client',
+            email,
+            comments,
+            items,
+            admin_status: 'nouveau',
+            account_email: session.email || email || '',
+            account_role: session.role || 'user'
+          };
+
+          try{
+            record = await saveOrderOnline(record);
+          }catch(e){
+            // Fallback local si la sauvegarde cloud echoue.
+          }
+
+          const exists = orders.some((o)=>String(o?.id || '') === String(record?.id || ''));
+          if(!exists){
             orders.unshift(record);
             saveOrders(orders);
-            updateBestSellerCounts(items);
-            applyBestSellerBadges();
-          }catch(e){}
+          }
+
+          updateBestSellerCounts(items);
+          applyBestSellerBadges();
+          return record;
         }
         function validateForm(){
           if(!form) return false;
@@ -1071,7 +1109,7 @@ ${c}`;
         async function submitCurrentOrder(){
           syncCommentFields();
           prefillFromSession();
-          saveOrderToHistory();
+          await saveOrderToHistory();
           saveOrderToLocalStorage();
           try{ await sendEmails(); }catch(e){ console.warn('EmailJS error:', e); }
           document.querySelectorAll('.qty[data-item]').forEach(q=>q.textContent='');
