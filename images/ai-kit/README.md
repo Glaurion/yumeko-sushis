@@ -4,11 +4,12 @@ Ce dossier contient le kit pour garder toutes les images du menu avec un style u
 
 ## Fichiers
 
-- `prompts-menu.json`: liste complete des prompts (1 prompt par article du menu).
+- `prompts-menu.json`: prompts issus du mode uniformisation locale.
+- `prompts-menu-openai.json`: prompts utilises par la generation 100% IA OpenAI.
 
-## Regeneration rapide des images
+## Mode 1: Uniformiser les images existantes (rapide)
 
-Le script principal est:
+Script:
 
 - `C:\Users\Benjamin_DHINAUT\Documents\GitHub\yumeko-sushis\scripts\uniform-images-kit.ps1`
 
@@ -16,8 +17,7 @@ Ce script:
 
 1. lit les articles dans `index.html`,
 2. cree une sauvegarde des images d'origine,
-3. regenere toutes les images avec le meme fond et le meme format carre,
-4. met a jour automatiquement `prompts-menu.json`.
+3. regenere toutes les images avec le meme fond et le meme format carre.
 
 Commande:
 
@@ -26,15 +26,36 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 & "C:\Users\Benjamin_DHINAUT\Documents\GitHub\yumeko-sushis\scripts\uniform-images-kit.ps1"
 ```
 
+## Mode 2: Generation 100% IA de tout le menu (OpenAI)
+
+Script:
+
+- `C:\Users\Benjamin_DHINAUT\Documents\GitHub\yumeko-sushis\scripts\generate-menu-images-openai.ps1`
+
+Pre-requis:
+
+1. Une cle API OpenAI active
+2. Variable d'environnement `OPENAI_API_KEY`
+
+Commande:
+
+```powershell
+$env:OPENAI_API_KEY="ta_cle_api_openai"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+& "C:\Users\Benjamin_DHINAUT\Documents\GitHub\yumeko-sushis\scripts\generate-menu-images-openai.ps1"
+```
+
+Mode test (n'ecrit pas les images):
+
+```powershell
+& "C:\Users\Benjamin_DHINAUT\Documents\GitHub\yumeko-sushis\scripts\generate-menu-images-openai.ps1" -DryRun
+```
+
 ## Sauvegardes
 
 Chaque execution cree un dossier de sauvegarde:
 
 - `images/_backup-uniform-YYYYMMDD-HHMMSS`
+- `images/_backup-openai-YYYYMMDD-HHMMSS`
 
-Tu peux restaurer facilement les images d'origine depuis ce dossier si besoin.
-
-## IA complete (optionnel)
-
-`prompts-menu.json` est pret pour une generation IA 100% nouvelle image (OpenAI, Midjourney, etc.).
-Il suffit de garder exactement les memes noms de fichiers (`m1.jpg`, `c1.jpg`, etc.) pour que le site affiche tout sans autre modification.
+Tu peux restaurer facilement les images d'origine depuis ces dossiers si besoin.
