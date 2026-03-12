@@ -101,7 +101,6 @@ function Invoke-OpenAIImage(
     prompt = $Prompt
     size = $SizeValue
     quality = $QualityValue
-    response_format = "b64_json"
   } | ConvertTo-Json -Depth 10
 
   $response = Invoke-RestMethod -Method Post `
@@ -124,6 +123,21 @@ function Invoke-OpenAIImage(
   }
 
   throw "Reponse image inattendue."
+}
+
+function Get-HttpErrorBody([System.Exception]$ExceptionObj) {
+  try {
+    $resp = $ExceptionObj.Response
+    if (-not $resp) { return $null }
+    $stream = $resp.GetResponseStream()
+    if (-not $stream) { return $null }
+    $reader = New-Object System.IO.StreamReader($stream)
+    $txt = $reader.ReadToEnd()
+    $reader.Dispose()
+    return $txt
+  } catch {
+    return $null
+  }
 }
 
 $promptDump = @()
@@ -164,6 +178,10 @@ foreach ($item in $items) {
       $saved = $true
     } catch {
       $msg = $_.Exception.Message
+      $httpBody = Get-HttpErrorBody -ExceptionObj $_.Exception
+      if ($httpBody) {
+        $msg = "$msg | body: $httpBody"
+      }
       Write-Warning "[Retry $attempt/$MaxRetries] $($item.code): $msg"
       if ($attempt -ge $MaxRetries) {
         $failed += "$($item.code): $msg"
