@@ -1,0 +1,289 @@
+﻿[
+    {
+        "code":  "B1",
+        "name":  "BIERE TSINGTAO",
+        "filename":  "b1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027BIERE TSINGTAO\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "B2",
+        "name":  "BIERE ASAHI",
+        "filename":  "b2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027BIERE ASAHI\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "B3",
+        "name":  "COCA COLA ZERO",
+        "filename":  "b3.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027COCA COLA ZERO\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "BR1",
+        "name":  "YAKITORI BOEUF FROMAGE",
+        "filename":  "br1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027YAKITORI BOEUF FROMAGE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C1",
+        "name":  "CALIFORNIA SAUMON",
+        "filename":  "c1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA SAUMON\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C2",
+        "name":  "CALIFORNIA SAUMON AVOCAT",
+        "filename":  "c2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA SAUMON AVOCAT\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C3",
+        "name":  "CALIFORNIA SAUMON CHEESE",
+        "filename":  "c3.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA SAUMON CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C4",
+        "name":  "CALIFORNIA CONCOMBRE",
+        "filename":  "c4.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA CONCOMBRE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C5",
+        "name":  "CALIFORNIA CONCOMBRE CHEESE",
+        "filename":  "c5.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA CONCOMBRE CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C6",
+        "name":  "CALIFORNIA AVOCAT",
+        "filename":  "c6.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA AVOCAT\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C7",
+        "name":  "CALIFORNIA AVOCAT CHEESE",
+        "filename":  "c7.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA AVOCAT CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C8",
+        "name":  "CALIFORNIA CHEESE",
+        "filename":  "c8.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "C9",
+        "name":  "CALIFORNIA SAUMON CHEESE OIGNONS FRITS",
+        "filename":  "c9.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027CALIFORNIA SAUMON CHEESE OIGNONS FRITS\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "CO1",
+        "name":  "SAUCE SOJA SUCREE",
+        "filename":  "co1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027SAUCE SOJA SUCREE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "CO2",
+        "name":  "SAUCE SOJA SALEE",
+        "filename":  "co2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027SAUCE SOJA SALEE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "CO5",
+        "name":  "GINGEMBRE",
+        "filename":  "co5.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027GINGEMBRE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "CO6",
+        "name":  "WASABI",
+        "filename":  "co6.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027WASABI\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "CO7",
+        "name":  "WASABI CACAHUÈTE",
+        "filename":  "co7.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027WASABI CACAHUÈTE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "CO8",
+        "name":  "WASABI PETIT POIS",
+        "filename":  "co8.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027WASABI PETIT POIS\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "G1",
+        "name":  "GYOZA POULET LEGUMES",
+        "filename":  "g1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027GYOZA POULET LEGUMES\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "G2",
+        "name":  "GYOZA BOEUF LEGUMES",
+        "filename":  "g2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027GYOZA BOEUF LEGUMES\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "G3",
+        "name":  "GYOZA LEGUMES",
+        "filename":  "g3.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027GYOZA LEGUMES\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M1",
+        "name":  "MAKI SAUMON",
+        "filename":  "m1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI SAUMON\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M2",
+        "name":  "MAKI SAUMON AVOCAT",
+        "filename":  "m2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI SAUMON AVOCAT\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M3",
+        "name":  "MAKI SAUMON CHEESE",
+        "filename":  "m3.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI SAUMON CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M4",
+        "name":  "MAKI CONCOMBRE",
+        "filename":  "m4.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI CONCOMBRE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M5",
+        "name":  "MAKI CONCOMBRE CHEESE",
+        "filename":  "m5.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI CONCOMBRE CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M6",
+        "name":  "MAKI AVOCAT",
+        "filename":  "m6.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI AVOCAT\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M7",
+        "name":  "MAKI AVOCAT CHEESE",
+        "filename":  "m7.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI AVOCAT CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "M8",
+        "name":  "MAKI CHEESE",
+        "filename":  "m8.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "N1",
+        "name":  "NIGIRI SAUMON",
+        "filename":  "n1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027NIGIRI SAUMON\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "N2",
+        "name":  "NIGIRI AVOCAT",
+        "filename":  "n2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027NIGIRI AVOCAT\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "O1",
+        "name":  "ONIGIRI THON MAYO",
+        "filename":  "o1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027ONIGIRI THON MAYO\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "P1",
+        "name":  "MAKI PRINTEMPS SAUMON AVOCAT",
+        "filename":  "p1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI PRINTEMPS SAUMON AVOCAT\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "P2",
+        "name":  "MAKI PRINTEMPS SAUMON CHEESE",
+        "filename":  "p2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI PRINTEMPS SAUMON CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "P3",
+        "name":  "MAKI PRINTEMPS CONCOMBRE CHEESE",
+        "filename":  "p3.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI PRINTEMPS CONCOMBRE CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "P4",
+        "name":  "MAKI PRINTEMPS AVOCAT CHEESE",
+        "filename":  "p4.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027MAKI PRINTEMPS AVOCAT CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "R1",
+        "name":  "ROLLS SAUMON AVOCAT CHEESE",
+        "filename":  "r1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027ROLLS SAUMON AVOCAT CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "R2",
+        "name":  "ROLLS AVOCAT SAUMON CHEESE",
+        "filename":  "r2.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027ROLLS AVOCAT SAUMON CHEESE\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "S1",
+        "name":  "SASHIMI SAUMON",
+        "filename":  "s1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027SASHIMI SAUMON\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    },
+    {
+        "code":  "SO1",
+        "name":  "SOUPE MISO",
+        "filename":  "so1.jpg",
+        "prompt":  "photo culinaire studio, produit japonais \u0027SOUPE MISO\u0027, objet unique centre, style premium, fond uniforme beige et rose sakura, lumiere douce, contraste propre, sans texte, sans logo, sans watermark, format carre 1024x1024",
+        "negative_prompt":  "texte, logo, watermark, personne, mains, flou, deformee, cadre coupe"
+    }
+]

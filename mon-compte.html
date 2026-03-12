@@ -704,8 +704,8 @@
       G1:'GYOZA POULET LÉGUMES', G2:'GYOZA BOEUF LÉGUMES', G3:'GYOZA LÉGUMES',
       BR1:'YAKITORI BOEUF FROMAGE',
       SO1:'SOUPE MISO',
-      CO1:'SAUCE SOJA SUCRÉE', CO2:'SAUCE SOJA SALÉE', CO3:'SAUCE MAYO JAPONAISE MAISON', CO4:'SAUCE MAYO JAPONAISE ÉPICÉE MAISON',
-      CO5:'GINGEMBRE', CO6:'WASABI', CO7:'WASABI CACAHUÈTE', CO8:'WASABI PETIT POIS', CO9:'OIGNONS FRITS', CO10:'SAUCE SRIRACHA',
+      CO1:'SAUCE SOJA SUCRÉE', CO2:'SAUCE SOJA SALÉE',
+      CO5:'GINGEMBRE', CO6:'WASABI', CO7:'WASABI CACAHUÈTE', CO8:'WASABI PETIT POIS',
       B1:'BIÈRE TSINGTAO', B2:'BIÈRE ASAHI', B3:'COCA COLA ZÉRO'
     };
 
@@ -1220,7 +1220,7 @@
       B3: { 'COCA ZERO (U)': 1 }
     };
 
-    const EXCEL_FALLBACK_UNIT_CODES = new Set(['G1', 'G2', 'G3', 'SO1', 'CO1', 'CO2', 'CO3', 'CO4', 'CO5', 'CO6', 'CO7', 'CO8', 'CO9', 'CO10']);
+    const EXCEL_FALLBACK_UNIT_CODES = new Set(['G1', 'G2', 'G3', 'SO1', 'CO1', 'CO2', 'CO5', 'CO6', 'CO7', 'CO8']);
 
     function estimateIngredientsForCode(code, qty, totals) {
       const q = Math.max(0, Number(qty) || 0);
