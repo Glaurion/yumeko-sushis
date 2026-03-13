@@ -23,13 +23,10 @@ $targetCodes = @(
   "M8", # MAKI CHEESE
   "M2", # MAKI SAUMON AVOCAT
   "M3", # MAKI SAUMON CHEESE
-  "C9", # CALIFORNIA SAUMON CHEESE OIGNONS FRITS
   "C6", # CALIFORNIA AVOCAT
-  "C4", # CALIFORNIA CONCOMBRE
-  "P2", # MAKI PRINTEMPS SAUMON CHEESE
-  "P4", # MAKI PRINTEMPS AVOCAT CHEESE
   "P3", # MAKI PRINTEMPS CONCOMBRE CHEESE
-  "P1"  # MAKI PRINTEMPS SAUMON AVOCAT
+  "P1", # MAKI PRINTEMPS SAUMON AVOCAT
+  "R1"  # ROLLS SAUMON AVOCAT CHEESE
 )
 
 $content = Get-Content -Raw -Path $catalogPath
@@ -80,7 +77,7 @@ function Save-AsJpeg {
 function Prompt-Base {
   return @(
     "Photorealistic premium Japanese sushi menu photography.",
-    "Visual style must match MAKI AVOCAT CHEESE reference style: same plate size, same framing, same light, same 3/4 front camera angle.",
+    "Visual style must match MAKI AVOCAT reference style (M6): same plate size, same framing, same light, same 3/4 front camera angle.",
     "Small elegant ceramic plate.",
     "Exactly 4 pieces.",
     "All 4 pieces lying down (not standing), same orientation and aligned cleanly.",
@@ -104,34 +101,25 @@ function Build-Prompt {
       return "$base Dish: MAKI CONCOMBRE. Nori outside, white rice and cucumber filling only. Exactly 4 pieces, lying down, not standing."
     }
     "M8" {
-      return "$base Dish: MAKI CHEESE. Nori outside, white rice with only cream-cheese center. Keep exact 3/4 angle like MAKI AVOCAT CHEESE."
+      return "$base Dish: MAKI CHEESE. Nori outside, white rice with only cream-cheese center. Keep exact 3/4 angle like MAKI AVOCAT."
     }
     "M2" {
-      return "$base Dish: MAKI SAUMON AVOCAT. Nori outside, filling salmon and avocado. Keep exact 3/4 angle like MAKI AVOCAT CHEESE."
+      return "$base Dish: MAKI SAUMON AVOCAT. Nori outside, filling salmon and avocado. Keep exact 3/4 angle like MAKI AVOCAT."
     }
     "M3" {
-      return "$base Dish: MAKI SAUMON CHEESE. Nori outside, filling salmon and cream cheese. Keep exact 3/4 angle like MAKI AVOCAT CHEESE."
-    }
-    "C9" {
-      return "$base Dish: CALIFORNIA SAUMON CHEESE OIGNONS FRITS. Uramaki with black and white sesame seeds outside, 4 pieces aligned on plate. Fried onions must be inside filling only, not outside coating."
+      return "$base Dish: MAKI SAUMON CHEESE. Nori outside, filling salmon and cream cheese. Keep exact 3/4 angle like MAKI AVOCAT."
     }
     "C6" {
       return "$base Dish: CALIFORNIA AVOCAT. Uramaki with black and white sesame seeds outside. Filling should be avocado only, no dark garnish inside."
-    }
-    "C4" {
-      return "$base Dish: CALIFORNIA CONCOMBRE. Uramaki with black and white sesame seeds outside. Filling should be cucumber only, no cream cheese."
-    }
-    "P2" {
-      return "$base Dish: MAKI PRINTEMPS SAUMON CHEESE. Structure must be: rice core wrapped first with rice paper, then an outer lettuce leaf, filling salmon and cream cheese. Exactly 4 pieces."
-    }
-    "P4" {
-      return "$base Dish: MAKI PRINTEMPS AVOCAT CHEESE. Structure must be: rice core wrapped first with rice paper, then an outer lettuce leaf, filling avocado and cream cheese. Exactly 4 pieces."
     }
     "P3" {
       return "$base Dish: MAKI PRINTEMPS CONCOMBRE CHEESE. Structure must be: rice core wrapped first with rice paper, then an outer lettuce leaf, filling cucumber and cream cheese. Exactly 4 pieces."
     }
     "P1" {
       return "$base Dish: MAKI PRINTEMPS SAUMON AVOCAT. Structure must be: rice core wrapped first with rice paper, then an outer lettuce leaf, filling salmon and avocado. Exactly 4 pieces."
+    }
+    "R1" {
+      return "$base Dish: ROLLS SAUMON AVOCAT CHEESE. 4 rolls pieces aligned with same orientation. Salmon clearly visible as topping/outside, avocado and cream cheese in the center."
     }
     default {
       return "$base Dish: $Name."
