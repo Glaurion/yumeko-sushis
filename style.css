@@ -425,6 +425,12 @@ p{ margin:0; }
   object-position:center top;
 }
 
+.about-photo.about-photo-contain img{
+  aspect-ratio:3/4;
+  object-fit:contain;
+  background:#fff;
+}
+
 .about-photo figcaption{
   padding:8px 10px 10px;
   font-size:.86rem;
