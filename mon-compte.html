@@ -369,6 +369,178 @@
       white-space:nowrap;
     }
 
+    .prep-item-card{
+      display:grid;
+      gap:10px;
+      padding:12px;
+    }
+
+    .prep-item-top{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .prep-item-main{
+      display:grid;
+      gap:8px;
+      min-width:0;
+      flex:1 1 260px;
+    }
+
+    .prep-item-label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      cursor:pointer;
+      min-width:0;
+    }
+
+    .prep-item-label input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      accent-color:#ff4d6d;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+
+    .prep-item-name{
+      overflow-wrap:anywhere;
+    }
+
+    .prep-item-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+
+    .prep-item-tools{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+
+    .item-step-btn{
+      width:30px;
+      height:30px;
+      border-radius:8px;
+      border:1px solid var(--card-border);
+      background:#fff;
+      font:inherit;
+      font-size:1rem;
+      font-weight:900;
+      line-height:1;
+      cursor:pointer;
+      transition:transform .12s, box-shadow .12s, border-color .12s;
+    }
+
+    .item-step-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,77,109,.35);
+      box-shadow:0 6px 12px rgba(0,0,0,.06);
+    }
+
+    .item-progress-pill{
+      border:1px solid var(--card-border);
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:.82rem;
+      font-weight:700;
+      background:#fff;
+      color:#3a3a3a;
+      white-space:nowrap;
+    }
+
+    .item-remaining-pill{
+      background:#fff3f5;
+      color:#bf1f45;
+      border-color:rgba(194,23,59,.25);
+    }
+
+    .item-expand-btn{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      border:1px solid var(--card-border);
+      background:#fff8ef;
+      color:#c2173b;
+      font:inherit;
+      font-size:1.1rem;
+      font-weight:900;
+      line-height:1;
+      cursor:pointer;
+      transition:transform .12s, box-shadow .12s, border-color .12s, background .12s;
+    }
+
+    .item-expand-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 12px rgba(0,0,0,.06);
+      border-color:rgba(255,77,109,.3);
+      background:#fff0f4;
+    }
+
+    .item-orders{
+      display:grid;
+      gap:8px;
+      margin-top:2px;
+    }
+
+    .item-order-row{
+      display:grid;
+      grid-template-columns:auto auto 1fr auto;
+      align-items:center;
+      gap:8px;
+      border:1px dashed var(--card-border);
+      border-radius:10px;
+      padding:8px;
+      background:#fffdf9;
+    }
+
+    .item-order-open{
+      border:1px solid var(--card-border);
+      border-radius:999px;
+      padding:6px 10px;
+      background:#fff;
+      font:inherit;
+      font-size:.82rem;
+      font-weight:800;
+      color:#c2173b;
+      cursor:pointer;
+      transition:transform .12s, box-shadow .12s, border-color .12s;
+    }
+
+    .item-order-open:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 12px rgba(0,0,0,.06);
+      border-color:rgba(255,77,109,.32);
+    }
+
+    .item-order-customer{
+      font-size:.84rem;
+      color:#4f5b63;
+      min-width:0;
+      overflow-wrap:anywhere;
+    }
+
+    @media (max-width:560px){
+      .item-order-row{
+        grid-template-columns:1fr auto;
+      }
+
+      .item-order-open{
+        justify-self:start;
+      }
+
+      .item-order-customer{
+        grid-column:1 / -1;
+      }
+    }
+
     .admin-subtitle{
       margin:14px 2px 8px;
       font-size:1rem;
@@ -613,7 +785,7 @@
                 </div>
 
                 <div id="adminPanelItems" class="hidden">
-                  <p class="muted">Articles à préparer selon les commandes en cours (hors commandes terminées).</p>
+                  <p class="muted">Articles à préparer selon les commandes en cours (hors commandes terminées). Clique sur + pour voir les numéros de commande et les quantités.</p>
                   <div id="adminItems" class="course-list"></div>
                 </div>
 
@@ -673,6 +845,7 @@
     const REORDER_KEY = 'yumeko_reorder_cart_v1';
     const LEGACY_COURSES_CHECK_KEY = 'yumeko_admin_courses_checks_v1';
     const ITEMS_CHECK_KEY = 'yumeko_admin_items_checks_v1';
+    const ITEMS_PROGRESS_KEY = 'yumeko_admin_items_progress_v1';
     const COURSES_CHECK_KEY = 'yumeko_admin_courses_checks_v2';
     const ADMIN_EMAIL = 'admin@yumeko.fr';
     const ADMIN_PASSWORD = 'Admin123!';
@@ -687,6 +860,7 @@
     let userOrdersCache = [];
     let adminOrdersCache = [];
     let adminReviewsCache = [];
+    let adminItemsExpanded = {};
     let selectedOrder = null;
     let lastConnectedEmail = '';
     let profileInitialState = null;
@@ -1025,6 +1199,15 @@
       writeJSON(ITEMS_CHECK_KEY, value || {});
     }
 
+    function readItemProgress() {
+      const value = readJSON(ITEMS_PROGRESS_KEY, {});
+      return value && typeof value === 'object' ? value : {};
+    }
+
+    function saveItemProgress(value) {
+      writeJSON(ITEMS_PROGRESS_KEY, value || {});
+    }
+
     function readCoursesChecks() {
       return readJSON(COURSES_CHECK_KEY, {});
     }
@@ -1055,6 +1238,92 @@
         });
       });
       return totals;
+    }
+
+    function buildItemDemandFromOrders(orders) {
+      const totals = {};
+      (Array.isArray(orders) ? orders : []).forEach((order) => {
+        const items = Array.isArray(order && order.items) ? order.items : [];
+        items.forEach((it) => {
+          const code = String(it && it.code || '').trim().toUpperCase();
+          if (!code) return;
+          const qty = Math.max(1, Number(it && it.qty || 1));
+          if (!totals[code]) {
+            totals[code] = {
+              code,
+              name: ITEM_NAME_BY_CODE[code] || String(it && it.name || code || 'Article').trim(),
+              qty: 0,
+              orders: []
+            };
+          }
+          totals[code].qty += qty;
+          totals[code].orders.push({
+            order_id: String(order && order.id || '').trim(),
+            order_no: parseOrderNumber(order),
+            order_display: getOrderDisplayId(order),
+            customer_name: String(order && order.customer_name || 'Client').trim() || 'Client',
+            created_at: String(order && order.created_at || ''),
+            qty,
+            status: normalizeOrderStatus(order && order.admin_status)
+          });
+        });
+      });
+
+      Object.values(totals).forEach((item) => {
+        item.orders.sort((a, b) => {
+          if (a.order_no > 0 && b.order_no > 0) return a.order_no - b.order_no;
+          if (a.order_no > 0) return -1;
+          if (b.order_no > 0) return 1;
+          return String(a.created_at).localeCompare(String(b.created_at));
+        });
+      });
+
+      return totals;
+    }
+
+    function sanitizeItemProgress(progress, itemTotals) {
+      const source = progress && typeof progress === 'object' ? progress : {};
+      const clean = {};
+      Object.values(itemTotals || {}).forEach((it) => {
+        const total = Math.max(0, Number(it && it.qty || 0));
+        const raw = Number(source[it.code] || 0);
+        const normalized = Math.max(0, Math.min(total, Math.round(Number.isFinite(raw) ? raw : 0)));
+        clean[it.code] = normalized;
+      });
+      return clean;
+    }
+
+    function findOrderById(orderId) {
+      const id = String(orderId || '').trim();
+      if (!id) return null;
+
+      const fromAdminCache = adminOrdersCache.find((order) => String(order && order.id || '').trim() === id);
+      if (fromAdminCache) return fromAdminCache;
+      const fromUserCache = userOrdersCache.find((order) => String(order && order.id || '').trim() === id);
+      if (fromUserCache) return fromUserCache;
+      const fromStore = readOrders().find((order) => String(order && order.id || '').trim() === id);
+      return fromStore || null;
+    }
+
+    function updatePreparedQtyForItem(code, step) {
+      const itemCode = String(code || '').trim().toUpperCase();
+      if (!itemCode) return;
+
+      const demand = buildItemDemandFromOrders(getActiveOrders());
+      const target = demand[itemCode];
+      if (!target) return;
+
+      const checks = readItemChecks();
+      const progress = sanitizeItemProgress(readItemProgress(), demand);
+      const current = Number(progress[itemCode] || 0);
+      const next = Math.max(0, Math.min(target.qty, current + Number(step || 0)));
+
+      progress[itemCode] = next;
+      checks[itemCode] = next >= target.qty && target.qty > 0;
+
+      saveItemProgress(progress);
+      saveItemChecks(checks);
+      renderItemsForAdmin();
     }
 
     function renderOrdersForUser(email) {
@@ -1144,11 +1413,33 @@
       const box = document.getElementById('adminItems');
       if (!box) return;
 
-      const checks = readItemChecks();
-      const totals = sumItemsFromOrders(getActiveOrders());
-      const list = Object.values(totals)
+      const demand = buildItemDemandFromOrders(getActiveOrders());
+      const normalizedProgress = sanitizeItemProgress(readItemProgress(), demand);
+      const rawChecks = readItemChecks();
+      const checks = {};
+      Object.values(demand).forEach((it) => {
+        const total = Math.max(0, Number(it.qty) || 0);
+        const prepared = Math.max(0, Math.min(total, Number(normalizedProgress[it.code]) || 0));
+        checks[it.code] = !!rawChecks[it.code] || (total > 0 && prepared >= total);
+        normalizedProgress[it.code] = checks[it.code] ? total : prepared;
+      });
+
+      if (JSON.stringify(rawChecks) !== JSON.stringify(checks)) {
+        saveItemChecks(checks);
+      }
+      if (JSON.stringify(readItemProgress()) !== JSON.stringify(normalizedProgress)) {
+        saveItemProgress(normalizedProgress);
+      }
+
+      const expandedClean = {};
+      Object.keys(demand).forEach((code) => {
+        if (adminItemsExpanded[code]) expandedClean[code] = true;
+      });
+      adminItemsExpanded = expandedClean;
+
+      const list = Object.values(demand)
         .filter((it) => it.qty > 0)
-        .sort((a, b) => b.qty - a.qty);
+        .sort((a, b) => (b.qty - a.qty) || String(a.name).localeCompare(String(b.name)));
 
       if (!list.length) {
         box.innerHTML = '<p class="muted">Aucun article à préparer pour le moment.</p>';
@@ -1159,13 +1450,50 @@
         const code = escapeHtml(it.code);
         const name = escapeHtml(it.name);
         const checked = checks[it.code] ? 'checked' : '';
+        const preparedQty = Math.max(0, Math.min(it.qty, Number(normalizedProgress[it.code]) || 0));
+        const remainingQty = Math.max(0, it.qty - preparedQty);
+        const expanded = !!adminItemsExpanded[it.code];
+        const expandSymbol = expanded ? '-' : '+';
+        const detailsClass = expanded ? 'item-orders' : 'item-orders hidden';
+        const detailsRows = it.orders.map((entry) => {
+          const orderId = escapeHtml(entry.order_id);
+          const display = escapeHtml(entry.order_display || 'Commande');
+          const customer = escapeHtml(entry.customer_name || 'Client');
+          const statusClass = getOrderStatusClass(entry.status);
+          const statusLabel = getOrderStatusLabel(entry.status);
+          return (
+            '<div class="item-order-row">' +
+              '<button type="button" class="item-order-open" data-order-id="' + orderId + '">' + display + '</button>' +
+              '<span class="course-qty">x' + entry.qty + '</span>' +
+              '<span class="item-order-customer">' + customer + '</span>' +
+              '<span class="order-chip order-status-chip ' + statusClass + '">' + statusLabel + '</span>' +
+            '</div>'
+          );
+        }).join('');
+
         return (
-          '<div class="order-card course-row">' +
-            '<label>' +
-              '<input class="item-check" type="checkbox" data-item-code="' + code + '" ' + checked + ' />' +
-              '<span>' + name + ' (' + code + ')</span>' +
-            '</label>' +
-            '<span class="course-qty">x' + it.qty + '</span>' +
+          '<div class="order-card prep-item-card">' +
+            '<div class="prep-item-top">' +
+              '<div class="prep-item-main">' +
+                '<label class="prep-item-label">' +
+                  '<input class="item-check" type="checkbox" data-item-code="' + code + '" ' + checked + ' />' +
+                  '<span class="prep-item-name">' + name + ' (' + code + ')</span>' +
+                '</label>' +
+                '<div class="prep-item-chips">' +
+                  '<span class="course-qty">A faire x' + it.qty + '</span>' +
+                  '<span class="item-progress-pill">Préparés ' + preparedQty + '/' + it.qty + '</span>' +
+                  '<span class="item-progress-pill item-remaining-pill">Reste x' + remainingQty + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="prep-item-tools">' +
+                '<button class="item-step-btn" type="button" data-item-code="' + code + '" data-step="-1" aria-label="Retirer une unité préparée">-</button>' +
+                '<button class="item-step-btn" type="button" data-item-code="' + code + '" data-step="1" aria-label="Ajouter une unité préparée">+</button>' +
+                '<button class="item-expand-btn" type="button" data-item-code="' + code + '" aria-expanded="' + (expanded ? 'true' : 'false') + '" aria-label="Voir les commandes de cet article">' + expandSymbol + '</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="' + detailsClass + '">' +
+              detailsRows +
+            '</div>' +
           '</div>'
         );
       }).join('');
@@ -1939,9 +2267,52 @@
         if (!input) return;
         const code = String(input.dataset.itemCode || '').trim().toUpperCase();
         if (!code) return;
+
+        const demand = buildItemDemandFromOrders(getActiveOrders());
+        const target = demand[code];
+        if (!target) return;
+
         const checks = readItemChecks();
         checks[code] = !!input.checked;
         saveItemChecks(checks);
+
+        const progress = sanitizeItemProgress(readItemProgress(), demand);
+        if (input.checked) {
+          progress[code] = target.qty;
+        } else if (Number(progress[code] || 0) >= target.qty) {
+          progress[code] = Math.max(0, target.qty - 1);
+        }
+        saveItemProgress(progress);
+        renderItemsForAdmin();
+      });
+
+      document.getElementById('adminItems')?.addEventListener('click', (e) => {
+        const expandBtn = e.target.closest('.item-expand-btn');
+        if (expandBtn) {
+          const code = String(expandBtn.dataset.itemCode || '').trim().toUpperCase();
+          if (!code) return;
+          adminItemsExpanded[code] = !adminItemsExpanded[code];
+          renderItemsForAdmin();
+          return;
+        }
+
+        const stepBtn = e.target.closest('.item-step-btn');
+        if (stepBtn) {
+          const code = String(stepBtn.dataset.itemCode || '').trim().toUpperCase();
+          const step = Number(stepBtn.dataset.step || 0);
+          if (!code || !Number.isFinite(step) || !step) return;
+          updatePreparedQtyForItem(code, step);
+          return;
+        }
+
+        const orderBtn = e.target.closest('.item-order-open');
+        if (orderBtn) {
+          const orderId = String(orderBtn.dataset.orderId || '').trim();
+          if (!orderId) return;
+          const order = findOrderById(orderId);
+          if (!order) return;
+          openOrderModal(order);
+        }
       });
 
       document.getElementById('adminCourses')?.addEventListener('change', (e) => {
