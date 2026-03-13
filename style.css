@@ -420,6 +420,11 @@ p{ margin:0; }
   display:block;
 }
 
+.about-photo.about-photo-portrait img{
+  aspect-ratio:3/4;
+  object-position:center top;
+}
+
 .about-photo figcaption{
   padding:8px 10px 10px;
   font-size:.86rem;
